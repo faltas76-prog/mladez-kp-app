@@ -1,0 +1,8 @@
+{
+  "name": "Mládež KP – Trénink",
+  "short_name": "KP Trénink",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a7c3a",
+  "theme_color": "#0a7c3a"
+}
