@@ -1,42 +1,44 @@
 function generateTraining() {
-  if (!window.drills || window.drills.length === 0) {
-    alert("Cviky nejsou načteny. Zkontroluj data.js");
-    return;
-  }
-
   const goal = document.getElementById("goal").value;
   const length = parseInt(document.getElementById("length").value);
+
+  const drills = getAllDrills();
+
+  if (!drills || drills.length === 0) {
+    alert("Databáze cvičení je prázdná.");
+    return;
+  }
 
   let plan = [];
   let time = 0;
 
-  // pomocná funkce
-  function addDrills(goalName, limit = 1) {
-    const found = window.drills.filter(d => d.goals.includes(goalName));
-    for (let d of found) {
-      if (time + d.duration <= length && limit > 0) {
-        plan.push(d);
-        time += d.duration;
-        limit--;
-      }
-    }
+  function addByGoal(g, limit = 2) {
+    drills
+      .filter(d => d.goals.includes(g))
+      .forEach(d => {
+        if (time + d.duration <= length && limit > 0) {
+          plan.push(d);
+          time += d.duration;
+          limit--;
+        }
+      });
   }
 
-  // 🔥 KOMBINOVANÝ TRÉNINK
   if (goal === "kombinace") {
-    addDrills("technika", 1);
-    addDrills("rychlost", 1);
-    addDrills("síla", 1);
-    addDrills("hra", 1);
+    addByGoal("technika", 1);
+    addByGoal("rychlost", 1);
+    addByGoal("síla", 1);
+    addByGoal("hra", 1);
   } else {
-    addDrills(goal, 10);
+    addByGoal(goal, 10);
   }
 
   if (plan.length === 0) {
-    alert("Nepodařilo se sestavit trénink – chybí cviky.");
+    alert("Nepodařilo se sestavit trénink.");
     return;
   }
 
   localStorage.setItem("trainingPlan", JSON.stringify(plan));
   window.location.href = "training.html";
 }
+
