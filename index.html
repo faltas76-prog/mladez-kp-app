@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Mládež KP – Trénink</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>⚽ Mládež KP</h1>
+<p>Vyber kategorii</p>
+
+<div class="categories">
+  <button onclick="selectCategory('U7')">U7</button>
+  <button onclick="selectCategory('U8')">U8</button>
+  <button onclick="selectCategory('U9')">U9</button>
+  <button onclick="selectCategory('U10')">U10</button>
+  <button onclick="selectCategory('U11')">U11</button>
+  <button onclick="selectCategory('U12')">U12</button>
+  <button onclick="selectCategory('U13')">U13</button>
+  <button onclick="selectCategory('U14')">U14</button>
+  <button onclick="selectCategory('U15')">U15</button>
+</div>
+
+<script src="js/app.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
