@@ -134,6 +134,52 @@ canvas.addEventListener("pointerdown", e => {
   redraw();
 });
 
+const DB_KEY = "tacticalExercises";
+
+function loadDB() {
+  return JSON.parse(localStorage.getItem(DB_KEY)) || [];
+}
+
+function saveDB(db) {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function saveExercise() {
+  const nameInput = document.getElementById("exerciseName");
+  const notesInput = document.getElementById("exerciseNotes");
+
+  if (!nameInput.value.trim()) {
+    alert("Zadej název cvičení");
+    return;
+  }
+
+  const db = loadDB();
+
+  db.push({
+    id: Date.now(),
+    name: nameInput.value,
+    notes: notesInput.value,
+    pitchType,
+    objects: JSON.parse(JSON.stringify(objects)),
+    lines: JSON.parse(JSON.stringify(lines)),
+    createdAt: new Date().toISOString()
+  });
+
+  saveDB(db);
+  alert("Cvičení uloženo ✔");
+}
+function resetExercise() {
+  if (!confirm("Opravdu chceš vymazat aktuální cvičení?")) return;
+
+  objects.length = 0;
+  lines.length = 0;
+
+  document.getElementById("exerciseName").value = "";
+  document.getElementById("exerciseNotes").value = "";
+
+  redraw();
+}
+
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
   const x = e.offsetX;
@@ -175,6 +221,19 @@ canvas.addEventListener("pointerup", () => {
   currentLine = null;
   selected = null;
 });
+
+(function loadLastExercise() {
+  const db = loadDB();
+  if (!db.length) return;
+
+  const last = db[db.length - 1];
+  pitchType = last.pitchType;
+
+  objects.push(...last.objects);
+  lines.push(...last.lines);
+
+  redraw();
+})();
 
 /* ---------- START ---------- */
 redraw();
