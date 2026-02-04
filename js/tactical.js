@@ -8,6 +8,12 @@ let currentLine = null;
 let selected = null;
 let currentSize = 10;
 
+// 🔁 přepínání typu hřiště
+function setPitch(p) {
+  pitchType = p;
+  redraw();
+}
+
 const objects = [];
 const lines = [];
 
