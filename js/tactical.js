@@ -162,14 +162,50 @@ canvas.addEventListener("pointerdown", e => {
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
+  const x = e.offsetX;
+  const y = e.offsetY;
 
-  if (selected) {
-    selected.x = e.offsetX;
-    selected.y = e.offsetY;
+  // 🔴 MAZÁNÍ – JAKO PŮVODNĚ
+  if (mode === "erase" && drawing) {
+
+    // 1️⃣ smaž objekty v okolí
+    for (let i = objects.length - 1; i >= 0; i--) {
+      const o = objects[i];
+      if (Math.hypot(o.x - x, o.y - y) < o.size + 10) {
+        objects.splice(i, 1);
+      }
+    }
+
+    // 2️⃣ smaž čáry v okolí
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      for (let p of line) {
+        if (Math.hypot(p.x - x, p.y - y) < 10) {
+          lines.splice(i, 1);
+          break;
+        }
+      }
+    }
+
     redraw();
     return;
   }
+
+  // ✏️ kreslení čáry
+  if (mode === "draw" && drawing && currentLine) {
+    currentLine.push({ x, y });
+    redraw();
+    return;
+  }
+
+  // 🔵 přesouvání objektu
+  if (drawing && selected) {
+    selected.x = x;
+    selected.y = y;
+    redraw();
+  }
+});
+
 
   if (currentLine) {
     currentLine.push({ x: e.offsetX, y: e.offsetY });
