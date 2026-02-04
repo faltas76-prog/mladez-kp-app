@@ -2,21 +2,27 @@ const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
 
 let mode = "draw";
-let drawing = false;
-let lastX = 0, lastY = 0;
 let pitchType = "full";
+let drawing = false;
+let selected = null;
 
-function setMode(m) {
-  mode = m;
-}
+const objects = [];
+let currentSize = 10;
 
-function setPitch(type) {
-  pitchType = type;
-  drawPitch();
-}
+// ------------------ OVLÁDÁNÍ ------------------
+function setMode(m) { mode = m; }
+function setPitch(p) { pitchType = p; redraw(); }
 
+document.getElementById("sizeControl")?.addEventListener("input", e => {
+  currentSize = parseInt(e.target.value);
+  if (selected) {
+    selected.size = currentSize;
+    redraw();
+  }
+});
+
+// ------------------ HŘIŠTĚ ------------------
 function drawPitch() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -44,121 +50,121 @@ function drawPitch() {
   }
 }
 
-drawPitch();
+// ------------------ OBJEKTY ------------------
+function drawObject(o) {
+  if (o.type === "playerBlue" || o.type === "playerRed") {
+    ctx.fillStyle = o.type === "playerBlue" ? "#2196f3" : "#e53935";
+    ctx.beginPath();
+    ctx.arc(o.x, o.y, o.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
+  if (o.type === "ball") {
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (o.type === "hurdle") {
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(o.x - o.size, o.y);
+    ctx.lineTo(o.x + o.size, o.y);
+    ctx.stroke();
+  }
+
+  if (o.type === "cone") {
+    ctx.fillStyle = "#ff9800";
+    ctx.beginPath();
+    ctx.moveTo(o.x, o.y - o.size);
+    ctx.lineTo(o.x - o.size, o.y + o.size);
+    ctx.lineTo(o.x + o.size, o.y + o.size);
+    ctx.fill();
+  }
+
+  if (o.type === "goal") {
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(o.x - o.size, o.y - o.size / 2, o.size * 2, o.size);
+  }
+}
+
+// ------------------ REDRAW ------------------
+function redraw() {
+  drawPitch();
+  objects.forEach(drawObject);
+}
+
+// ------------------ INTERAKCE ------------------
 canvas.addEventListener("pointerdown", e => {
-  drawing = true;
-  lastX = e.offsetX;
-  lastY = e.offsetY;
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < o.size);
+
+  if (selected) {
+    drawing = true;
+    return;
+  }
 
   if (mode !== "draw" && mode !== "erase") {
-    placeObject(lastX, lastY);
-    drawing = false;
+    const map = {
+      blue: "playerBlue",
+      red: "playerRed",
+      ball: "ball",
+      hurdle: "hurdle",
+      cone: "cone",
+      goal: "goal"
+    };
+
+    objects.push({
+      id: Date.now(),
+      type: map[mode],
+      x, y,
+      size: currentSize
+    });
+
+    redraw();
   }
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
-
-  if (mode === "draw") {
-    ctx.strokeStyle = "#ffeb3b";
-    ctx.lineWidth = 3;
-  } else if (mode === "erase") {
-    ctx.strokeStyle = "#2e7d32";
-    ctx.lineWidth = 12;
+  if (drawing && selected) {
+    selected.x = e.offsetX;
+    selected.y = e.offsetY;
+    redraw();
   }
-
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-
-  lastX = e.offsetX;
-  lastY = e.offsetY;
 });
 
-canvas.addEventListener("pointerup", () => drawing = false);
+canvas.addEventListener("pointerup", () => {
+  drawing = false;
+  selected = null;
+});
 
-function placeObject(x, y) {
-  if (mode === "blue") drawPlayer(x, y, "#2196f3");
-  if (mode === "red") drawPlayer(x, y, "#e53935");
-
-  if (mode === "ball") drawBall(x, y);
-  if (mode === "balls") drawMultiBalls(x, y);
-
-  if (mode === "cone") drawCone(x, y);
-  if (mode === "hurdle") drawHurdle(x, y);
-  if (mode === "goal") drawGoal(x, y);
-}
-
-function drawPlayer(x, y, color) {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(x, y, 9, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawBall(x, y) {
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(x, y, 5, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function drawCone(x, y) {
-  ctx.fillStyle = "#ff9800";
-  ctx.beginPath();
-  ctx.moveTo(x, y - 8);
-  ctx.lineTo(x - 6, y + 8);
-  ctx.lineTo(x + 6, y + 8);
-  ctx.closePath();
-  ctx.fill();
-}
-
-function drawMultiBalls(x, y) {
-  drawBall(x - 6, y);
-  drawBall(x + 6, y);
-  drawBall(x, y - 6);
-}
-
-function drawHurdle(x, y) {
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 3;
-
-  ctx.beginPath();
-  ctx.moveTo(x - 10, y);
-  ctx.lineTo(x + 10, y);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(x - 6, y);
-  ctx.lineTo(x - 6, y - 10);
-  ctx.moveTo(x + 6, y);
-  ctx.lineTo(x + 6, y - 10);
-  ctx.stroke();
-}
-
-
-function drawGoal(x, y) {
-  ctx.strokeStyle = "#fff";
-  ctx.strokeRect(x - 12, y - 6, 24, 12);
-}
-
+// ------------------ OVLÁDÁNÍ ------------------
 function clearPad() {
-  drawPitch();
+  objects.length = 0;
+  redraw();
 }
 
 function savePad() {
-  const img = canvas.toDataURL("image/png");
-  localStorage.setItem("tacticalPad", img);
+  localStorage.setItem("tacticalObjects", JSON.stringify(objects));
   alert("Nákres uložen ✔");
+}
+
+function loadPad() {
+  const saved = JSON.parse(localStorage.getItem("tacticalObjects")) || [];
+  objects.push(...saved);
+  redraw();
 }
 
 function exportPDF() {
   const img = canvas.toDataURL("image/png");
   const w = window.open("");
-  w.document.write(`
-    <img src="${img}" style="width:100%">
-    <script>window.print()<\/script>
-  `);
+  w.document.write(`<img src="${img}" style="width:100%"><script>window.print()<\/script>`);
 }
+
+// ------------------ START ------------------
+drawPitch();
+loadPad();
