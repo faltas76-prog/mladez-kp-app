@@ -1,20 +1,35 @@
 const drills = [
   {
-    name: "Vedení míče slalom",
-    description: "Práce s oběma nohama",
+    id: 1,
+    name: "Aktivace s míčem",
+    goal: "technika",
     duration: 10,
-    link: "https://www.youtube.com/results?search_query=football+dribbling+slalom+drill"
+    description: "Lehké vedení míče, změny směru.",
+    link: "https://www.youtube.com/results?search_query=football+warm+up+with+ball"
   },
   {
-    name: "Sprint na signál",
-    description: "Reakční rychlost",
-    duration: 8,
-    link: "https://www.youtube.com/results?search_query=football+reaction+sprint+drill"
+    id: 2,
+    name: "Sprinty 10–20 m",
+    goal: "rychlost",
+    duration: 10,
+    description: "Maximální akcelerace s pauzou.",
+    link: "https://www.youtube.com/results?search_query=football+sprint+drill"
   },
   {
-    name: "Hra 5v5",
-    description: "Malá hra vysoké tempo",
+    id: 3,
+    name: "Silový core",
+    goal: "síla",
+    duration: 10,
+    description: "Plank, side plank, dřepy.",
+    link: "https://www.youtube.com/results?search_query=football+core+training"
+  },
+  {
+    id: 4,
+    name: "Malá hra 5v5",
+    goal: "hra",
     duration: 20,
+    description: "Vysoké tempo, minimum přerušení.",
     link: "https://www.youtube.com/results?search_query=5v5+small+sided+game+football"
   }
 ];
+
