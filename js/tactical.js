@@ -4,24 +4,14 @@ const ctx = canvas.getContext("2d");
 let mode = "draw";
 let pitchType = "full";
 let drawing = false;
-let currentLine = null;
 let selected = null;
-let currentSize = 10;
-
-// 🔁 přepínání typu hřiště
-function setPitch(p) {
-  pitchType = p;
-  redraw();
-}
 
 const objects = [];
-const lines = [];
+let currentSize = 10;
 
-/* ================= OVLÁDÁNÍ ================= */
-function setMode(m) {
-  mode = m;
-  selected = null;
-}
+// ------------------ OVLÁDÁNÍ ------------------
+function setMode(m) { mode = m; }
+function setPitch(p) { pitchType = p; redraw(); }
 
 document.getElementById("sizeControl")?.addEventListener("input", e => {
   currentSize = parseInt(e.target.value);
@@ -31,7 +21,7 @@ document.getElementById("sizeControl")?.addEventListener("input", e => {
   }
 });
 
-/* ================= HŘIŠTĚ ================= */
+// ------------------ HŘIŠTĚ ------------------
 function drawPitch() {
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -46,9 +36,21 @@ function drawPitch() {
     ctx.lineTo(canvas.width - 10, canvas.height / 2);
     ctx.stroke();
   }
+
+  if (pitchType === "half") {
+    ctx.strokeRect(10, canvas.height / 2, canvas.width - 20, canvas.height / 2 - 10);
+  }
+
+  if (pitchType === "square") {
+    ctx.strokeRect(60, 160, 240, 240);
+  }
+
+  if (pitchType === "rect") {
+    ctx.strokeRect(40, 180, 280, 180);
+  }
 }
 
-/* ================= OBJEKTY ================= */
+// ------------------ OBJEKTY ------------------
 function drawObject(o) {
   if (o.type === "playerBlue" || o.type === "playerRed") {
     ctx.fillStyle = o.type === "playerBlue" ? "#2196f3" : "#e53935";
@@ -88,32 +90,17 @@ function drawObject(o) {
   }
 }
 
-/* ================= ČÁRY ================= */
-function drawLines() {
-  ctx.strokeStyle = "#ffeb3b";
-  ctx.lineWidth = 3;
-
-  lines.forEach(line => {
-    ctx.beginPath();
-    ctx.moveTo(line[0].x, line[0].y);
-    for (let p of line) ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-  });
-}
-
-/* ================= REDRAW ================= */
+// ------------------ REDRAW ------------------
 function redraw() {
   drawPitch();
-  drawLines();
   objects.forEach(drawObject);
 }
 
-/* ================= INTERAKCE ================= */
+// ------------------ INTERAKCE ------------------
 canvas.addEventListener("pointerdown", e => {
   const x = e.offsetX;
   const y = e.offsetY;
 
-  // výběr objektu
   selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < o.size);
 
   if (selected) {
@@ -121,82 +108,54 @@ canvas.addEventListener("pointerdown", e => {
     return;
   }
 
-  // kreslení čáry
-  if (mode === "draw") {
-    currentLine = [{ x, y }];
-    lines.push(currentLine);
-    drawing = true;
-    return;
-  }
+  if (mode !== "draw" && mode !== "erase") {
+    const map = {
+      blue: "playerBlue",
+      red: "playerRed",
+      ball: "ball",
+      hurdle: "hurdle",
+      cone: "cone",
+      goal: "goal"
+    };
 
-  // mazání
-  if (mode === "erase") {
-    const idx = objects.findIndex(o => Math.hypot(o.x - x, o.y - y) < o.size);
-    if (idx > -1) objects.splice(idx, 1);
-    redraw();
-    return;
-  }
-
-  // přidání objektu
-  const map = {
-    blue: "playerBlue",
-    red: "playerRed",
-    ball: "ball",
-    hurdle: "hurdle",
-    cone: "cone",
-    goal: "goal"
-  };
-
-  if (map[mode]) {
     objects.push({
       id: Date.now(),
       type: map[mode],
       x, y,
       size: currentSize
     });
+
     redraw();
   }
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
-
-  if (selected) {
+  if (drawing && selected) {
     selected.x = e.offsetX;
     selected.y = e.offsetY;
-    redraw();
-    return;
-  }
-
-  if (currentLine) {
-    currentLine.push({ x: e.offsetX, y: e.offsetY });
     redraw();
   }
 });
 
 canvas.addEventListener("pointerup", () => {
   drawing = false;
-  currentLine = null;
   selected = null;
 });
 
-/* ================= OVLÁDÁNÍ ================= */
+// ------------------ OVLÁDÁNÍ ------------------
 function clearPad() {
   objects.length = 0;
-  lines.length = 0;
   redraw();
 }
 
 function savePad() {
-  localStorage.setItem("tacticalObjects", JSON.stringify({ objects, lines }));
+  localStorage.setItem("tacticalObjects", JSON.stringify(objects));
   alert("Nákres uložen ✔");
 }
 
 function loadPad() {
-  const saved = JSON.parse(localStorage.getItem("tacticalObjects"));
-  if (!saved) return;
-  objects.push(...saved.objects);
-  lines.push(...saved.lines);
+  const saved = JSON.parse(localStorage.getItem("tacticalObjects")) || [];
+  objects.push(...saved);
   redraw();
 }
 
@@ -208,6 +167,6 @@ function exportPDF() {
 
 alert("TACTICAL.JS NAČTEN");
 
-/* ================= START ================= */
+// ------------------ START ------------------
 drawPitch();
 loadPad();
