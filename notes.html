@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Poznámky trenéra</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>📝 Poznámky trenéra</h1>
+
+<label>Datum:</label>
+<input type="date" id="date">
+
+<label>Kategorie:</label>
+<select id="category">
+  <option>U7</option>
+  <option>U8</option>
+  <option>U9</option>
+  <option>U10</option>
+  <option>U11</option>
+  <option>U12</option>
+  <option>U13</option>
+  <option>U14</option>
+  <option>U15</option>
+</select>
+
+<label>Poznámky k tréninku / zápasu:</label>
+<textarea id="note" placeholder="Co se povedlo, co zlepšit, docházka, chování..."></textarea>
+
+<button onclick="saveNote()">Uložit poznámku</button>
+
+<hr>
+
+<h2>📚 Uložené poznámky</h2>
+<div id="notesList"></div>
+
+<script src="js/notes.js"></script>
+</body>
+</html>
