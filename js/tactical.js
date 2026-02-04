@@ -1,44 +1,58 @@
 const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
 
-let drawing = false;
 let mode = "draw";
-let lastX = 0;
-let lastY = 0;
+let drawing = false;
+let lastX = 0, lastY = 0;
+let pitchType = "full";
 
-// --- základní hřiště ---
+function setMode(m) {
+  mode = m;
+}
+
+function setPitch(type) {
+  pitchType = type;
+  drawPitch();
+}
+
 function drawPitch() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
 
-  ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-  ctx.beginPath();
-  ctx.moveTo(10, canvas.height / 2);
-  ctx.lineTo(canvas.width - 10, canvas.height / 2);
-  ctx.stroke();
+  if (pitchType === "full") {
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    ctx.beginPath();
+    ctx.moveTo(10, canvas.height / 2);
+    ctx.lineTo(canvas.width - 10, canvas.height / 2);
+    ctx.stroke();
+  }
 
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, 40, 0, Math.PI * 2);
-  ctx.stroke();
+  if (pitchType === "half") {
+    ctx.strokeRect(10, canvas.height / 2, canvas.width - 20, canvas.height / 2 - 10);
+  }
+
+  if (pitchType === "square") {
+    ctx.strokeRect(60, 160, 240, 240);
+  }
+
+  if (pitchType === "rect") {
+    ctx.strokeRect(40, 180, 280, 180);
+  }
 }
 
 drawPitch();
-
-// --- režimy ---
-function setMode(m) {
-  mode = m;
-}
 
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   lastX = e.offsetX;
   lastY = e.offsetY;
 
-  if (mode === "player") {
-    drawPlayer(lastX, lastY);
+  if (mode !== "draw" && mode !== "erase") {
+    placeObject(lastX, lastY);
     drawing = false;
   }
 });
@@ -51,7 +65,7 @@ canvas.addEventListener("pointermove", e => {
     ctx.lineWidth = 3;
   } else if (mode === "erase") {
     ctx.strokeStyle = "#2e7d32";
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 12;
   }
 
   ctx.beginPath();
@@ -65,14 +79,43 @@ canvas.addEventListener("pointermove", e => {
 
 canvas.addEventListener("pointerup", () => drawing = false);
 
-function drawPlayer(x, y) {
-  ctx.fillStyle = "#2196f3";
+function placeObject(x, y) {
+  if (mode === "blue") drawPlayer(x, y, "#2196f3");
+  if (mode === "red") drawPlayer(x, y, "#e53935");
+  if (mode === "ball") drawBall(x, y);
+  if (mode === "cone") drawCone(x, y);
+  if (mode === "goal") drawGoal(x, y);
+}
+
+function drawPlayer(x, y, color) {
+  ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(x, y, 8, 0, Math.PI * 2);
+  ctx.arc(x, y, 9, 0, Math.PI * 2);
   ctx.fill();
 }
 
-// --- ovládání ---
+function drawBall(x, y) {
+  ctx.fillStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawCone(x, y) {
+  ctx.fillStyle = "#ff9800";
+  ctx.beginPath();
+  ctx.moveTo(x, y - 8);
+  ctx.lineTo(x - 6, y + 8);
+  ctx.lineTo(x + 6, y + 8);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawGoal(x, y) {
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(x - 12, y - 6, 24, 12);
+}
+
 function clearPad() {
   drawPitch();
 }
@@ -83,10 +126,11 @@ function savePad() {
   alert("Nákres uložen ✔");
 }
 
-// --- načtení uloženého ---
-const saved = localStorage.getItem("tacticalPad");
-if (saved) {
-  const img = new Image();
-  img.onload = () => ctx.drawImage(img, 0, 0);
-  img.src = saved;
+function exportPDF() {
+  const img = canvas.toDataURL("image/png");
+  const w = window.open("");
+  w.document.write(`
+    <img src="${img}" style="width:100%">
+    <script>window.print()<\/script>
+  `);
 }
