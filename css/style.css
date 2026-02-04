@@ -28,3 +28,25 @@ button {
   border-radius: 8px;
   margin-bottom: 8px;
 }
+/* BARCELONA */
+.theme-barca {
+  background: linear-gradient(135deg, #004d98, #a50044);
+  color: white;
+}
+
+/* REAL MADRID */
+.theme-real {
+  background: linear-gradient(135deg, #ffffff, #d4af37);
+  color: #111;
+}
+
+/* ARSENAL */
+.theme-arsenal {
+  background: linear-gradient(135deg, #db0007, #ffffff);
+  color: #111;
+}
+
+/* jemná animace */
+body {
+  transition: background 1s ease;
+}
