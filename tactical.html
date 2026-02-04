@@ -3,15 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Tactical Pad</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; margin: 10px; }
+    canvas { background:#2e7d32; border-radius:12px; touch-action:none; }
+    .toolbar { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:6px 0; }
+    button, select, input { padding:8px; font-size:14px; }
+  </style>
 </head>
 <body>
 
-<h1>⚽ Tactical Pad</h1>
+<h2>⚽ Tactical Pad</h2>
 
 <select onchange="setPitch(this.value)">
   <option value="full">Celé hřiště</option>
-  <option value="half">Polovina hřiště</option>
+  <option value="half">Polovina</option>
   <option value="square">Čtverec</option>
   <option value="rect">Obdélník</option>
 </select>
@@ -19,26 +25,21 @@
 <canvas id="pitch" width="360" height="540"></canvas>
 
 <div class="toolbar">
-  <button onclick="setMode('draw')">✏️ Kreslit</button>
-  <button onclick="setMode('blue')">🔵 Modří</button>
-  <button onclick="setMode('red')">🔴 Červení</button>
-  <button onclick="setMode('ball')">⚽ Míč</button>
-  <button onclick="setMode('balls')">⚽⚽</button>
-  <button onclick="setMode('cone')">🔺 Meta</button>
-  <button onclick="setMode('hurdle')">⛔ Překážka</button>
-  <button onclick="setMode('goal')">🥅 Branka</button>
-
-  <button onclick="setMode('erase')">🧽 Mazat</button>
+  <button onclick="setMode('draw')">✏️</button>
+  <button onclick="setMode('erase')">🧽</button>
+  <button onclick="setMode('playerBlue')">🔵</button>
+  <button onclick="setMode('playerRed')">🔴</button>
 </div>
-  
-<label>Velikost objektu</label>
-<input type="range" id="sizeControl" min="5" max="25" value="10">
 
 <div class="toolbar">
-  <button onclick="clearPad()">♻️ Reset</button>
-  <button onclick="savePad()">💾 Uložit</button>
-  <button onclick="exportPDF()">📄 Export PDF</button>
+  <button onclick="setMode('ball')">⚽</button>
+  <button onclick="setMode('cone')">🔺</button>
+  <button onclick="setMode('hurdle')">⛔</button>
+  <button onclick="setMode('goal')">🥅</button>
 </div>
+
+<label>Velikost objektu / gumy</label>
+<input type="range" id="sizeControl" min="5" max="50" value="15">
 
 <script src="js/tactical.js"></script>
 </body>
