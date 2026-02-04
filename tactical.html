@@ -38,6 +38,18 @@
   <button onclick="setMode('goal')">🥅</button>
 </div>
 
+  <hr>
+
+<input id="exerciseName" placeholder="Název cvičení">
+
+<textarea id="exerciseNotes" placeholder="Poznámky trenéra"></textarea>
+
+<div class="toolbar">
+  <button onclick="saveExercise()">💾 Uložit cvičení</button>
+  <button onclick="resetExercise()">♻️ Reset cvičení</button>
+</div>
+
+
 <label>Velikost objektu / gumy</label>
 <input type="range" id="sizeControl" min="5" max="50" value="15">
 
