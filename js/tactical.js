@@ -123,6 +123,11 @@ canvas.addEventListener("pointerdown", e => {
     drawing = true;
     return;
   }
+  canvas.addEventListener("pointerup", () => {
+  drawing = false;
+  currentLine = null;
+  selected = null;
+});
 
   // kreslení čáry
   if (mode === "draw") {
