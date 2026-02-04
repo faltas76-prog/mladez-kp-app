@@ -17,7 +17,9 @@ function setMode(m) {
   selected = null;
 }
 
-document.getElementById("sizeControl")?.addEventListener("input", e => {
+const sizeCtrl = document.getElementById("sizeControl");
+if (sizeCtrl) {
+  sizeCtrl.addEventListener("input", e => {
   currentSize = parseInt(e.target.value);
   if (selected) {
     selected.size = currentSize;
