@@ -1,3 +1,39 @@
-<button onclick="location.href='notes.html'">
-  📝 Poznámky trenéra
-</button>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>Dashboard trenéra</h1>
+
+<label>Cíl tréninku:</label>
+<select id="goal">
+  <option value="technika">Technika</option>
+  <option value="rychlost">Rychlost</option>
+  <option value="síla">Síla</option>
+  <option value="hra">Hra</option>
+</select>
+
+<label>Délka:</label>
+<select id="length">
+  <option value="60">60 min</option>
+  <option value="75">75 min</option>
+  <option value="90">90 min</option>
+</select>
+
+<button onclick="generateTraining()">Vygenerovat trénink</button>
+
+<hr>
+
+<button onclick="location.href='training.html'">▶ Trénink</button>
+<button onclick="location.href='notes.html'">📝 Poznámky</button>
+<button onclick="location.href='players.html'">👥 Hráči</button>
+<button onclick="location.href='attendance.html'">📋 Docházka</button>
+
+<script src="js/data.js"></script>
+<script src="js/generator.js"></script>
+</body>
+</html>
