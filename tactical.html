@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Tactical Pad</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>⚽ Tactical Pad</h1>
+
+<canvas id="pitch" width="360" height="540"></canvas>
+
+<div class="toolbar">
+  <button onclick="setMode('draw')">✏️ Kreslit</button>
+  <button onclick="setMode('player')">👤 Hráč</button>
+  <button onclick="setMode('erase')">🧽 Mazat</button>
+  <button onclick="clearPad()">♻️ Reset</button>
+  <button onclick="savePad()">💾 Uložit</button>
+</div>
+
+<script src="js/tactical.js"></script>
+</body>
+</html>
