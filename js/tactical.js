@@ -206,6 +206,8 @@ function exportPDF() {
   w.document.write(`<img src="${img}" style="width:100%"><script>window.print()<\/script>`);
 }
 
+alert("TACTICAL.JS NAČTEN");
+
 /* ================= START ================= */
 drawPitch();
 loadPad();
