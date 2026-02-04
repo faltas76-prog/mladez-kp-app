@@ -1,25 +1,7 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <title>Hráči</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
-<h1>Hráči</h1>
-
-<select id="category">
-  <option>U7</option><option>U8</option><option>U9</option>
-  <option>U10</option><option>U11</option><option>U12</option>
-  <option>U13</option><option>U14</option><option>U15</option>
-</select>
-
-<input id="playerName" placeholder="Jméno hráče">
+<h1>👥 Hráči</h1>
+<input id="name" placeholder="Jméno hráče">
 <button onclick="addPlayer()">Přidat</button>
+<div id="list"></div>
 
-<div id="playerList"></div>
-
+<script src="js/storage.js"></script>
 <script src="js/players.js"></script>
-</body>
-</html>
