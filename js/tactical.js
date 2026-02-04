@@ -8,6 +8,11 @@ let currentLine = null;
 let selected = null;
 let currentSize = 10;
 
+function setPitch(type) {
+  pitchType = type;
+  redraw();
+}
+
 const objects = [];
 const lines = [];
 
@@ -205,5 +210,6 @@ function exportPDF() {
 }
 
 /* ================= START ================= */
-drawPitch();
+redraw();
 loadPad();
+
