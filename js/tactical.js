@@ -115,6 +115,30 @@ function drawCone(x, y) {
   ctx.fill();
 }
 
+function drawMultiBalls(x, y) {
+  drawBall(x - 6, y);
+  drawBall(x + 6, y);
+  drawBall(x, y - 6);
+}
+
+function drawHurdle(x, y) {
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.moveTo(x - 10, y);
+  ctx.lineTo(x + 10, y);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x - 6, y);
+  ctx.lineTo(x - 6, y - 10);
+  ctx.moveTo(x + 6, y);
+  ctx.lineTo(x + 6, y - 10);
+  ctx.stroke();
+}
+
+
 function drawGoal(x, y) {
   ctx.strokeStyle = "#fff";
   ctx.strokeRect(x - 12, y - 6, 24, 12);
