@@ -1,13 +1,14 @@
-const plan = JSON.parse(localStorage.getItem("trainingPlan")) || [];
+const plan = JSON.parse(localStorage.getItem("trainingPlan"));
+
+if (!plan || plan.length === 0) {
+  alert("Tréninkový plán nebyl nalezen.");
+}
+
 let index = 0;
 let timeLeft = 0;
 let timer;
 
-if (plan.length === 0) {
-  alert("Nebyl nalezen žádný tréninkový plán.");
-}
-
-function startDrill() {
+function start() {
   const d = plan[index];
 
   document.getElementById("name").innerText = d.name;
@@ -21,26 +22,20 @@ function startDrill() {
 
   timer = setInterval(() => {
     timeLeft--;
-    renderTime();
+    document.getElementById("timer").innerText =
+      Math.floor(timeLeft / 60) + ":" + String(timeLeft % 60).padStart(2, "0");
+
     if (timeLeft <= 0) next();
   }, 1000);
 }
 
-function renderTime() {
-  const min = Math.floor(timeLeft / 60);
-  const sec = timeLeft % 60;
-  document.getElementById("timer").innerText =
-    `${min}:${sec.toString().padStart(2, "0")}`;
-}
-
 function next() {
   index++;
-  if (index < plan.length) {
-    startDrill();
-  } else {
+  if (index < plan.length) start();
+  else {
     clearInterval(timer);
     alert("Trénink dokončen 💪");
   }
 }
 
-startDrill();
+start();
