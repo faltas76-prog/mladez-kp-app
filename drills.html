@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Databáze cvičení</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>📚 Databáze cvičení</h1>
+
+<label>Název cvičení</label>
+<input id="name" placeholder="např. Sprint na signál">
+
+<label>Cíl cvičení</label>
+<select id="goal">
+  <option value="technika">Technika</option>
+  <option value="rychlost">Rychlost</option>
+  <option value="síla">Síla</option>
+  <option value="hra">Hra</option>
+</select>
+
+<label>Délka (minuty)</label>
+<input type="number" id="duration" value="10">
+
+<label>Popis</label>
+<textarea id="description"></textarea>
+
+<label>Odkaz (video / článek)</label>
+<input id="link" placeholder="https://">
+
+<button onclick="addDrill()">➕ Přidat cvičení</button>
+
+<hr>
+
+<h2>📋 Moje cvičení</h2>
+<div id="list"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/drills.js"></script>
+</body>
+</html>
