@@ -63,4 +63,17 @@ canvas {
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
 }
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
 
