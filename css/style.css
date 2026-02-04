@@ -50,3 +50,17 @@ button {
 body {
   transition: background 1s ease;
 }
+canvas {
+  background: #2e7d32;
+  border-radius: 12px;
+  display: block;
+  margin: 10px auto;
+  touch-action: none;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
