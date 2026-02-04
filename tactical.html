@@ -9,14 +9,29 @@
 
 <h1>⚽ Tactical Pad</h1>
 
+<select onchange="setPitch(this.value)">
+  <option value="full">Celé hřiště</option>
+  <option value="half">Polovina hřiště</option>
+  <option value="square">Čtverec</option>
+  <option value="rect">Obdélník</option>
+</select>
+
 <canvas id="pitch" width="360" height="540"></canvas>
 
 <div class="toolbar">
   <button onclick="setMode('draw')">✏️ Kreslit</button>
-  <button onclick="setMode('player')">👤 Hráč</button>
+  <button onclick="setMode('blue')">🔵 Modří</button>
+  <button onclick="setMode('red')">🔴 Červení</button>
+  <button onclick="setMode('ball')">⚽ Míč</button>
+  <button onclick="setMode('cone')">🔺 Meta</button>
+  <button onclick="setMode('goal')">🥅 Branka</button>
   <button onclick="setMode('erase')">🧽 Mazat</button>
+</div>
+
+<div class="toolbar">
   <button onclick="clearPad()">♻️ Reset</button>
   <button onclick="savePad()">💾 Uložit</button>
+  <button onclick="exportPDF()">📄 Export PDF</button>
 </div>
 
 <script src="js/tactical.js"></script>
