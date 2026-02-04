@@ -1,37 +1,18 @@
-<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <title>Poznámky</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
-<h1>Poznámky trenéra</h1>
+<h1>📝 Poznámky</h1>
 
 <input type="date" id="date">
-
-<select id="category">
-  <option>U7</option><option>U8</option><option>U9</option>
-  <option>U10</option><option>U11</option><option>U12</option>
-  <option>U13</option><option>U14</option><option>U15</option>
-</select>
-
 <select id="player"></select>
-
 <select id="rating">
   <option value="1">1</option><option value="2">2</option>
   <option value="3">3</option><option value="4">4</option>
   <option value="5">5</option>
 </select>
-
-<textarea id="note"></textarea>
+<textarea id="text"></textarea>
 
 <button onclick="saveNote()">Uložit</button>
-<button onclick="exportPDF()">Export PDF</button>
+<button onclick="exportPDF()">PDF</button>
 
-<div id="notesList"></div>
+<div id="list"></div>
 
+<script src="js/storage.js"></script>
 <script src="js/notes.js"></script>
-</body>
-</html>
