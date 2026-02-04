@@ -82,8 +82,12 @@ canvas.addEventListener("pointerup", () => drawing = false);
 function placeObject(x, y) {
   if (mode === "blue") drawPlayer(x, y, "#2196f3");
   if (mode === "red") drawPlayer(x, y, "#e53935");
+
   if (mode === "ball") drawBall(x, y);
+  if (mode === "balls") drawMultiBalls(x, y);
+
   if (mode === "cone") drawCone(x, y);
+  if (mode === "hurdle") drawHurdle(x, y);
   if (mode === "goal") drawGoal(x, y);
 }
 
