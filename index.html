@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Mládež KP</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2e7d32">
 </head>
 <body>
 
@@ -25,6 +27,11 @@
   <script src="js/theme.js"></script>
 <script>
   applyTheme();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
 </script>
 
 </body>
