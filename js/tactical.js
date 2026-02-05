@@ -1,14 +1,13 @@
 console.log("tactical.js loaded");
 
-/* ===== CANVAS ===== */
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 /* ===== RESIZE ===== */
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
+  const r = canvas.getBoundingClientRect();
+  canvas.width = r.width;
+  canvas.height = r.height;
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
@@ -19,7 +18,7 @@ let drawing = false;
 let currentLine = null;
 let lines = [];
 
-/* ===== OVLÁDÁNÍ ===== */
+/* ===== TLAČÍTKA ===== */
 document.getElementById("drawBtn").onclick = () => mode = "draw";
 document.getElementById("eraseBtn").onclick = () => mode = "erase";
 document.getElementById("clearBtn").onclick = () => {
@@ -28,7 +27,7 @@ document.getElementById("clearBtn").onclick = () => {
 };
 
 /* ===== POZICE ===== */
-function getPos(e) {
+function pos(e) {
   const r = canvas.getBoundingClientRect();
   return {
     x: e.clientX - r.left,
@@ -39,26 +38,26 @@ function getPos(e) {
 /* ===== INTERAKCE ===== */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
-  const { x, y } = getPos(e);
+  const {x,y} = pos(e);
 
   if (mode === "draw") {
-    currentLine = [{ x, y }];
+    currentLine = [{x,y}];
     lines.push(currentLine);
   }
 });
 
 canvas.addEventListener("pointermove", e => {
   if (!drawing) return;
-  const { x, y } = getPos(e);
+  const {x,y} = pos(e);
 
   if (mode === "draw" && currentLine) {
-    currentLine.push({ x, y });
+    currentLine.push({x,y});
     redraw();
   }
 
   if (mode === "erase") {
     lines = lines.filter(line =>
-      !line.some(p => Math.hypot(p.x - x, p.y - y) < 15)
+      !line.some(p => Math.hypot(p.x-x, p.y-y) < 15)
     );
     redraw();
   }
@@ -71,7 +70,7 @@ canvas.addEventListener("pointerup", () => {
 
 /* ===== VYKRESLENÍ ===== */
 function redraw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle = "#ffeb3b";
   ctx.lineWidth = 3;
   ctx.lineCap = "round";
