@@ -9,15 +9,14 @@ const ctx = canvas.getContext("2d");
 let pitchType = "full";
 
 function resizeCanvas() {
-  const r = canvas.getBoundingClientRect();
-  canvas.width = r.width;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * devicePixelRatio;
+  canvas.height = rect.height * devicePixelRatio;
 
-  if (pitchType === "full") canvas.height = r.width * 0.6;
-  if (pitchType === "half") canvas.height = r.width * 0.9;
-  if (pitchType === "square") canvas.height = r.width * 0.7;
-
+  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   redraw();
 }
+
 window.addEventListener("resize", resizeCanvas);
 
 /* =========================
