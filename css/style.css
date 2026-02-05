@@ -62,12 +62,16 @@ select {
   margin-bottom: 8px;
 }
 
-.toolbar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 6px;
+.toolbar,
+select,
+input,
+button,
+label,
+textarea {
+  position: relative;
+  z-index: 10;
 }
+
 <style>
   body {
     font-family: sans-serif;
@@ -102,13 +106,6 @@ select {
   textarea {
     font-size: 16px;
     padding: 12px;
-  }
-
-  .toolbar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin: 8px 0;
   }
 
   .toolbar button {
