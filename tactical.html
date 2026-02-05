@@ -1,46 +1,31 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Tactical Pad</title>
+<meta charset="UTF-8">
+<title>Tactical Pad</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+body { font-family: Arial; margin: 0; padding: 10px; background:#f2f2f2; }
+h2 { text-align:center; margin:5px 0; }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 8px;
-      background: #f2f2f2;
-    }
+.controls {
+  display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;
+}
+button, select, input, textarea {
+  padding:10px; font-size:16px;
+}
 
-    h2 {
-      text-align: center;
-      margin: 6px 0;
-    }
+canvas {
+  width:100%;
+  background:#2e7d32;
+  border-radius:12px;
+  touch-action:none;
+  display:block;
+}
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    button, select {
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    canvas {
-      display: block;
-      width: 100%;
-      background: #2e7d32;
-      border-radius: 12px;
-      margin-top: 8px;
-      touch-action: none;
-    }
-  </style>
+textarea { width:100%; min-height:70px; }
+</style>
 </head>
 
 <body>
@@ -58,12 +43,21 @@
   <button data-mode="playerBlue">🔵</button>
   <button data-mode="playerRed">🔴</button>
   <button data-mode="ball">⚽</button>
-  <button data-mode="cone">🔺</button>
-  <button data-mode="hurdle">⛔</button>
   <button data-mode="goal">🥅</button>
+
+  <button id="undoBtn">↩️</button>
+  <button id="redoBtn">↪️</button>
 </div>
 
 <canvas id="pitch"></canvas>
+
+<input id="exerciseName" placeholder="Název cvičení">
+<textarea id="exerciseNotes" placeholder="Poznámky trenéra"></textarea>
+
+<div class="controls">
+  <button id="saveBtn">💾 Uložit cvičení</button>
+  <button id="resetBtn">♻️ Reset</button>
+</div>
 
 <script src="js/tactical.js"></script>
 </body>
