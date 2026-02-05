@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<title>Docházka – kalendář</title>
+<title>Docházka & statistiky</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -20,18 +20,30 @@ select, button {
   margin: 4px 0;
 }
 
-.day {
+.calendar-day {
   background: #fff;
   padding: 8px;
   margin-bottom: 6px;
   border-radius: 6px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: #e0f2f1;
+}
+
+.detail, .stats {
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📅 Kalendář docházky</h2>
+<h2>🗓 Docházka – kalendář</h2>
 
 <label>Měsíc:
   <select id="monthSelect"></select>
@@ -41,13 +53,18 @@ select, button {
   <select id="yearSelect"></select>
 </label>
 
-<br>
-
-<button id="exportPdfBtn">📄 Export do PDF</button>
-
 <hr>
 
 <div id="calendar"></div>
+
+<hr>
+
+<div id="dayDetail" class="detail"></div>
+
+<hr>
+
+<h2>📊 Statistiky hráčů</h2>
+<div id="stats" class="stats"></div>
 
 <script src="js/attendance.js"></script>
 </body>
