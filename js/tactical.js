@@ -94,12 +94,17 @@ document.querySelectorAll("[data-tool]").forEach(btn => {
    POZICE
 ========================= */
 function pos(e) {
-  const r = canvas.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect();
+
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
   return {
-    x: e.clientX - r.left,
-    y: e.clientY - r.top
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
   };
 }
+
 
 /* =========================
    INTERAKCE
