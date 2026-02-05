@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <title>Tactical Pad</title>
 
-  <!-- POVINNÉ pro mobil -->
   <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        content="width=device-width, initial-scale=1.0, user-scalable=no">
 
   <style>
     body {
@@ -26,11 +25,9 @@
       flex-wrap: wrap;
       gap: 6px;
       margin-bottom: 6px;
-      z-index: 10;
-      position: relative;
     }
 
-    button, select, input {
+    button, select {
       padding: 10px;
       font-size: 16px;
     }
@@ -38,15 +35,10 @@
     canvas {
       display: block;
       width: 100%;
-      max-width: 100%;
       background: #2e7d32;
       border-radius: 12px;
-      margin: 8px 0;
+      margin-top: 8px;
       touch-action: none;
-
-      /* KRITICKÉ – canvas NESMÍ blokovat UI */
-      position: relative;
-      z-index: 1;
     }
   </style>
 </head>
@@ -70,30 +62,9 @@
   <button data-mode="hurdle">⛔</button>
   <button data-mode="goal">🥅</button>
 </div>
-<hr>
-
-<input
-  type="text"
-  id="exerciseName"
-  placeholder="Název cvičení"
-  style="width:100%;padding:10px;font-size:16px;">
-
-<textarea
-  id="exerciseNotes"
-  placeholder="Poznámky trenéra"
-  style="width:100%;min-height:80px;padding:10px;font-size:15px;"></textarea>
-
-<div class="controls">
-  <button id="saveExerciseBtn">💾 Uložit cvičení</button>
-  <button id="resetExerciseBtn">♻️ Reset cvičení</button>
-</div>
-
-<label>Velikost objektu / gumy</label>
-<input type="range" id="sizeControl" min="6" max="40" value="14">
 
 <canvas id="pitch"></canvas>
 
 <script src="js/tactical.js"></script>
-
 </body>
 </html>
