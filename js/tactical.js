@@ -1,25 +1,25 @@
-console.log("TACTICAL PAD LOADED");
+console.log("TACTICAL PAD – BASIC VERSION LOADED");
 
 const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
 
-/* ====== STAV ====== */
+/* ===== STAV ===== */
 let mode = "draw";
 let pitchType = "full";
 let drawing = false;
-let selected = null;
 let currentLine = null;
-let size = 14;
+let selected = null;
 
+const size = 14;
 const objects = [];
 const lines = [];
 
-/* ====== RESIZE ====== */
+/* ===== RESIZE ===== */
 function resizeCanvas() {
-  const isWide = window.innerWidth > 900;
+  const isWide = window.innerWidth > 800;
 
   if (isWide) {
-    canvas.width = Math.min(window.innerWidth - 20, 1000);
+    canvas.width = Math.min(window.innerWidth - 20, 900);
     canvas.height = canvas.width * 0.6;
   } else {
     canvas.width = window.innerWidth - 16;
@@ -30,7 +30,7 @@ function resizeCanvas() {
 }
 window.addEventListener("resize", resizeCanvas);
 
-/* ====== OVLÁDÁNÍ UI ====== */
+/* ===== UI ===== */
 document.querySelectorAll("button[data-mode]").forEach(btn => {
   btn.addEventListener("click", () => {
     mode = btn.dataset.mode;
@@ -43,11 +43,7 @@ document.getElementById("pitchSelect").addEventListener("change", e => {
   redraw();
 });
 
-document.getElementById("sizeControl").addEventListener("input", e => {
-  size = parseInt(e.target.value);
-});
-
-/* ====== HŘIŠTĚ ====== */
+/* ===== HŘIŠTĚ ===== */
 function drawPitch() {
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -66,35 +62,31 @@ function drawPitch() {
     ctx.moveTo(w / 2, m);
     ctx.lineTo(w / 2, h - m);
     ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(w / 2, h / 2, 50, 0, Math.PI * 2);
-    ctx.stroke();
   }
 }
 
-/* ====== OBJEKTY ====== */
+/* ===== OBJEKTY ===== */
 function drawObject(o) {
   if (o.type === "playerBlue" || o.type === "playerRed") {
     ctx.fillStyle = o.type === "playerBlue" ? "#2196f3" : "#e53935";
     ctx.beginPath();
-    ctx.arc(o.x, o.y, o.size, 0, Math.PI * 2);
+    ctx.arc(o.x, o.y, size, 0, Math.PI * 2);
     ctx.fill();
   }
 
   if (o.type === "ball") {
     ctx.fillStyle = "#fff";
     ctx.beginPath();
-    ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+    ctx.arc(o.x, o.y, size / 2, 0, Math.PI * 2);
     ctx.fill();
   }
 
   if (o.type === "cone") {
     ctx.fillStyle = "#ff9800";
     ctx.beginPath();
-    ctx.moveTo(o.x, o.y - o.size);
-    ctx.lineTo(o.x - o.size, o.y + o.size);
-    ctx.lineTo(o.x + o.size, o.y + o.size);
+    ctx.moveTo(o.x, o.y - size);
+    ctx.lineTo(o.x - size, o.y + size);
+    ctx.lineTo(o.x + size, o.y + size);
     ctx.fill();
   }
 
@@ -102,85 +94,18 @@ function drawObject(o) {
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(o.x - o.size, o.y);
-    ctx.lineTo(o.x + o.size, o.y);
+    ctx.moveTo(o.x - size, o.y);
+    ctx.lineTo(o.x + size, o.y);
     ctx.stroke();
   }
 
   if (o.type === "goal") {
     ctx.strokeStyle = "#fff";
-    ctx.strokeRect(
-      o.x - o.size * 1.5,
-      o.y - o.size / 2,
-      o.size * 3,
-      o.size
-    );
+    ctx.strokeRect(o.x - size * 1.5, o.y - size / 2, size * 3, size);
   }
 }
-const DB_KEY = "tacticalExercises";
-function loadDB() {
-  return JSON.parse(localStorage.getItem(DB_KEY)) || [];
-}
 
-function saveDB(db) {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
-}
-function saveExercise() {
-  const nameInput = document.getElementById("exerciseName");
-  const notesInput = document.getElementById("exerciseNotes");
-
-  if (!nameInput) {
-    alert("Chyba: pole pro název cvičení nebylo nalezeno.");
-    return;
-  }
-
-  const name = nameInput.value.trim();
-  const notes = notesInput ? notesInput.value.trim() : "";
-
-  if (!name) {
-    alert("Zadej název cvičení");
-    return;
-  }
-
-  const db = loadDB();
-
-  db.push({
-    id: Date.now(),
-    name: name,
-    notes: notes,
-    pitchType,
-    objects: JSON.parse(JSON.stringify(objects)),
-    lines: JSON.parse(JSON.stringify(lines)),
-    createdAt: new Date().toISOString()
-  });
-
-  saveDB(db);
-
-  // ✅ RESET POLÍ – TO TI TEĎ CHYBĚLO
-  nameInput.value = "";
-  if (notesInput) notesInput.value = "";
-
-  alert("Cvičení uloženo ✔");
-}
-
-
-  const db = loadDB();
-
-  db.push({
-    id: Date.now(),
-    name: nameInput.value,
-    notes: notesInput.value,
-    pitchType,
-    objects: JSON.parse(JSON.stringify(objects)),
-    lines: JSON.parse(JSON.stringify(lines)),
-    createdAt: new Date().toISOString()
-  });
-
-  saveDB(db);
-  alert("Cvičení uloženo ✔");
-}
-
-/* ====== ČÁRY ====== */
+/* ===== ČÁRY ===== */
 function drawLines() {
   ctx.strokeStyle = "#ffeb3b";
   ctx.lineWidth = 3;
@@ -193,20 +118,20 @@ function drawLines() {
   });
 }
 
-/* ====== REDRAW ====== */
+/* ===== REDRAW ===== */
 function redraw() {
   drawPitch();
   drawLines();
   objects.forEach(drawObject);
 }
 
-/* ====== INTERAKCE ====== */
+/* ===== INTERAKCE ===== */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const x = e.offsetX;
   const y = e.offsetY;
 
-  selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < o.size);
+  selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < size);
 
   if (selected) return;
 
@@ -218,7 +143,7 @@ canvas.addEventListener("pointerdown", e => {
 
   if (mode === "erase") return;
 
-  objects.push({ id: Date.now(), type: mode, x, y, size });
+  objects.push({ type: mode, x, y });
   redraw();
 });
 
@@ -266,42 +191,6 @@ canvas.addEventListener("pointerup", () => {
   selected = null;
   currentLine = null;
 });
-function resetExercise() {
-  if (!confirm("Opravdu chceš vymazat aktuální cvičení?")) return;
 
-  objects.length = 0;
-  lines.length = 0;
-
-  document.getElementById("exerciseName").value = "";
-  document.getElementById("exerciseNotes").value = "";
-
-  document.getElementById("saveExerciseBtn")
-  .addEventListener("click", saveExercise);
-
-document.addEventListener("DOMContentLoaded", () => {
-  const saveBtn = document.getElementById("saveExerciseBtn");
-  const resetBtn = document.getElementById("resetExerciseBtn");
-
-  if (saveBtn) saveBtn.addEventListener("click", saveExercise);
-  if (resetBtn) resetBtn.addEventListener("click", resetExercise);
-});
-
-
-/* ====== START ====== */
+/* ===== START ===== */
 resizeCanvas();
-
-(function loadLastExercise() {
-  const db = loadDB();
-  if (!db.length) return;
-
-  const last = db[db.length - 1];
-
-  pitchType = last.pitchType;
-  objects.push(...last.objects);
-  lines.push(...last.lines);
-
-  document.getElementById("exerciseName").value = last.name;
-  document.getElementById("exerciseNotes").value = last.notes;
-
-  redraw();
-})();
