@@ -10,10 +10,10 @@ let pitchType = "full";
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * devicePixelRatio;
-  canvas.height = rect.height * devicePixelRatio;
 
-  ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+
   redraw();
 }
 
