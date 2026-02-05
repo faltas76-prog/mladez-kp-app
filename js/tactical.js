@@ -299,15 +299,21 @@ canvas.addEventListener("pointerup", () => {
   redraw();
 })();
 function resizeCanvas() {
-  const ratio = 3 / 4; // poměr hřiště
-  const width = Math.min(window.innerWidth - 16, 600);
-  const height = width / ratio;
+  const isWide = window.innerWidth > 900;
 
-  canvas.width = width;
-  canvas.height = height;
+  if (isWide) {
+    // PC / tablet – landscape
+    canvas.width = Math.min(window.innerWidth - 40, 1000);
+    canvas.height = canvas.width * 0.6;
+  } else {
+    // mobil – portrait
+    canvas.width = window.innerWidth - 16;
+    canvas.height = canvas.width * 1.4;
+  }
 
   redraw();
 }
+
 
 window.addEventListener("resize", resizeCanvas);
 
