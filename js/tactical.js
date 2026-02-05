@@ -129,10 +129,40 @@ function saveExercise() {
   const nameInput = document.getElementById("exerciseName");
   const notesInput = document.getElementById("exerciseNotes");
 
-  if (!nameInput.value.trim()) {
+  if (!nameInput) {
+    alert("Chyba: pole pro název cvičení nebylo nalezeno.");
+    return;
+  }
+
+  const name = nameInput.value.trim();
+  const notes = notesInput ? notesInput.value.trim() : "";
+
+  if (!name) {
     alert("Zadej název cvičení");
     return;
   }
+
+  const db = loadDB();
+
+  db.push({
+    id: Date.now(),
+    name: name,
+    notes: notes,
+    pitchType,
+    objects: JSON.parse(JSON.stringify(objects)),
+    lines: JSON.parse(JSON.stringify(lines)),
+    createdAt: new Date().toISOString()
+  });
+
+  saveDB(db);
+
+  // ✅ RESET POLÍ – TO TI TEĎ CHYBĚLO
+  nameInput.value = "";
+  if (notesInput) notesInput.value = "";
+
+  alert("Cvičení uloženo ✔");
+}
+
 
   const db = loadDB();
 
