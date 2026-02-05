@@ -153,10 +153,12 @@ function drawObject(o) {
   }
 
   if (o.type === "goal") {
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(o.x-o.size,o.y-o.size/2,o.size*2,o.size);
-  }
+  const width = o.size * 3;
+  const height = o.size * 1.5;
+  ctx.strokeStyle = "#fff";
+  ctx.strokeRect(o.x - width / 2, o.y - height / 2, width, height);
 }
+
 
 /* ---------- KRESLENÍ ---------- */
 function drawLines() {
