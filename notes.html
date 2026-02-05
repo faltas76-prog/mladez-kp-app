@@ -1,22 +1,57 @@
-<h1>📝 Poznámky</h1>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Poznámky trenéra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<input type="date" id="date">
-<select id="player"></select>
-<select id="rating">
-  <option value="1">1</option><option value="2">2</option>
-  <option value="3">3</option><option value="4">4</option>
-  <option value="5">5</option>
-</select>
-<textarea id="text"></textarea>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 10px;
+  background: #f2f2f2;
+}
 
-<button onclick="saveNote()">Uložit</button>
-<button onclick="exportPDF()">PDF</button>
+h2 {
+  text-align: center;
+}
 
-<div id="list"></div>
+textarea {
+  width: 100%;
+  min-height: 100px;
+  font-size: 16px;
+  padding: 8px;
+}
 
-<script src="js/storage.js"></script>
+input, button {
+  padding: 8px;
+  font-size: 16px;
+  margin: 4px 0;
+}
+
+.note {
+  background: #fff;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📝 Poznámky trenéra</h2>
+
+<input id="noteTitle" placeholder="Název poznámky">
+
+<textarea id="noteText" placeholder="Text poznámky"></textarea>
+
+<button id="saveNoteBtn">💾 Uložit poznámku</button>
+
+<hr>
+
+<div id="notesList"></div>
+
 <script src="js/notes.js"></script>
-<script src="js/theme.js"></script>
-<script>
-  applyTheme();
-</script>
+</body>
+</html>
