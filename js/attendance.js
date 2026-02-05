@@ -1,119 +1,89 @@
-const cat = localStorage.getItem("activeCategory");
-const data = getCategory(cat);
-const list = document.getElementById("list");
+console.log("attendance.js loaded");
 
-data.players.forEach(p => {
-  list.innerHTML += `
-    <div class="card">
-      <label>
-        <input type="checkbox" data-id="${p.id}"> ${p.name}
-      </label>
-    </div>`;
-});
-const PLAYER_KEY = "players";
-const ATTENDANCE_KEY = "attendance";
+const RECORD_KEY = "attendance_records_v1";
 
-function loadPlayers() {
-  return JSON.parse(localStorage.getItem(PLAYER_KEY)) || [];
-}
-
-function savePlayers(players) {
-  localStorage.setItem(PLAYER_KEY, JSON.stringify(players));
-}
-
-function loadAttendance() {
-  return JSON.parse(localStorage.getItem(ATTENDANCE_KEY)) || [];
-}
-
-function saveAttendance(data) {
-  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(data));
-}
-document.getElementById("addPlayerBtn").onclick = () => {
-  const input = document.getElementById("playerName");
-  const name = input.value.trim();
-
-  if (!name) {
-    alert("Zadej jméno hráče");
-    return;
+/* ===== DATA ===== */
+function loadRecords() {
+  try {
+    return JSON.parse(localStorage.getItem(RECORD_KEY)) || [];
+  } catch {
+    return [];
   }
-
-  const players = loadPlayers();
-
-  players.push({
-    id: Date.now(),
-    name
-  });
-
-  savePlayers(players);
-  input.value = "";
-  renderPlayers();
-  renderAttendance();
-};
-function renderPlayers() {
-  const list = document.getElementById("playerList");
-  const players = loadPlayers();
-
-  list.innerHTML = "";
-  players.forEach(p => {
-    const li = document.createElement("li");
-    li.textContent = p.name;
-    list.appendChild(li);
-  });
 }
-function renderAttendance() {
-  const container = document.getElementById("attendanceList");
-  const players = loadPlayers();
 
-  container.innerHTML = "";
+/* ===== SELECTY ===== */
+const monthSelect = document.getElementById("monthSelect");
+const yearSelect = document.getElementById("yearSelect");
+const calendar = document.getElementById("calendar");
 
-  players.forEach(p => {
-    const row = document.createElement("div");
-    row.style.marginBottom = "6px";
+/* naplnění měsíců */
+const months = [
+  "Leden","Únor","Březen","Duben","Květen","Červen",
+  "Červenec","Srpen","Září","Říjen","Listopad","Prosinec"
+];
 
-    row.innerHTML = `
-      <strong>${p.name}</strong><br>
-      <select data-id="${p.id}">
-        <option value="ano">Ano</option>
-        <option value="ne">Ne</option>
-        <option value="omluven">Omluven</option>
-        <option value="neomluven">Neomluven</option>
-      </select>
-    `;
+months.forEach((m, i) => {
+  const o = document.createElement("option");
+  o.value = i;
+  o.textContent = m;
+  monthSelect.appendChild(o);
+});
 
-    container.appendChild(row);
-  });
+/* roky */
+const currentYear = new Date().getFullYear();
+for (let y = currentYear - 2; y <= currentYear + 1; y++) {
+  const o = document.createElement("option");
+  o.value = y;
+  o.textContent = y;
+  yearSelect.appendChild(o);
 }
-document.getElementById("saveAttendanceBtn").onclick = () => {
-  const date = new Date().toISOString().split("T")[0];
-  const selects = document.querySelectorAll("#attendanceList select");
 
-  const record = {
-    date,
-    data: []
-  };
+monthSelect.value = new Date().getMonth();
+yearSelect.value = currentYear;
 
-  selects.forEach(sel => {
-    record.data.push({
-      playerId: sel.dataset.id,
-      status: sel.value
+/* ===== RENDER KALENDÁŘE ===== */
+function renderCalendar() {
+  const month = parseInt(monthSelect.value);
+  const year = parseInt(yearSelect.value);
+  const records = loadRecords();
+
+  calendar.innerHTML = "";
+
+  records
+    .filter(r => {
+      const d = new Date(r.date);
+      return d.getMonth() === month && d.getFullYear() === year;
+    })
+    .sort((a,b) => new Date(b.date) - new Date(a.date))
+    .forEach(r => {
+      const div = document.createElement("div");
+      div.className = "day";
+
+      div.innerHTML = `
+        <strong>${new Date(r.date).toLocaleDateString()}</strong>
+        <ul>
+          ${r.players
+            .map(p => `<li>${p.name} – ${p.attendance} – ⭐ ${p.rating}</li>`)
+            .join("")}
+        </ul>
+      `;
+
+      calendar.appendChild(div);
     });
-  });
+}
 
-  const db = loadAttendance();
-  db.push(record);
-  saveAttendance(db);
-
-  alert("Docházka uložena ✔");
+/* ===== PDF EXPORT ===== */
+document.getElementById("exportPdfBtn").onclick = () => {
+  const w = window.open("", "_blank");
+  w.document.write("<h2>Docházka – přehled</h2>");
+  w.document.write(calendar.innerHTML);
+  w.document.close();
+  w.print();
 };
 
-function save() {
-  const records = [];
-  document.querySelectorAll("input").forEach(i => {
-    records.push({ playerId: i.dataset.id, present: i.checked });
-  });
-  data.attendance.push({ date: date.value, records });
-  saveCategory(cat, data);
-  alert("Uloženo");
-}
-renderPlayers();
-renderAttendance();
+/* ===== EVENTS ===== */
+monthSelect.onchange = renderCalendar;
+yearSelect.onchange = renderCalendar;
+
+/* ===== START ===== */
+renderCalendar();
