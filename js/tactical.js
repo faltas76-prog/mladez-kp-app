@@ -16,18 +16,31 @@ const lines = [];
 
 /* ===== RESIZE ===== */
 function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+
   const isWide = window.innerWidth > 800;
 
+  let width, height;
+
   if (isWide) {
-    canvas.width = Math.min(window.innerWidth - 20, 900);
-    canvas.height = canvas.width * 0.6;
+    width = Math.min(window.innerWidth - 20, 900);
+    height = width * 0.6;
   } else {
-    canvas.width = window.innerWidth - 16;
-    canvas.height = canvas.width * 1.4;
+    width = window.innerWidth - 16;
+    height = width * 1.4;
   }
+
+  // CSS velikost
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  // VNITŘNÍ kreslící plocha
+  canvas.width = width;
+  canvas.height = height;
 
   redraw();
 }
+
 window.addEventListener("resize", resizeCanvas);
 
 /* ===== UI ===== */
@@ -126,10 +139,14 @@ function redraw() {
 }
 
 /* ===== INTERAKCE ===== */
-canvas.addEventListener("pointerdown", e => {
-  drawing = true;
-  const x = e.offsetX;
-  const y = e.offsetY;
+canvas.addEventListener("pointermove", e => {
+  if (!drawing) return;
+  const { x, y } = getPos(e);
+    x: (evt.clientX - rect.left) * (canvas.width / rect.width),
+    y: (evt.clientY - rect.top) * (canvas.height / rect.height)
+  };
+}
+
 
   selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < size);
 
