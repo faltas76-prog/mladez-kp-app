@@ -272,25 +272,43 @@ function renderAttendance() {
 
 /* ---------- INIT ---------- */
 document.addEventListener("DOMContentLoaded", () => {
+
   const nameInput = document.getElementById("playerName");
   const addBtn = document.getElementById("addPlayerBtn");
-  const saveAttendanceBtn = document.getElementById("saveAttendanceBtn");
 
-  addBtn.onclick = () => {
+  if (!nameInput || !addBtn) {
+    console.error("❌ Chybí input #playerName nebo tlačítko #addPlayerBtn");
+    return;
+  }
+
+  addBtn.addEventListener("click", () => {
     const name = nameInput.value.trim();
+
     if (!name) {
       alert("Zadej jméno hráče");
       return;
     }
 
     const players = loadPlayers();
-    players.push({ id: Date.now().toString(), name });
+
+    players.push({
+      id: Date.now().toString(),
+      name: name
+    });
+
     savePlayers(players);
 
+    // ✅ RESET INPUTU – tobě tohle chybělo
     nameInput.value = "";
+
     renderPlayers();
     renderAttendance();
-  };
+  });
+
+  renderPlayers();
+  renderAttendance();
+});
+
 
   saveAttendanceBtn.onclick = () => {
     const date = new Date().toISOString().split("T")[0];
