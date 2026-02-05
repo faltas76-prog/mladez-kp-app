@@ -234,6 +234,19 @@ canvas.addEventListener("pointerup", () => {
 
   redraw();
 })();
+function resizeCanvas() {
+  const ratio = 3 / 4; // poměr hřiště
+  const width = Math.min(window.innerWidth - 16, 600);
+  const height = width / ratio;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  redraw();
+}
+
+window.addEventListener("resize", resizeCanvas);
 
 /* ---------- START ---------- */
-redraw();
+resizeCanvas();
+
