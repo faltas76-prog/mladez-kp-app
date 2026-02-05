@@ -1,33 +1,24 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Mládež KP</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2e7d32">
+<meta charset="UTF-8">
+<title>Trenérská aplikace</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2e7d32">
 </head>
+
 <body>
 
-<h1>⚽ Mládež KP</h1>
-<div class="grid">
-  <button onclick="selectCategory('U7')">U7</button>
-  <button onclick="selectCategory('U8')">U8</button>
-  <button onclick="selectCategory('U9')">U9</button>
-  <button onclick="selectCategory('U10')">U10</button>
-  <button onclick="selectCategory('U11')">U11</button>
-  <button onclick="selectCategory('U12')">U12</button>
-  <button onclick="selectCategory('U13')">U13</button>
-  <button onclick="selectCategory('U14')">U14</button>
-  <button onclick="selectCategory('U15')">U15</button>
-</div>
+<h2>⚽ Trenérská aplikace</h2>
 
-<script src="js/storage.js"></script>
-<script src="js/app.js"></script>
-  <script src="js/theme.js"></script>
-<script>
-  applyTheme();
-</script>
+<ul>
+  <li><a href="tactical.html">📋 Tactical Pad</a></li>
+  <li><a href="players.html">👤 Hráči & Docházka</a></li>
+  <li><a href="attendance.html">📊 Kalendář & Statistiky</a></li>
+  <li><a href="notes.html">📝 Poznámky trenéra</a></li>
+</ul>
+
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
