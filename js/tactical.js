@@ -30,28 +30,92 @@ sizeCtrl.addEventListener("input", e => size = parseInt(e.target.value));
 function drawPitch() {
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
 
+  const w = canvas.width;
+  const h = canvas.height;
+  const margin = 20;
+
+  // Obrys hřiště
+  ctx.strokeRect(margin, margin, w - margin * 2, h - margin * 2);
+
+  // Středová čára
+  ctx.beginPath();
+  ctx.moveTo(w / 2, margin);
+  ctx.lineTo(w / 2, h - margin);
+  ctx.stroke();
+
+  // Středový kruh
+  ctx.beginPath();
+  ctx.arc(w / 2, h / 2, 50, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Středový bod
+  ctx.beginPath();
+  ctx.arc(w / 2, h / 2, 3, 0, Math.PI * 2);
+  ctx.fillStyle = "#fff";
+  ctx.fill();
+
+  // Velké hřiště
   if (pitchType === "full") {
-    ctx.strokeRect(10,10,canvas.width-20,canvas.height-20);
+
+    // Vápna
+    const boxW = 120;
+    const boxH = 260;
+    const smallBoxW = 60;
+    const smallBoxH = 140;
+
+    // Levé vápno
+    ctx.strokeRect(margin, h / 2 - boxH / 2, boxW, boxH);
+    ctx.strokeRect(margin, h / 2 - smallBoxH / 2, smallBoxW, smallBoxH);
+
+    // Pravé vápno
+    ctx.strokeRect(w - margin - boxW, h / 2 - boxH / 2, boxW, boxH);
+    ctx.strokeRect(w - margin - smallBoxW, h / 2 - smallBoxH / 2, smallBoxW, smallBoxH);
+
+    // Penaltové body
     ctx.beginPath();
-    ctx.moveTo(10,canvas.height/2);
-    ctx.lineTo(canvas.width-10,canvas.height/2);
-    ctx.stroke();
+    ctx.arc(margin + 90, h / 2, 3, 0, Math.PI * 2);
+    ctx.arc(w - margin - 90, h / 2, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Branky (náčrt)
+    ctx.strokeRect(margin - 10, h / 2 - 40, 10, 80);
+    ctx.strokeRect(w - margin, h / 2 - 40, 10, 80);
+
+    // Rohy
+    drawCorner(margin, margin);
+    drawCorner(w - margin, margin, Math.PI / 2);
+    drawCorner(margin, h - margin, -Math.PI / 2);
+    drawCorner(w - margin, h - margin, Math.PI);
   }
 
+  // Polovina hřiště
   if (pitchType === "half") {
-    ctx.strokeRect(10,canvas.height/2,canvas.width-20,canvas.height/2-10);
-  }
 
-  if (pitchType === "square") {
-    ctx.strokeRect(60,160,240,240);
-  }
+    const boxW = 120;
+    const boxH = 260;
 
-  if (pitchType === "rect") {
-    ctx.strokeRect(40,180,280,180);
+    ctx.strokeRect(w - margin - boxW, h / 2 - boxH / 2, boxW, boxH);
+    ctx.strokeRect(w - margin, h / 2 - 40, 10, 80);
+
+    // Penalta
+    ctx.beginPath();
+    ctx.arc(w - margin - 90, h / 2, 3, 0, Math.PI * 2);
+    ctx.fill();
   }
+}
+
+function drawCorner(x, y, rot = 0) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(rot);
+  ctx.beginPath();
+  ctx.arc(0, 0, 20, 0, Math.PI / 2);
+  ctx.stroke();
+  ctx.restore();
 }
 
 /* ---------- OBJEKTY ---------- */
