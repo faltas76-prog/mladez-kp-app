@@ -95,11 +95,16 @@ document.querySelectorAll("[data-tool]").forEach(btn => {
 function pos(e) {
   const rect = canvas.getBoundingClientRect();
 
+  // ABSOLUTNÍ SOUŘADNICE NA STRÁNCE
+  const pageX = e.touches ? e.touches[0].pageX : e.pageX;
+  const pageY = e.touches ? e.touches[0].pageY : e.pageY;
+
   return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
+    x: pageX - rect.left - window.scrollX,
+    y: pageY - rect.top - window.scrollY
   };
 }
+
 
 
 /* =========================
