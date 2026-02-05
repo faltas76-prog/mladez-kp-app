@@ -1,213 +1,187 @@
-console.log("TACTICAL PAD – BASIC VERSION LOADED");
+console.log("TACTICAL PAD FINAL LOADED");
 
 const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
 
-/* ===== STAV ===== */
+/* ====== STAV ====== */
 let mode = "draw";
 let pitchType = "full";
 let drawing = false;
 let currentLine = null;
-let selected = null;
 
-const size = 14;
-const objects = [];
-const lines = [];
+let objects = [];
+let lines = [];
 
-/* ===== RESIZE ===== */
-function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+/* ====== UNDO / REDO ====== */
+let history = [];
+let future = [];
 
-  const isWide = window.innerWidth > 800;
+function saveState() {
+  history.push(JSON.stringify({ objects, lines }));
+  if (history.length > 50) history.shift();
+  future = [];
+}
 
-  let width, height;
-
-  if (isWide) {
-    width = Math.min(window.innerWidth - 20, 900);
-    height = width * 0.6;
-  } else {
-    width = window.innerWidth - 16;
-    height = width * 1.4;
-  }
-
-  // CSS velikost
-  canvas.style.width = width + "px";
-  canvas.style.height = height + "px";
-
-  // VNITŘNÍ kreslící plocha
-  canvas.width = width;
-  canvas.height = height;
-
+function undo() {
+  if (!history.length) return;
+  future.push(JSON.stringify({ objects, lines }));
+  const state = JSON.parse(history.pop());
+  objects = state.objects;
+  lines = state.lines;
   redraw();
 }
 
+function redo() {
+  if (!future.length) return;
+  history.push(JSON.stringify({ objects, lines }));
+  const state = JSON.parse(future.pop());
+  objects = state.objects;
+  lines = state.lines;
+  redraw();
+}
+
+/* ====== CANVAS SIZE ====== */
+function resizeCanvas() {
+  const w = window.innerWidth - 20;
+  canvas.width = w;
+  canvas.height = w * 1.4;
+  redraw();
+}
 window.addEventListener("resize", resizeCanvas);
 
-/* ===== UI ===== */
-document.querySelectorAll("button[data-mode]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    mode = btn.dataset.mode;
-    selected = null;
-  });
-});
+/* ====== POZICE ====== */
+function pos(e) {
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - r.left) * (canvas.width / r.width),
+    y: (e.clientY - r.top) * (canvas.height / r.height)
+  };
+}
 
-document.getElementById("pitchSelect").addEventListener("change", e => {
-  pitchType = e.target.value;
-  redraw();
-});
+/* ====== UI ====== */
+document.querySelectorAll("button[data-mode]").forEach(b =>
+  b.onclick = () => mode = b.dataset.mode
+);
+pitchSelect.onchange = e => { pitchType = e.target.value; redraw(); };
+undoBtn.onclick = undo;
+redoBtn.onclick = redo;
 
-/* ===== HŘIŠTĚ ===== */
+/* ====== KRESBA HŘIŠTĚ ====== */
 function drawPitch() {
   ctx.fillStyle = "#2e7d32";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+  ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
-
-  const m = 20;
-  const w = canvas.width;
-  const h = canvas.height;
-
-  ctx.strokeRect(m, m, w - m * 2, h - m * 2);
-
+  ctx.strokeRect(20,20,canvas.width-40,canvas.height-40);
   if (pitchType === "full") {
     ctx.beginPath();
-    ctx.moveTo(w / 2, m);
-    ctx.lineTo(w / 2, h - m);
+    ctx.moveTo(canvas.width/2,20);
+    ctx.lineTo(canvas.width/2,canvas.height-20);
     ctx.stroke();
   }
 }
 
-/* ===== OBJEKTY ===== */
+/* ====== OBJEKTY ====== */
 function drawObject(o) {
   if (o.type === "playerBlue" || o.type === "playerRed") {
     ctx.fillStyle = o.type === "playerBlue" ? "#2196f3" : "#e53935";
     ctx.beginPath();
-    ctx.arc(o.x, o.y, size, 0, Math.PI * 2);
+    ctx.arc(o.x,o.y,14,0,Math.PI*2);
     ctx.fill();
   }
-
   if (o.type === "ball") {
     ctx.fillStyle = "#fff";
     ctx.beginPath();
-    ctx.arc(o.x, o.y, size / 2, 0, Math.PI * 2);
+    ctx.arc(o.x,o.y,7,0,Math.PI*2);
     ctx.fill();
   }
-
-  if (o.type === "cone") {
-    ctx.fillStyle = "#ff9800";
-    ctx.beginPath();
-    ctx.moveTo(o.x, o.y - size);
-    ctx.lineTo(o.x - size, o.y + size);
-    ctx.lineTo(o.x + size, o.y + size);
-    ctx.fill();
-  }
-
-  if (o.type === "hurdle") {
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(o.x - size, o.y);
-    ctx.lineTo(o.x + size, o.y);
-    ctx.stroke();
-  }
-
   if (o.type === "goal") {
     ctx.strokeStyle = "#fff";
-    ctx.strokeRect(o.x - size * 1.5, o.y - size / 2, size * 3, size);
+    ctx.strokeRect(o.x-20,o.y-10,40,20);
   }
 }
 
-/* ===== ČÁRY ===== */
+/* ====== ČÁRY ====== */
 function drawLines() {
   ctx.strokeStyle = "#ffeb3b";
   ctx.lineWidth = 3;
-
-  lines.forEach(line => {
+  lines.forEach(l=>{
     ctx.beginPath();
-    ctx.moveTo(line[0].x, line[0].y);
-    line.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.moveTo(l[0].x,l[0].y);
+    l.forEach(p=>ctx.lineTo(p.x,p.y));
     ctx.stroke();
   });
 }
 
-/* ===== REDRAW ===== */
+/* ====== REDRAW ====== */
 function redraw() {
   drawPitch();
   drawLines();
   objects.forEach(drawObject);
 }
 
-/* ===== INTERAKCE ===== */
-canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
-  const { x, y } = getPos(e);
-    x: (evt.clientX - rect.left) * (canvas.width / rect.width),
-    y: (evt.clientY - rect.top) * (canvas.height / rect.height)
-  };
-}
-
-
-  selected = objects.find(o => Math.hypot(o.x - x, o.y - y) < size);
-
-  if (selected) return;
+/* ====== INTERAKCE ====== */
+canvas.onpointerdown = e => {
+  drawing = true;
+  saveState();
+  const {x,y} = pos(e);
 
   if (mode === "draw") {
-    currentLine = [{ x, y }];
+    currentLine = [{x,y}];
     lines.push(currentLine);
     return;
   }
-
   if (mode === "erase") return;
 
   objects.push({ type: mode, x, y });
   redraw();
-});
+};
 
-canvas.addEventListener("pointermove", e => {
+canvas.onpointermove = e => {
   if (!drawing) return;
-
-  const x = e.offsetX;
-  const y = e.offsetY;
+  const {x,y} = pos(e);
 
   if (mode === "erase") {
-    for (let i = objects.length - 1; i >= 0; i--) {
-      if (Math.hypot(objects[i].x - x, objects[i].y - y) < size + 10) {
-        objects.splice(i, 1);
-      }
-    }
-
-    for (let i = lines.length - 1; i >= 0; i--) {
-      for (let p of lines[i]) {
-        if (Math.hypot(p.x - x, p.y - y) < size) {
-          lines.splice(i, 1);
-          break;
-        }
-      }
-    }
-
-    redraw();
-    return;
-  }
-
-  if (selected) {
-    selected.x = x;
-    selected.y = y;
+    objects = objects.filter(o => Math.hypot(o.x-x,o.y-y)>20);
+    lines = lines.filter(l => !l.some(p => Math.hypot(p.x-x,p.y-y)<20));
     redraw();
     return;
   }
 
   if (currentLine) {
-    currentLine.push({ x, y });
+    currentLine.push({x,y});
     redraw();
   }
-});
+};
 
-canvas.addEventListener("pointerup", () => {
+canvas.onpointerup = () => {
   drawing = false;
-  selected = null;
   currentLine = null;
-});
+};
 
-/* ===== START ===== */
+/* ====== UKLÁDÁNÍ CVIČENÍ ====== */
+saveBtn.onclick = () => {
+  if (!exerciseName.value.trim()) return alert("Zadej název");
+  const db = JSON.parse(localStorage.getItem("tacticalDB")||"[]");
+  db.push({
+    id: Date.now(),
+    name: exerciseName.value,
+    notes: exerciseNotes.value,
+    pitchType,
+    objects, lines
+  });
+  localStorage.setItem("tacticalDB",JSON.stringify(db));
+  exerciseName.value="";
+  exerciseNotes.value="";
+  alert("Uloženo ✔");
+};
+
+resetBtn.onclick = () => {
+  if (!confirm("Vymazat cvičení?")) return;
+  objects=[]; lines=[];
+  redraw();
+};
+
+/* ====== START ====== */
 resizeCanvas();
+
