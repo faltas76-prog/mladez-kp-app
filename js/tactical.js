@@ -278,10 +278,14 @@ function resetExercise() {
   document.getElementById("saveExerciseBtn")
   .addEventListener("click", saveExercise);
 
-document.getElementById("resetExerciseBtn")
-  .addEventListener("click", resetExercise);
-  redraw();
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const saveBtn = document.getElementById("saveExerciseBtn");
+  const resetBtn = document.getElementById("resetExerciseBtn");
+
+  if (saveBtn) saveBtn.addEventListener("click", saveExercise);
+  if (resetBtn) resetBtn.addEventListener("click", resetExercise);
+});
+
 
 /* ====== START ====== */
 resizeCanvas();
