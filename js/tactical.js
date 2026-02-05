@@ -181,6 +181,143 @@ resetBtn.onclick = () => {
   objects=[]; lines=[];
   redraw();
 };
+/* ===============================
+   HRÁČI + DOCHÁZKA (STABILNÍ VERZE)
+   =============================== */
+
+const PLAYER_KEY = "players_v1";
+const ATTENDANCE_KEY = "attendance_v1";
+
+/* ---------- DB ---------- */
+function loadPlayers() {
+  try {
+    return JSON.parse(localStorage.getItem(PLAYER_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function savePlayers(players) {
+  localStorage.setItem(PLAYER_KEY, JSON.stringify(players));
+}
+
+function loadAttendance() {
+  try {
+    return JSON.parse(localStorage.getItem(ATTENDANCE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveAttendance(data) {
+  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(data));
+}
+
+/* ---------- RENDER HRÁČŮ ---------- */
+function renderPlayers() {
+  const list = document.getElementById("playerList");
+  if (!list) return;
+
+  const players = loadPlayers();
+  list.innerHTML = "";
+
+  players.forEach(p => {
+    const li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.justifyContent = "space-between";
+    li.style.marginBottom = "4px";
+
+    li.innerHTML = `
+      <span>${p.name}</span>
+      <button data-id="${p.id}">❌</button>
+    `;
+
+    li.querySelector("button").onclick = () => {
+      if (!confirm(`Smazat hráče ${p.name}?`)) return;
+      const updated = loadPlayers().filter(x => x.id !== p.id);
+      savePlayers(updated);
+      renderPlayers();
+      renderAttendance();
+    };
+
+    list.appendChild(li);
+  });
+}
+
+/* ---------- RENDER DOCHÁZKY ---------- */
+function renderAttendance() {
+  const container = document.getElementById("attendanceList");
+  if (!container) return;
+
+  const players = loadPlayers();
+  container.innerHTML = "";
+
+  players.forEach(p => {
+    const row = document.createElement("div");
+    row.style.marginBottom = "6px";
+
+    row.innerHTML = `
+      <strong>${p.name}</strong><br>
+      <select data-id="${p.id}">
+        <option value="ano">Ano</option>
+        <option value="ne">Ne</option>
+        <option value="omluven">Omluven</option>
+        <option value="neomluven">Neomluven</option>
+      </select>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+/* ---------- INIT ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const nameInput = document.getElementById("playerName");
+  const addBtn = document.getElementById("addPlayerBtn");
+  const saveAttendanceBtn = document.getElementById("saveAttendanceBtn");
+
+  addBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    if (!name) {
+      alert("Zadej jméno hráče");
+      return;
+    }
+
+    const players = loadPlayers();
+    players.push({ id: Date.now().toString(), name });
+    savePlayers(players);
+
+    nameInput.value = "";
+    renderPlayers();
+    renderAttendance();
+  };
+
+  saveAttendanceBtn.onclick = () => {
+    const date = new Date().toISOString().split("T")[0];
+    const selects = document.querySelectorAll("#attendanceList select");
+
+    const record = {
+      date,
+      data: []
+    };
+
+    selects.forEach(sel => {
+      record.data.push({
+        playerId: sel.dataset.id,
+        status: sel.value
+      });
+    });
+
+    const db = loadAttendance();
+    db.push(record);
+    saveAttendance(db);
+
+    alert("Docházka uložena ✔");
+  };
+
+  renderPlayers();
+  renderAttendance();
+});
 
 /* ====== START ====== */
 resizeCanvas();
