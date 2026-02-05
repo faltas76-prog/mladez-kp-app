@@ -52,13 +52,20 @@ input {
   <button id="drawBtn">✏️ Kreslit</button>
   <button id="eraseBtn">🧽 Mazat</button>
 
-  <button data-tool="ball">⚽ Míč</button>
-  <button data-tool="goal">🥅 Branka</button>
-  <button data-tool="cone">🔺 Kužel</button>
+  <button data-tool="ball">⚽</button>
+  <button data-tool="goal">🥅</button>
+  <button data-tool="cone">🔺</button>
+  <button data-tool="hurdle">🚧</button>
+  <button data-tool="ladder">🪜</button>
+  <button data-tool="target">🎯</button>
+
+  <label>
+    Velikost:
+    <input type="range" id="sizeSlider" min="6" max="40" value="16">
+  </label>
 
   <button id="clearBtn">♻️ Vymazat vše</button>
 </div>
-
 
 <canvas id="canvas"></canvas>
 
