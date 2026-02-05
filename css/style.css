@@ -89,15 +89,19 @@ select {
   }
 
   canvas {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    background: #2e7d32;
-    border-radius: 14px;
-    touch-action: none;
-    display: block;
-    margin: 8px auto;
-  }
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  background: #2e7d32;
+  border-radius: 14px;
+  touch-action: none;
+  display: block;
+  margin: 8px auto;
+
+  position: relative;   /* DŮLEŽITÉ */
+  z-index: 1;           /* DŮLEŽITÉ */
+}
+
 
   select,
   button,
