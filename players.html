@@ -1,11 +1,38 @@
-<h1>👥 Hráči</h1>
-<input id="name" placeholder="Jméno hráče">
-<button onclick="addPlayer()">Přidat</button>
-<div id="list"></div>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Hráči & Docházka</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="js/storage.js"></script>
+<style>
+body { font-family: Arial; padding:10px; background:#f2f2f2; }
+h2 { margin-top:20px; }
+input, select, button { padding:8px; margin:4px 0; }
+.player {
+  background:#fff;
+  padding:8px;
+  margin-bottom:8px;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>👤 Evidence hráčů</h2>
+
+<input id="playerName" placeholder="Jméno hráče">
+<button id="addPlayerBtn">➕ Přidat hráče</button>
+
+<div id="playerList"></div>
+
+<hr>
+
+<h2>📋 Docházka & ⭐ hodnocení (dnešní trénink)</h2>
+
+<button id="saveAttendanceBtn">💾 Uložit záznam</button>
+
 <script src="js/players.js"></script>
-<script src="js/theme.js"></script>
-<script>
-  applyTheme();
-</script>
+</body>
+</html>
