@@ -18,25 +18,29 @@ function renderNotes() {
 
   box.innerHTML = "";
 
-  notes.forEach(note => {
-    const div = document.createElement("div");
-    div.className = "note";
+  // 🔽 nejnovější nahoře
+  notes
+    .slice()
+    .reverse()
+    .forEach(note => {
+      const div = document.createElement("div");
+      div.className = "note";
 
-    div.innerHTML = `
-      <strong>${note.title}</strong><br>
-      <small>${new Date(note.createdAt).toLocaleString()}</small>
-      <p>${note.text}</p>
-      <button data-id="${note.id}">❌ Smazat</button>
-    `;
+      div.innerHTML = `
+        <strong>${note.title}</strong><br>
+        <small>${new Date(note.createdAt).toLocaleString()}</small>
+        <p>${note.text}</p>
+        <button data-id="${note.id}">❌ Smazat</button>
+      `;
 
-    div.querySelector("button").onclick = () => {
-      const updated = loadNotes().filter(n => n.id !== note.id);
-      saveNotes(updated);
-      renderNotes();
-    };
+      div.querySelector("button").onclick = () => {
+        const updated = loadNotes().filter(n => n.id !== note.id);
+        saveNotes(updated);
+        renderNotes();
+      };
 
-    box.appendChild(div);
-  });
+      box.appendChild(div);
+    });
 }
 
 /* ===== INIT ===== */
