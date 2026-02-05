@@ -1,4 +1,4 @@
-console.log("tactical.js – tools version loaded");
+console.log("tactical.js – tools + size loaded");
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -14,7 +14,7 @@ resizeCanvas();
 
 /* ===== STAV ===== */
 let mode = "draw";          // draw | erase | object
-let activeTool = null;     // ball | goal | cone
+let activeTool = null;
 let drawing = false;
 let currentLine = null;
 
@@ -22,7 +22,9 @@ let lines = [];
 let objects = [];
 let selectedObject = null;
 
-/* ===== OVLÁDÁNÍ ===== */
+let toolSize = 16;
+
+/* ===== UI ===== */
 document.getElementById("drawBtn").onclick = () => {
   mode = "draw";
   activeTool = null;
@@ -37,6 +39,10 @@ document.getElementById("clearBtn").onclick = () => {
   lines = [];
   objects = [];
   redraw();
+};
+
+document.getElementById("sizeSlider").oninput = e => {
+  toolSize = parseInt(e.target.value);
 };
 
 document.querySelectorAll("[data-tool]").forEach(btn => {
@@ -56,8 +62,8 @@ function pos(e) {
 }
 
 /* ===== HIT TEST ===== */
-function hitObject(o, x, y) {
-  return Math.hypot(o.x - x, o.y - y) < o.size;
+function hit(o, x, y) {
+  return Math.hypot(o.x - x, o.y - y) < o.size + 5;
 }
 
 /* ===== INTERAKCE ===== */
@@ -65,7 +71,7 @@ canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const { x, y } = pos(e);
 
-  selectedObject = objects.find(o => hitObject(o, x, y));
+  selectedObject = objects.find(o => hit(o, x, y));
 
   if (mode === "erase") {
     if (selectedObject) {
@@ -88,7 +94,7 @@ canvas.addEventListener("pointerdown", e => {
       type: activeTool,
       x,
       y,
-      size: activeTool === "ball" ? 8 : 20
+      size: toolSize
     });
     redraw();
   }
@@ -134,30 +140,65 @@ function redraw() {
   });
 
   /* objekty */
-  objects.forEach(o => drawObject(o));
+  objects.forEach(drawObject);
 }
 
 /* ===== OBJEKTY ===== */
 function drawObject(o) {
-  if (o.type === "ball") {
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.arc(o.x, o.y, o.size, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  switch (o.type) {
+    case "ball":
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+      break;
 
-  if (o.type === "cone") {
-    ctx.fillStyle = "#ff9800";
-    ctx.beginPath();
-    ctx.moveTo(o.x, o.y - o.size);
-    ctx.lineTo(o.x - o.size, o.y + o.size);
-    ctx.lineTo(o.x + o.size, o.y + o.size);
-    ctx.fill();
-  }
+    case "goal":
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(o.x - o.size, o.y - o.size / 3, o.size * 2, o.size / 1.5);
+      break;
 
-  if (o.type === "goal") {
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(o.x - 25, o.y - 10, 50, 20);
+    case "cone":
+      ctx.fillStyle = "#ff9800";
+      ctx.beginPath();
+      ctx.moveTo(o.x, o.y - o.size);
+      ctx.lineTo(o.x - o.size, o.y + o.size);
+      ctx.lineTo(o.x + o.size, o.y + o.size);
+      ctx.fill();
+      break;
+
+    case "hurdle":
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(o.x - o.size, o.y);
+      ctx.lineTo(o.x + o.size, o.y);
+      ctx.stroke();
+      break;
+
+    case "ladder":
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 2;
+      for (let i = -2; i <= 2; i++) {
+        ctx.strokeRect(
+          o.x - o.size,
+          o.y + i * (o.size / 2),
+          o.size * 2,
+          o.size / 3
+        );
+      }
+      break;
+
+    case "target":
+      ctx.strokeStyle = "#f44336";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.size, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
   }
 }
