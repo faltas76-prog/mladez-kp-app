@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<title>Tactical Pad</title>
+<title>Tactical Pad – STABLE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -36,8 +36,8 @@ button, select {
 canvas {
   width: 100%;
   height: 100%;
-  display: block;
   background: #2e7d32;
+  display: block;
   touch-action: none;
 }
 </style>
@@ -67,7 +67,146 @@ canvas {
   <canvas id="canvas"></canvas>
 </div>
 
-<script src="js/tactical.js"></script>
+<script>
+console.log("TACTICAL PAD INLINE JS RUNNING");
+
+/* ===== ZÁKLAD ===== */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+/* ===== RESIZE – TVÁ FUNKČNÍ VERZE ===== */
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  redraw();
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+/* ===== STAV ===== */
+let mode = "draw";
+let tool = null;
+let drawing = false;
+let currentLine = null;
+
+let lines = [];
+let objects = [];
+
+/* ===== TLAČÍTKA – 100% JISTOTA ===== */
+drawBtn.onclick = () => { mode = "draw"; tool = null; };
+eraseBtn.onclick = () => { mode = "erase"; tool = null; };
+
+ballBtn.onclick = () => { mode = "object"; tool = "ball"; };
+coneBtn.onclick = () => { mode = "object"; tool = "cone"; };
+hurdleBtn.onclick = () => { mode = "object"; tool = "hurdle"; };
+goalBtn.onclick = () => { mode = "object"; tool = "goal"; };
+
+resetBtn.onclick = () => {
+  if (!confirm("Vymazat celé cvičení?")) return;
+  lines = [];
+  objects = [];
+  redraw();
+};
+
+/* ===== POZICE ===== */
+function pos(e) {
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: e.clientX - r.left,
+    y: e.clientY - r.top
+  };
+}
+
+/* ===== INTERAKCE ===== */
+canvas.addEventListener("pointerdown", e => {
+  const p = pos(e);
+  drawing = true;
+
+  if (mode === "draw") {
+    currentLine = [p];
+    lines.push(currentLine);
+  }
+
+  if (mode === "object" && tool) {
+    objects.push({
+      type: tool,
+      x: p.x,
+      y: p.y,
+      size: parseInt(sizeSelect.value)
+    });
+    redraw();
+  }
+
+  if (mode === "erase") {
+    lines = lines.filter(l =>
+      !l.some(pt => Math.hypot(pt.x - p.x, pt.y - p.y) < 10)
+    );
+    objects = objects.filter(o =>
+      Math.hypot(o.x - p.x, o.y - p.y) > o.size
+    );
+    redraw();
+  }
+});
+
+canvas.addEventListener("pointermove", e => {
+  if (!drawing || mode !== "draw") return;
+  currentLine.push(pos(e));
+  redraw();
+});
+
+canvas.addEventListener("pointerup", () => {
+  drawing = false;
+  currentLine = null;
+});
+
+/* ===== VYKRESLENÍ ===== */
+function redraw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "#ffeb3b";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+
+  lines.forEach(l => {
+    ctx.beginPath();
+    ctx.moveTo(l[0].x, l[0].y);
+    l.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+  });
+
+  objects.forEach(o => {
+    if (o.type === "ball") {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (o.type === "cone") {
+      ctx.fillStyle = "#ff9800";
+      ctx.beginPath();
+      ctx.moveTo(o.x, o.y - o.size);
+      ctx.lineTo(o.x - o.size, o.y + o.size);
+      ctx.lineTo(o.x + o.size, o.y + o.size);
+      ctx.fill();
+    }
+    if (o.type === "hurdle") {
+      ctx.fillStyle = "#2196f3";
+      ctx.fillRect(o.x - o.size, o.y - o.size / 4, o.size * 2, o.size / 2);
+    }
+    if (o.type === "goal") {
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(
+        o.x - o.size * 1.5,
+        o.y - o.size / 2,
+        o.size * 3,
+        o.size
+      );
+    }
+  });
+}
+</script>
+
 </body>
 </html>
-
