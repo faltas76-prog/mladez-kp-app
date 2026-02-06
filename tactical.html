@@ -1,67 +1,46 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<title>Tactical Pad – Simple Stable</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 10px;
-  background: #f2f2f2;
-}
-
-h2 { text-align:center; }
-
-.toolbar {
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
-}
-
-button {
-  padding:10px;
-  font-size:16px;
-}
-
-canvas {
-  width:100%;
-  height:60vh;
-  background:#2e7d32;
-  border-radius:12px;
-  touch-action:none;
-  display:block;
-}
-
-input {
-  padding:8px;
-  font-size:16px;
-  margin-right:6px;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Tactical Pad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; margin: 10px; }
+    canvas { background:#2e7d32; border-radius:12px; touch-action:none; }
+    .toolbar { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:6px 0; }
+    button, select, input { padding:8px; font-size:14px; }
+  </style>
 </head>
-
 <body>
 
 <h2>⚽ Tactical Pad</h2>
 
+<select onchange="setPitch(this.value)">
+  <option value="full">Celé hřiště</option>
+  <option value="half">Polovina</option>
+  <option value="square">Čtverec</option>
+  <option value="rect">Obdélník</option>
+</select>
+
+<canvas id="pitch" width="360" height="540"></canvas>
+
 <div class="toolbar">
-  <button id="drawBtn">✏️ Kreslit</button>
-  <button id="eraseBtn">🧽 Mazat</button>
-
-  <button data-tool="ball">⚽ Míč</button>
-  <button data-tool="goal">🥅 Branka</button>
-  <button data-tool="cone">🔺 Kužel</button>
-
-  <button id="clearBtn">♻️ Vymazat vše</button>
+  <button onclick="setMode('draw')">✏️</button>
+  <button onclick="setMode('erase')">🧽</button>
+  <button onclick="setMode('playerBlue')">🔵</button>
+  <button onclick="setMode('playerRed')">🔴</button>
 </div>
-<canvas id="canvas"></canvas>
+
+<div class="toolbar">
+  <button onclick="setMode('ball')">⚽</button>
+  <button onclick="setMode('cone')">🔺</button>
+  <button onclick="setMode('hurdle')">⛔</button>
+  <button onclick="setMode('goal')">🥅</button>
+</div>
+
+<label>Velikost objektu / gumy</label>
+<input type="range" id="sizeControl" min="5" max="50" value="15">
 
 <script src="js/tactical.js"></script>
-<script src="js/players.js"></script>
-
 </body>
 </html>
