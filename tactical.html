@@ -2,73 +2,57 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<title>Tactical Pad – Simple Stable</title>
-
+<title>Tactical Pad</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2e7d32">
 
-  
 <style>
-body {
-  font-family: Arial, sans-serif;
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #f2f2f2;
+  background: #1e1e1e;
+  color: #fff;
+  font-family: Arial, sans-serif;
 }
 
-h2 { text-align:center; }
-
 .toolbar {
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: #333;
 }
 
 button {
-  padding:10px;
-  font-size:16px;
+  padding: 8px 10px;
+  font-size: 16px;
+  cursor: pointer;
 }
-<canvas id="canvas"></canvas>
-  <div id="pitchWrapper">
-  <canvas id="canvas"></canvas>
-</div>
-  
+
+#pitchWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 10;
+}
+
 canvas {
-  width:100%;
-  height:100%;
-  background:#2e7d32;
-  border-radius:12px;
-  position: relative;
-  touch-action: none;
+  width: 100%;
+  height: 100%;
   display: block;
+  background: #2e7d32;
+  touch-action: none;
 }
 
 @media (max-width: 768px) {
   #pitchWrapper {
-    aspect-ratio: 4 / 3; /* lepší pro mobil */
+    aspect-ratio: 4 / 3;
   }
-}
-
-  #pitchWrapper {
-  width: 100%;
-  max-width: 1200px;   /* limit pro velké monitory */
-  margin: 0 auto;     /* centrování */
-  aspect-ratio: 16 / 10; /* poměr hřiště */
-}
-
-input {
-  padding:8px;
-  font-size:16px;
-  margin-right:6px;
 }
 </style>
 </head>
 
 <body>
-
-<h2>⚽ Tactical Pad</h2>
 
 <div class="toolbar">
   <button id="drawBtn">✏️</button>
@@ -77,31 +61,14 @@ input {
   <button data-tool="ball">⚽</button>
   <button data-tool="goal">🥅</button>
   <button data-tool="cone">🔺</button>
-  <button data-tool="hurdle">🚧</button>
 
-  <label>Velikost
-    <input type="range" id="sizeSlider" min="6" max="40" value="16">
-  </label>
-
-  <select id="pitchSelect">
-    <option value="full">Celé hřiště</option>
-    <option value="half">Polovina</option>
-    <option value="square">Čtverec</option>
-  </select>
-
-  <button id="undoBtn">↩️</button>
-  <button id="redoBtn">↪️</button>
-  <button id="saveExerciseBtn">💾</button>
   <button id="clearBtn">♻️</button>
 </div>
 
-<script src="js/tactical.js"></script>
-<script src="js/players.js"></script>
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
-</script>
+<div id="pitchWrapper">
+  <canvas id="canvas"></canvas>
+</div>
 
+<script src="js/tactical.js"></script>
 </body>
 </html>
