@@ -1,234 +1,81 @@
-console.log("tactical.js – FINAL STABLE");
-
-const canvas = document.getElementById("canvas");
+const canvas = document.getElementById("pitch");
 const ctx = canvas.getContext("2d");
 
-/* =========================
-   RESIZE + HŘIŠTĚ
-========================= */
-let pitchType = "full";
-
-function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
-
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  redraw();
-}
-window.addEventListener("resize", resizeCanvas);
-
-/* =========================
-   STAV
-========================= */
 let mode = "draw";
-let activeTool = null;
+let pitchType = "full";
 let drawing = false;
 let currentLine = null;
-let toolSize = 16;
+let selected = null;
 
-let lines = [];
-let objects = [];
+let size = 15;
 
-/* ===== UNDO / REDO ===== */
-let history = [];
-let future = [];
+const objects = [];
+const lines = [];
 
-function saveState() {
-  history.push(JSON.stringify({ lines, objects }));
-  if (history.length > 50) history.shift();
-  future = [];
+/* ---------- OVLÁDÁNÍ ---------- */
+function setMode(m) {
+  mode = m;
+  selected = null;
 }
 
-function undo() {
-  if (!history.length) return;
-  future.push(JSON.stringify({ lines, objects }));
-  const state = JSON.parse(history.pop());
-  lines = state.lines;
-  objects = state.objects;
+function setPitch(p) {
+  pitchType = p;
   redraw();
 }
 
-function redo() {
-  if (!future.length) return;
-  history.push(JSON.stringify({ lines, objects }));
-  const state = JSON.parse(future.pop());
-  lines = state.lines;
-  objects = state.objects;
-  redraw();
-}
+const sizeCtrl = document.getElementById("sizeControl");
+sizeCtrl.addEventListener("input", e => size = parseInt(e.target.value));
 
-/* =========================
-   UI
-========================= */
-drawBtn.onclick = () => { mode = "draw"; activeTool = null; };
-eraseBtn.onclick = () => { mode = "erase"; activeTool = null; };
-undoBtn.onclick = undo;
-redoBtn.onclick = redo;
-
-clearBtn.onclick = () => {
-  if (!confirm("Vymazat celé cvičení?")) return;
-  saveState();
-  lines = [];
-  objects = [];
-  redraw();
-};
-
-sizeSlider.oninput = e => toolSize = parseInt(e.target.value);
-
-pitchSelect.onchange = e => {
-  pitchType = e.target.value;
-  resizeCanvas();
-};
-
-document.querySelectorAll("[data-tool]").forEach(btn => {
-  btn.onclick = () => {
-    mode = "object";
-    activeTool = btn.dataset.tool;
-  };
-});
-
-/* =========================
-   POZICE
-========================= */
-function pos(e) {
-  const rect = canvas.getBoundingClientRect();
-
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  };
-}
-
-
-/* =========================
-   INTERAKCE
-========================= */
-canvas.addEventListener("pointerdown", e => {
-  drawing = true;
-  const { x, y } = pos(e);
-
-  const hit = objects.find(o => Math.hypot(o.x - x, o.y - y) < o.size);
-
-  if (mode === "erase") {
-    if (hit) {
-      saveState();
-      objects = objects.filter(o => o !== hit);
-      redraw();
-    }
-    return;
-  }
-
-  if (hit) {
-    saveState();
-    hit.drag = true;
-    return;
-  }
-
-  if (mode === "draw") {
-    saveState();
-    currentLine = [{ x, y }];
-    lines.push(currentLine);
-  }
-
-  if (mode === "object" && activeTool) {
-    saveState();
-    objects.push({ type: activeTool, x, y, size: toolSize });
-    redraw();
-  }
-});
-
-canvas.addEventListener("pointermove", e => {
-  if (!drawing) return;
-  const { x, y } = pos(e);
-
-  const dragging = objects.find(o => o.drag);
-  if (dragging) {
-    dragging.x = x;
-    dragging.y = y;
-    redraw();
-    return;
-  }
-
-  if (mode === "draw" && currentLine) {
-    currentLine.push({ x, y });
-    redraw();
-  }
-
-  if (mode === "erase") {
-    const before = objects.length + lines.length;
-    objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
-    lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 12));
-    if (before !== objects.length + lines.length) redraw();
-  }
-});
-
-canvas.addEventListener("pointerup", () => {
-  drawing = false;
-  currentLine = null;
-  objects.forEach(o => delete o.drag);
-});
-
-/* =========================
-   VYKRESLENÍ
-========================= */
+/* ---------- HŘIŠTĚ ---------- */
 function drawPitch() {
   ctx.fillStyle = "#2e7d32";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
   ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
-  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
 
   if (pitchType === "full") {
+    ctx.strokeRect(10,10,canvas.width-20,canvas.height-20);
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 20);
-    ctx.lineTo(canvas.width / 2, canvas.height - 20);
+    ctx.moveTo(10,canvas.height/2);
+    ctx.lineTo(canvas.width-10,canvas.height/2);
     ctx.stroke();
+  }
+
+  if (pitchType === "half") {
+    ctx.strokeRect(10,canvas.height/2,canvas.width-20,canvas.height/2-10);
+  }
+
+  if (pitchType === "square") {
+    ctx.strokeRect(60,160,240,240);
+  }
+
+  if (pitchType === "rect") {
+    ctx.strokeRect(40,180,280,180);
   }
 }
 
-function redraw() {
-  drawPitch();
-
-  ctx.strokeStyle = "#ffeb3b";
-  ctx.lineWidth = 3;
-  ctx.lineCap = "round";
-  lines.forEach(l => {
-    ctx.beginPath();
-    ctx.moveTo(l[0].x, l[0].y);
-    l.forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.stroke();
-  });
-
-  objects.forEach(drawObject);
-}
-
-/* =========================
-   OBJEKTY
-========================= */
+/* ---------- OBJEKTY ---------- */
 function drawObject(o) {
-  if (o.type === "ball") {
-    ctx.fillStyle = "#fff";
+  if (o.type === "playerBlue" || o.type === "playerRed") {
+    ctx.fillStyle = o.type === "playerBlue" ? "#2196f3" : "#e53935";
     ctx.beginPath();
-    ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+    ctx.arc(o.x,o.y,o.size,0,Math.PI*2);
     ctx.fill();
   }
 
-  if (o.type === "goal") {
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(o.x - o.size, o.y - o.size / 3, o.size * 2, o.size / 1.5);
+  if (o.type === "ball") {
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(o.x,o.y,o.size/2,0,Math.PI*2);
+    ctx.fill();
   }
 
   if (o.type === "cone") {
     ctx.fillStyle = "#ff9800";
     ctx.beginPath();
-    ctx.moveTo(o.x, o.y - o.size);
-    ctx.lineTo(o.x - o.size, o.y + o.size);
-    ctx.lineTo(o.x + o.size, o.y + o.size);
+    ctx.moveTo(o.x,o.y-o.size);
+    ctx.lineTo(o.x-o.size,o.y+o.size);
+    ctx.lineTo(o.x+o.size,o.y+o.size);
     ctx.fill();
   }
 
@@ -236,28 +83,98 @@ function drawObject(o) {
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(o.x - o.size, o.y);
-    ctx.lineTo(o.x + o.size, o.y);
+    ctx.moveTo(o.x-o.size,o.y);
+    ctx.lineTo(o.x+o.size,o.y);
     ctx.stroke();
+  }
+
+  if (o.type === "goal") {
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(o.x-o.size,o.y-o.size/2,o.size*2,o.size);
   }
 }
 
-/* =========================
-   ULOŽENÍ CVIČENÍ
-========================= */
-saveExerciseBtn.onclick = () => {
-  const data = {
-    pitchType,
-    lines,
-    objects,
-    savedAt: new Date().toISOString()
-  };
+/* ---------- KRESLENÍ ---------- */
+function drawLines() {
+  ctx.strokeStyle = "#ffeb3b";
+  ctx.lineWidth = 3;
+  lines.forEach(line => {
+    ctx.beginPath();
+    ctx.moveTo(line[0].x,line[0].y);
+    line.forEach(p => ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+  });
+}
 
-  localStorage.setItem("tactical_exercise", JSON.stringify(data));
-  alert("Cvičení uloženo ✔");
-};
+function redraw() {
+  drawPitch();
+  drawLines();
+  objects.forEach(drawObject);
+}
 
-/* =========================
-   START
-========================= */
-resizeCanvas();
+/* ---------- INTERAKCE ---------- */
+canvas.addEventListener("pointerdown", e => {
+  drawing = true;
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  selected = objects.find(o => Math.hypot(o.x-x,o.y-y) < o.size);
+
+  if (selected) return;
+
+  if (mode === "draw") {
+    currentLine = [{x,y}];
+    lines.push(currentLine);
+    return;
+  }
+
+  if (mode === "erase") return;
+
+  objects.push({ id:Date.now(), type:mode, x, y, size });
+  redraw();
+});
+
+canvas.addEventListener("pointermove", e => {
+  if (!drawing) return;
+  const x = e.offsetX;
+  const y = e.offsetY;
+
+  if (mode === "erase") {
+    for (let i=objects.length-1;i>=0;i--) {
+      if (Math.hypot(objects[i].x-x,objects[i].y-y)<size+10) {
+        objects.splice(i,1);
+      }
+    }
+    for (let i=lines.length-1;i>=0;i--) {
+      for (let p of lines[i]) {
+        if (Math.hypot(p.x-x,p.y-y)<size) {
+          lines.splice(i,1);
+          break;
+        }
+      }
+    }
+    redraw();
+    return;
+  }
+
+  if (selected) {
+    selected.x = x;
+    selected.y = y;
+    redraw();
+    return;
+  }
+
+  if (currentLine) {
+    currentLine.push({x,y});
+    redraw();
+  }
+});
+
+canvas.addEventListener("pointerup", () => {
+  drawing = false;
+  currentLine = null;
+  selected = null;
+});
+
+/* ---------- START ---------- */
+redraw();
