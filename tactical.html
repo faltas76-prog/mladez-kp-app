@@ -10,8 +10,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: Arial, sans-serif;
   background: #1e1e1e;
+  font-family: Arial, sans-serif;
   color: #fff;
 }
 
@@ -23,14 +23,14 @@ html, body {
   background: #333;
 }
 
-button {
+button, select {
   padding: 6px 10px;
   font-size: 14px;
 }
 
 #wrap {
   width: 100%;
-  height: calc(100vh - 56px); /* KLÍČOVÉ */
+  height: calc(100vh - 60px);
 }
 
 canvas {
@@ -48,7 +48,19 @@ canvas {
 <div class="toolbar">
   <button id="drawBtn">✏️ Kreslit</button>
   <button id="eraseBtn">🧽 Mazat</button>
-  <button id="clearBtn">♻️ Reset</button>
+
+  <button data-tool="ball">⚽</button>
+  <button data-tool="cone">🔺</button>
+  <button data-tool="hurdle">🟦</button>
+  <button data-tool="goal">🥅</button>
+
+  <select id="sizeSelect">
+    <option value="15">S</option>
+    <option value="25" selected>M</option>
+    <option value="40">L</option>
+  </select>
+
+  <button id="resetBtn">♻️ Reset</button>
 </div>
 
 <div id="wrap">
@@ -58,3 +70,4 @@ canvas {
 <script src="js/tactical.js"></script>
 </body>
 </html>
+
