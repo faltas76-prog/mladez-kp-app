@@ -1,49 +1,55 @@
-console.log("tactical.js FIXED loaded");
-
+/* ===============================
+   ZÁKLAD
+=============================== */
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const wrapper = document.getElementById("pitchWrapper");
 
-/* =====================
-   RESIZE
-===================== */
+const EXERCISE_KEY = "tactical_exercises_v1";
+
+/* ===============================
+   RESIZE – RESPONZIVNÍ HŘIŠTĚ
+=============================== */
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
+  const rect = wrapper.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   redraw();
 }
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-/* =====================
+/* ===============================
    STAV
-===================== */
+=============================== */
 let mode = "draw";        // draw | erase | object
-let activeTool = null;   // ball | goal | cone | ...
+let activeTool = null;
 let drawing = false;
 let currentLine = null;
 
 let lines = [];
 let objects = [];
 
-/* =====================
-   UI – TLAČÍTKA
-===================== */
-const drawBtn = document.getElementById("drawBtn");
-const eraseBtn = document.getElementById("eraseBtn");
-const clearBtn = document.getElementById("clearBtn");
+/* ===============================
+   UI
+=============================== */
+const sizeSelect = document.getElementById("sizeSelect");
 
-drawBtn.onclick = () => {
+document.getElementById("drawBtn").onclick = () => {
   mode = "draw";
   activeTool = null;
 };
 
-eraseBtn.onclick = () => {
+document.getElementById("eraseBtn").onclick = () => {
   mode = "erase";
   activeTool = null;
 };
 
-clearBtn.onclick = () => {
+document.getElementById("resetBtn").onclick = () => {
   if (!confirm("Vymazat celé cvičení?")) return;
   lines = [];
   objects = [];
@@ -58,55 +64,50 @@ document.querySelectorAll("[data-tool]").forEach(btn => {
   };
 });
 
-/* =====================
-   POZICE – OPRAVENÁ
-===================== */
+/* ===============================
+   POZICE – PŘESNÁ
+=============================== */
 function pos(e) {
   const rect = canvas.getBoundingClientRect();
-  const x = (e.touches ? e.touches[0].pageX : e.pageX) - rect.left - window.scrollX;
-  const y = (e.touches ? e.touches[0].pageY : e.pageY) - rect.top - window.scrollY;
-  return { x, y };
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
 }
 
-/* =====================
+/* ===============================
    INTERAKCE
-===================== */
+=============================== */
 canvas.addEventListener("pointerdown", e => {
-  drawing = true;
   const { x, y } = pos(e);
+  drawing = true;
 
-  // mazání objektu
-  if (mode === "erase") {
-    objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
-    lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 10));
-    saveExercise();
-    redraw();
-    return;
-  }
-
-  // kreslení
   if (mode === "draw") {
     currentLine = [{ x, y }];
     lines.push(currentLine);
-    redraw();
-    return;
   }
 
-  // přidání objektu
   if (mode === "object" && activeTool) {
     objects.push({
       type: activeTool,
       x,
       y,
-      size: 20
+      size: parseInt(sizeSelect.value)
     });
+    saveExercise();
+    redraw();
+  }
+
+  if (mode === "erase") {
+    lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 10));
+    objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
     saveExercise();
     redraw();
   }
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drawing || mode !== "draw" || !currentLine) return;
+  if (!drawing || mode !== "draw") return;
   const { x, y } = pos(e);
   currentLine.push({ x, y });
   redraw();
@@ -118,9 +119,9 @@ canvas.addEventListener("pointerup", () => {
   saveExercise();
 });
 
-/* =====================
+/* ===============================
    VYKRESLENÍ
-===================== */
+=============================== */
 function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -136,25 +137,18 @@ function redraw() {
     ctx.stroke();
   });
 
-  // objekty
   objects.forEach(drawObject);
 }
 
-/* =====================
+/* ===============================
    OBJEKTY
-===================== */
+=============================== */
 function drawObject(o) {
   if (o.type === "ball") {
     ctx.fillStyle = "#fff";
     ctx.beginPath();
     ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
     ctx.fill();
-  }
-
-  if (o.type === "goal") {
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(o.x - 30, o.y - 10, 60, 20);
   }
 
   if (o.type === "cone") {
@@ -165,18 +159,29 @@ function drawObject(o) {
     ctx.lineTo(o.x + o.size, o.y + o.size);
     ctx.fill();
   }
+
+  if (o.type === "hurdle") {
+    ctx.fillStyle = "#2196f3";
+    ctx.fillRect(o.x - o.size, o.y - o.size / 4, o.size * 2, o.size / 2);
+  }
+
+  if (o.type === "goal") {
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(o.x - o.size * 1.5, o.y - o.size / 2, o.size * 3, o.size);
+  }
 }
 
-/* =====================
-   ULOŽENÍ / NAČTENÍ
-===================== */
-const EXERCISE_KEY = "tactical_exercise_v1";
-
+/* ===============================
+   DATABÁZE (OFFLINE)
+=============================== */
 function saveExercise() {
-  localStorage.setItem(
-    EXERCISE_KEY,
-    JSON.stringify({ lines, objects })
-  );
+  const data = {
+    lines,
+    objects,
+    savedAt: Date.now()
+  };
+  localStorage.setItem(EXERCISE_KEY, JSON.stringify(data));
 }
 
 function loadExercise() {
@@ -189,8 +194,8 @@ function loadExercise() {
   } catch {}
 }
 
-/* =====================
+/* ===============================
    START
-===================== */
+=============================== */
 loadExercise();
 redraw();
