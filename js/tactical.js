@@ -2,6 +2,7 @@ console.log("tactical.js – FINAL STABLE");
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const EXERCISE_KEY = "tactical_exercise_v1";
 
 /* =========================
    RESIZE + HŘIŠTĚ
@@ -57,6 +58,30 @@ function redo() {
   lines = state.lines;
   objects = state.objects;
   redraw();
+}
+function saveExercise() {
+  const data = {
+    pitchType,
+    lines,
+    objects,
+    savedAt: Date.now()
+  };
+  localStorage.setItem(EXERCISE_KEY, JSON.stringify(data));
+}
+
+function loadExercise() {
+  const raw = localStorage.getItem(EXERCISE_KEY);
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw);
+    pitchType = data.pitchType || "full";
+    lines = data.lines || [];
+    objects = data.objects || [];
+  } catch {
+    lines = [];
+    objects = [];
+  }
 }
 
 /* =========================
@@ -193,6 +218,7 @@ function drawPitch() {
     ctx.stroke();
   }
 }
+loadExercise();
 
 function redraw() {
   drawPitch();
@@ -259,6 +285,22 @@ saveExerciseBtn.onclick = () => {
   localStorage.setItem("tactical_exercise", JSON.stringify(data));
   alert("Cvičení uloženo ✔");
 };
+// po dokončení kreslení
+canvas.addEventListener("pointerup", () => {
+  drawing = false;
+  currentLine = null;
+  objects.forEach(o => delete o.drag);
+  saveExercise();
+});
+
+// po přidání objektu
+objects.push({ ... });
+saveExercise();
+
+// po mazání
+objects = objects.filter(...);
+lines = lines.filter(...);
+saveExercise();
 
 /* =========================
    START
