@@ -13,7 +13,8 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding: 10px;
+  padding: 0;
+  height: 100%;
   background: #f2f2f2;
 }
 
@@ -32,12 +33,19 @@ button {
 
 canvas {
   width:100%;
-  height:60vh;
+  height:100%;
   background:#2e7d32;
   border-radius:12px;
   position: relative;
   touch-action: none;
   display: block;
+}
+
+  #pitchWrapper {
+  width: 100%;
+  max-width: 1200px;   /* limit pro velké monitory */
+  margin: 0 auto;     /* centrování */
+  aspect-ratio: 16 / 10; /* poměr hřiště */
 }
 
 input {
@@ -78,6 +86,9 @@ input {
 </div>
 
 <canvas id="canvas"></canvas>
+  <div id="pitchWrapper">
+  <canvas id="canvas"></canvas>
+</div>
 
 <script src="js/tactical.js"></script>
 <script src="js/players.js"></script>
