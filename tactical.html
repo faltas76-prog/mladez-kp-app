@@ -10,30 +10,23 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: #1e1e1e;
-  color: #fff;
-  font-family: Arial, sans-serif;
 }
 
 .toolbar {
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
   padding: 8px;
   background: #333;
 }
 
 button {
-  padding: 8px 10px;
   font-size: 16px;
-  cursor: pointer;
+  padding: 6px 10px;
 }
 
-#pitchWrapper {
+#wrapper {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  aspect-ratio: 16 / 10;
+  height: calc(100vh - 52px);
 }
 
 canvas {
@@ -43,29 +36,21 @@ canvas {
   background: #2e7d32;
   touch-action: none;
 }
-
-@media (max-width: 768px) {
-  #pitchWrapper {
-    aspect-ratio: 4 / 3;
-  }
-}
 </style>
 </head>
 
 <body>
 
 <div class="toolbar">
-  <button id="drawBtn">✏️</button>
-  <button id="eraseBtn">🧽</button>
-
+  <button id="drawBtn">✏️ Kreslit</button>
+  <button id="eraseBtn">🧽 Mazat</button>
   <button data-tool="ball">⚽</button>
-  <button data-tool="goal">🥅</button>
   <button data-tool="cone">🔺</button>
-
-  <button id="clearBtn">♻️</button>
+  <button data-tool="goal">🥅</button>
+  <button id="clearBtn">♻️ Reset</button>
 </div>
 
-<div id="pitchWrapper">
+<div id="wrapper">
   <canvas id="canvas"></canvas>
 </div>
 
