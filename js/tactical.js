@@ -1,21 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  console.log("TACTICAL PAD READY");
+  console.log("TACTICAL PAD – FIXED RESIZE");
 
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
-  const wrap = document.getElementById("wrap");
 
   /* =====================
-     RESIZE
+     RESIZE – FUNKČNÍ VERZE
   ===================== */
-  function resize() {
-    canvas.width = wrap.clientWidth;
-    canvas.height = wrap.clientHeight;
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
     redraw();
   }
-  window.addEventListener("resize", resize);
-  resize();
+
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
 
   /* =====================
      STAV
@@ -31,53 +32,55 @@ document.addEventListener("DOMContentLoaded", () => {
   const sizeSelect = document.getElementById("sizeSelect");
 
   /* =====================
-     TLAČÍTKA – JISTOTA
+     TLAČÍTKA – FUNKČNÍ
   ===================== */
-  document.getElementById("drawBtn").addEventListener("click", () => {
+  document.getElementById("drawBtn").onclick = () => {
     mode = "draw";
     tool = null;
-  });
+    console.log("MODE: draw");
+  };
 
-  document.getElementById("eraseBtn").addEventListener("click", () => {
+  document.getElementById("eraseBtn").onclick = () => {
     mode = "erase";
     tool = null;
-  });
+    console.log("MODE: erase");
+  };
 
-  document.getElementById("ballBtn").addEventListener("click", () => {
+  document.getElementById("ballBtn").onclick = () => {
     mode = "object";
     tool = "ball";
-  });
+  };
 
-  document.getElementById("coneBtn").addEventListener("click", () => {
+  document.getElementById("coneBtn").onclick = () => {
     mode = "object";
     tool = "cone";
-  });
+  };
 
-  document.getElementById("hurdleBtn").addEventListener("click", () => {
+  document.getElementById("hurdleBtn").onclick = () => {
     mode = "object";
     tool = "hurdle";
-  });
+  };
 
-  document.getElementById("goalBtn").addEventListener("click", () => {
+  document.getElementById("goalBtn").onclick = () => {
     mode = "object";
     tool = "goal";
-  });
+  };
 
-  document.getElementById("resetBtn").addEventListener("click", () => {
+  document.getElementById("resetBtn").onclick = () => {
     if (!confirm("Vymazat celé cvičení?")) return;
     lines = [];
     objects = [];
     redraw();
-  });
+  };
 
   /* =====================
-     POZICE
+     POZICE – JEDNODUCHÁ
   ===================== */
   function pos(e) {
-    const r = canvas.getBoundingClientRect();
+    const rect = canvas.getBoundingClientRect();
     return {
-      x: e.clientX - r.left,
-      y: e.clientY - r.top
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
     };
   }
 
