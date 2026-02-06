@@ -9,12 +9,13 @@ const ctx = canvas.getContext("2d");
 let pitchType = "full";
 
 function resizeCanvas() {
-  const r = canvas.getBoundingClientRect();
-  canvas.width = r.width;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
 
-  if (pitchType === "full") canvas.height = r.width * 0.6;
-  if (pitchType === "half") canvas.height = r.width * 0.9;
-  if (pitchType === "square") canvas.height = r.width * 0.7;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   redraw();
 }
@@ -94,12 +95,14 @@ document.querySelectorAll("[data-tool]").forEach(btn => {
    POZICE
 ========================= */
 function pos(e) {
-  const r = canvas.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect();
+
   return {
-    x: e.clientX - r.left,
-    y: e.clientY - r.top
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
   };
 }
+
 
 /* =========================
    INTERAKCE
