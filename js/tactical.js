@@ -1,20 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ===== ZÁKLAD ===== */
+  console.log("TacticalPad INIT");
+
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
-  const wrapper = document.getElementById("pitchWrapper");
+  const wrapper = document.getElementById("wrapper");
 
   const DB_KEY = "tactical_exercises_db";
 
   /* ===== RESIZE ===== */
   function resizeCanvas() {
-    const rect = wrapper.getBoundingClientRect();
+    const r = wrapper.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-
+    canvas.width = r.width * dpr;
+    canvas.height = r.height * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     redraw();
   }
@@ -31,93 +30,71 @@ document.addEventListener("DOMContentLoaded", () => {
   let objects = [];
 
   /* ===== UI ===== */
-  const nameInput = document.getElementById("exerciseName");
-  const sizeSelect = document.getElementById("sizeSelect");
-
-  document.getElementById("drawBtn").onclick = () => {
+  document.getElementById("toolDraw").onclick = () => {
     mode = "draw";
     tool = null;
   };
 
-  document.getElementById("eraseBtn").onclick = () => {
+  document.getElementById("toolErase").onclick = () => {
     mode = "erase";
     tool = null;
   };
 
-  document.getElementById("resetBtn").onclick = () => {
-    if (!confirm("Vymazat celé cvičení?")) return;
+  document.querySelectorAll("[data-tool]").forEach(b => {
+    b.onclick = () => {
+      mode = "object";
+      tool = b.dataset.tool;
+    };
+  });
+
+  document.getElementById("resetExercise").onclick = () => {
+    if (!confirm("Vymazat cvičení?")) return;
     lines = [];
     objects = [];
     redraw();
   };
 
-  document.querySelectorAll("[data-tool]").forEach(btn => {
-    btn.onclick = () => {
-      mode = "object";
-      tool = btn.dataset.tool;
-    };
-  });
-
-  document.getElementById("saveBtn").onclick = () => {
-    const name = nameInput.value.trim();
-    if (!name) {
-      alert("Zadej název cvičení");
-      return;
-    }
-
-    const db = loadDB();
-    db.push({
-      id: Date.now().toString(),
-      name,
-      lines,
-      objects,
-      createdAt: Date.now()
-    });
-
-    localStorage.setItem(DB_KEY, JSON.stringify(db));
-    alert("Cvičení uloženo ✔");
-  };
+  document.getElementById("saveExercise").onclick = saveExercise;
 
   /* ===== POZICE ===== */
   function pos(e) {
-    const rect = canvas.getBoundingClientRect();
+    const r = canvas.getBoundingClientRect();
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: e.clientX - r.left,
+      y: e.clientY - r.top
     };
   }
 
-  /* ===== INTERAKCE ===== */
+  /* ===== KRESLENÍ ===== */
   canvas.addEventListener("pointerdown", e => {
-    const { x, y } = pos(e);
+    const p = pos(e);
     drawing = true;
 
     if (mode === "draw") {
-      currentLine = [{ x, y }];
+      currentLine = [p];
       lines.push(currentLine);
     }
 
     if (mode === "object" && tool) {
       objects.push({
         type: tool,
-        x,
-        y,
-        size: parseInt(sizeSelect.value)
+        x: p.x,
+        y: p.y,
+        size: parseInt(document.getElementById("sizeSelect").value)
       });
       redraw();
     }
 
     if (mode === "erase") {
-      lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 10));
-      objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
+      lines = lines.filter(l => !l.some(pt => Math.hypot(pt.x - p.x, pt.y - p.y) < 10));
+      objects = objects.filter(o => Math.hypot(o.x - p.x, o.y - p.y) > o.size);
       redraw();
     }
   });
 
   canvas.addEventListener("pointermove", e => {
     if (!drawing || mode !== "draw") return;
-    const { x, y } = pos(e);
-    currentLine.push({ x, y });
+    currentLine.push(pos(e));
     redraw();
   });
 
@@ -126,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     currentLine = null;
   });
 
-  /* ===== VYKRESLENÍ ===== */
+  /* ===== RENDER ===== */
   function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -141,45 +118,73 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.stroke();
     });
 
-    objects.forEach(drawObject);
+    objects.forEach(o => {
+      if (o.type === "ball") {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (o.type === "cone") {
+        ctx.fillStyle = "#ff9800";
+        ctx.beginPath();
+        ctx.moveTo(o.x, o.y - o.size);
+        ctx.lineTo(o.x - o.size, o.y + o.size);
+        ctx.lineTo(o.x + o.size, o.y + o.size);
+        ctx.fill();
+      }
+      if (o.type === "hurdle") {
+        ctx.fillStyle = "#2196f3";
+        ctx.fillRect(o.x - o.size, o.y - o.size / 4, o.size * 2, o.size / 2);
+      }
+      if (o.type === "goal") {
+        ctx.strokeStyle = "#fff";
+        ctx.strokeRect(o.x - o.size * 1.5, o.y - o.size / 2, o.size * 3, o.size);
+      }
+    });
   }
 
-  function drawObject(o) {
-    if (o.type === "ball") {
-      ctx.fillStyle = "#fff";
-      ctx.beginPath();
-      ctx.arc(o.x, o.y, o.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    if (o.type === "cone") {
-      ctx.fillStyle = "#ff9800";
-      ctx.beginPath();
-      ctx.moveTo(o.x, o.y - o.size);
-      ctx.lineTo(o.x - o.size, o.y + o.size);
-      ctx.lineTo(o.x + o.size, o.y + o.size);
-      ctx.fill();
-    }
-
-    if (o.type === "hurdle") {
-      ctx.fillStyle = "#2196f3";
-      ctx.fillRect(o.x - o.size, o.y - o.size / 4, o.size * 2, o.size / 2);
-    }
-
-    if (o.type === "goal") {
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(o.x - o.size * 1.5, o.y - o.size / 2, o.size * 3, o.size);
-    }
-  }
-
-  /* ===== DB ===== */
+  /* ===== DATABÁZE ===== */
   function loadDB() {
-    try {
-      return JSON.parse(localStorage.getItem(DB_KEY)) || [];
-    } catch {
-      return [];
-    }
+    return JSON.parse(localStorage.getItem(DB_KEY) || "[]");
   }
 
+  function saveExercise() {
+    const name = document.getElementById("exerciseName").value.trim();
+    if (!name) {
+      alert("Zadej název cvičení");
+      return;
+    }
+    const db = loadDB();
+    db.push({
+      id: Date.now(),
+      name,
+      lines,
+      objects
+    });
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    renderExerciseList();
+  }
+
+  function loadExercise(id) {
+    const ex = loadDB().find(e => e.id === id);
+    if (!ex) return;
+    lines = ex.lines;
+    objects = ex.objects;
+    redraw();
+  }
+
+  function renderExerciseList() {
+    const list = document.getElementById("exerciseList");
+    list.innerHTML = "";
+    loadDB().forEach(e => {
+      const div = document.createElement("div");
+      div.className = "exercise-item";
+      div.textContent = e.name;
+      div.onclick = () => loadExercise(e.id);
+      list.appendChild(div);
+    });
+  }
+
+  renderExerciseList();
 });
