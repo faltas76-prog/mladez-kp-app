@@ -1,54 +1,86 @@
-console.log("tactical.js FIXED loaded");
+console.log("tactical.js – FINAL STABLE");
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-/* =====================
-   RESIZE
-===================== */
+/* =========================
+   RESIZE + HŘIŠTĚ
+========================= */
+let pitchType = "full";
+
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
+  const r = canvas.getBoundingClientRect();
+  canvas.width = r.width;
+
+  if (pitchType === "full") canvas.height = r.width * 0.6;
+  if (pitchType === "half") canvas.height = r.width * 0.9;
+  if (pitchType === "square") canvas.height = r.width * 0.7;
+
   redraw();
 }
 window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
 
-/* =====================
+/* =========================
    STAV
-===================== */
-let mode = "draw";        // draw | erase | object
-let activeTool = null;   // ball | goal | cone | ...
+========================= */
+let mode = "draw";
+let activeTool = null;
 let drawing = false;
 let currentLine = null;
+let toolSize = 16;
 
 let lines = [];
 let objects = [];
 
-/* =====================
-   UI – TLAČÍTKA
-===================== */
-const drawBtn = document.getElementById("drawBtn");
-const eraseBtn = document.getElementById("eraseBtn");
-const clearBtn = document.getElementById("clearBtn");
+/* ===== UNDO / REDO ===== */
+let history = [];
+let future = [];
 
-drawBtn.onclick = () => {
-  mode = "draw";
-  activeTool = null;
-};
+function saveState() {
+  history.push(JSON.stringify({ lines, objects }));
+  if (history.length > 50) history.shift();
+  future = [];
+}
 
-eraseBtn.onclick = () => {
-  mode = "erase";
-  activeTool = null;
-};
+function undo() {
+  if (!history.length) return;
+  future.push(JSON.stringify({ lines, objects }));
+  const state = JSON.parse(history.pop());
+  lines = state.lines;
+  objects = state.objects;
+  redraw();
+}
+
+function redo() {
+  if (!future.length) return;
+  history.push(JSON.stringify({ lines, objects }));
+  const state = JSON.parse(future.pop());
+  lines = state.lines;
+  objects = state.objects;
+  redraw();
+}
+
+/* =========================
+   UI
+========================= */
+drawBtn.onclick = () => { mode = "draw"; activeTool = null; };
+eraseBtn.onclick = () => { mode = "erase"; activeTool = null; };
+undoBtn.onclick = undo;
+redoBtn.onclick = redo;
 
 clearBtn.onclick = () => {
   if (!confirm("Vymazat celé cvičení?")) return;
+  saveState();
   lines = [];
   objects = [];
-  saveExercise();
   redraw();
+};
+
+sizeSlider.oninput = e => toolSize = parseInt(e.target.value);
+
+pitchSelect.onchange = e => {
+  pitchType = e.target.value;
+  resizeCanvas();
 };
 
 document.querySelectorAll("[data-tool]").forEach(btn => {
@@ -58,77 +90,110 @@ document.querySelectorAll("[data-tool]").forEach(btn => {
   };
 });
 
-/* =====================
-   POZICE – OPRAVENÁ
-===================== */
+/* =========================
+   POZICE
+========================= */
 function pos(e) {
-  const rect = canvas.getBoundingClientRect();
-  const x = (e.touches ? e.touches[0].pageX : e.pageX) - rect.left - window.scrollX;
-  const y = (e.touches ? e.touches[0].pageY : e.pageY) - rect.top - window.scrollY;
-  return { x, y };
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: e.clientX - r.left,
+    y: e.clientY - r.top
+  };
 }
 
-/* =====================
+/* =========================
    INTERAKCE
-===================== */
+========================= */
 canvas.addEventListener("pointerdown", e => {
   drawing = true;
   const { x, y } = pos(e);
 
-  // mazání objektu
+  const hit = objects.find(o => Math.hypot(o.x - x, o.y - y) < o.size);
+
   if (mode === "erase") {
-    objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
-    lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 10));
-    saveExercise();
-    redraw();
+    if (hit) {
+      saveState();
+      objects = objects.filter(o => o !== hit);
+      redraw();
+    }
     return;
   }
 
-  // kreslení
+  if (hit) {
+    saveState();
+    hit.drag = true;
+    return;
+  }
+
   if (mode === "draw") {
+    saveState();
     currentLine = [{ x, y }];
     lines.push(currentLine);
-    redraw();
-    return;
   }
 
-  // přidání objektu
   if (mode === "object" && activeTool) {
-    objects.push({
-      type: activeTool,
-      x,
-      y,
-      size: 20
-    });
-    saveExercise();
+    saveState();
+    objects.push({ type: activeTool, x, y, size: toolSize });
     redraw();
   }
 });
 
 canvas.addEventListener("pointermove", e => {
-  if (!drawing || mode !== "draw" || !currentLine) return;
+  if (!drawing) return;
   const { x, y } = pos(e);
-  currentLine.push({ x, y });
-  redraw();
+
+  const dragging = objects.find(o => o.drag);
+  if (dragging) {
+    dragging.x = x;
+    dragging.y = y;
+    redraw();
+    return;
+  }
+
+  if (mode === "draw" && currentLine) {
+    currentLine.push({ x, y });
+    redraw();
+  }
+
+  if (mode === "erase") {
+    const before = objects.length + lines.length;
+    objects = objects.filter(o => Math.hypot(o.x - x, o.y - y) > o.size);
+    lines = lines.filter(l => !l.some(p => Math.hypot(p.x - x, p.y - y) < 12));
+    if (before !== objects.length + lines.length) redraw();
+  }
 });
 
 canvas.addEventListener("pointerup", () => {
   drawing = false;
   currentLine = null;
-  saveExercise();
+  objects.forEach(o => delete o.drag);
 });
 
-/* =====================
+/* =========================
    VYKRESLENÍ
-===================== */
-function redraw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+========================= */
+function drawPitch() {
+  ctx.fillStyle = "#2e7d32";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // čáry
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+  if (pitchType === "full") {
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 20);
+    ctx.lineTo(canvas.width / 2, canvas.height - 20);
+    ctx.stroke();
+  }
+}
+
+function redraw() {
+  drawPitch();
+
   ctx.strokeStyle = "#ffeb3b";
   ctx.lineWidth = 3;
   ctx.lineCap = "round";
-
   lines.forEach(l => {
     ctx.beginPath();
     ctx.moveTo(l[0].x, l[0].y);
@@ -136,13 +201,12 @@ function redraw() {
     ctx.stroke();
   });
 
-  // objekty
   objects.forEach(drawObject);
 }
 
-/* =====================
+/* =========================
    OBJEKTY
-===================== */
+========================= */
 function drawObject(o) {
   if (o.type === "ball") {
     ctx.fillStyle = "#fff";
@@ -153,8 +217,7 @@ function drawObject(o) {
 
   if (o.type === "goal") {
     ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 3;
-    ctx.strokeRect(o.x - 30, o.y - 10, 60, 20);
+    ctx.strokeRect(o.x - o.size, o.y - o.size / 3, o.size * 2, o.size / 1.5);
   }
 
   if (o.type === "cone") {
@@ -165,32 +228,33 @@ function drawObject(o) {
     ctx.lineTo(o.x + o.size, o.y + o.size);
     ctx.fill();
   }
+
+  if (o.type === "hurdle") {
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(o.x - o.size, o.y);
+    ctx.lineTo(o.x + o.size, o.y);
+    ctx.stroke();
+  }
 }
 
-/* =====================
-   ULOŽENÍ / NAČTENÍ
-===================== */
-const EXERCISE_KEY = "tactical_exercise_v1";
+/* =========================
+   ULOŽENÍ CVIČENÍ
+========================= */
+saveExerciseBtn.onclick = () => {
+  const data = {
+    pitchType,
+    lines,
+    objects,
+    savedAt: new Date().toISOString()
+  };
 
-function saveExercise() {
-  localStorage.setItem(
-    EXERCISE_KEY,
-    JSON.stringify({ lines, objects })
-  );
-}
+  localStorage.setItem("tactical_exercise", JSON.stringify(data));
+  alert("Cvičení uloženo ✔");
+};
 
-function loadExercise() {
-  const raw = localStorage.getItem(EXERCISE_KEY);
-  if (!raw) return;
-  try {
-    const data = JSON.parse(raw);
-    lines = data.lines || [];
-    objects = data.objects || [];
-  } catch {}
-}
-
-/* =====================
+/* =========================
    START
-===================== */
-loadExercise();
-redraw();
+========================= */
+resizeCanvas();
