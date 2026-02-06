@@ -9,7 +9,8 @@ const ctx = canvas.getContext("2d");
 let pitchType = "full";
 
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const wrapper = document.getElementById("pitchWrapper");
+  const rect = wrapper.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
 
   canvas.width = rect.width * dpr;
@@ -19,6 +20,7 @@ function resizeCanvas() {
 
   redraw();
 }
+
 
 window.addEventListener("resize", resizeCanvas);
 
