@@ -28,11 +28,9 @@ input, button, select {
   font-size: 14px;
 }
 
-#pitchWrapper {
+#wrapper {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  aspect-ratio: 16 / 10;
+  height: calc(100vh - 140px);
 }
 
 canvas {
@@ -43,10 +41,18 @@ canvas {
   touch-action: none;
 }
 
-@media (max-width: 768px) {
-  #pitchWrapper {
-    aspect-ratio: 4 / 3;
-  }
+#exerciseList {
+  background: #222;
+  padding: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+.exercise-item {
+  cursor: pointer;
+  padding: 4px;
+}
+.exercise-item:hover {
+  background: #444;
 }
 </style>
 </head>
@@ -56,8 +62,8 @@ canvas {
 <div class="toolbar">
   <input id="exerciseName" placeholder="Název cvičení">
 
-  <button id="drawBtn">✏️</button>
-  <button id="eraseBtn">🧽</button>
+  <button id="toolDraw">✏️</button>
+  <button id="toolErase">🧽</button>
 
   <button data-tool="ball">⚽</button>
   <button data-tool="cone">🔺</button>
@@ -70,13 +76,15 @@ canvas {
     <option value="40">L</option>
   </select>
 
-  <button id="saveBtn">💾 Uložit</button>
-  <button id="resetBtn">♻️ Reset</button>
+  <button id="saveExercise">💾 Uložit</button>
+  <button id="resetExercise">♻️ Reset</button>
 </div>
 
-<div id="pitchWrapper">
+<div id="wrapper">
   <canvas id="canvas"></canvas>
 </div>
+
+<div id="exerciseList"></div>
 
 <script src="js/tactical.js"></script>
 </body>
