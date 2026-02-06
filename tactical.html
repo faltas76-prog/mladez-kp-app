@@ -60,6 +60,11 @@ textarea { width:100%; min-height:70px; }
 </div>
 
 <script src="js/tactical.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 </body>
 </html>
 
