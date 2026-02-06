@@ -10,12 +10,11 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-family: Arial, sans-serif;
   background: #1e1e1e;
   color: #fff;
-  font-family: Arial, sans-serif;
 }
 
-/* panel nástrojů */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -24,12 +23,11 @@ html, body {
   background: #333;
 }
 
-button, select {
-  padding: 6px 10px;
+input, button, select {
+  padding: 6px 8px;
   font-size: 14px;
 }
 
-/* wrapper hřiště */
 #pitchWrapper {
   width: 100%;
   max-width: 1200px;
@@ -56,21 +54,23 @@ canvas {
 <body>
 
 <div class="toolbar">
-  <button id="drawBtn">✏️ Tužka</button>
-  <button id="eraseBtn">🧽 Mazat</button>
+  <input id="exerciseName" placeholder="Název cvičení">
+
+  <button id="drawBtn">✏️</button>
+  <button id="eraseBtn">🧽</button>
 
   <button data-tool="ball">⚽</button>
   <button data-tool="cone">🔺</button>
   <button data-tool="hurdle">🟦</button>
   <button data-tool="goal">🥅</button>
 
-  Velikost:
   <select id="sizeSelect">
     <option value="15">S</option>
     <option value="25" selected>M</option>
     <option value="40">L</option>
   </select>
 
+  <button id="saveBtn">💾 Uložit</button>
   <button id="resetBtn">♻️ Reset</button>
 </div>
 
