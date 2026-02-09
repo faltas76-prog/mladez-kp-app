@@ -1,50 +1,60 @@
+console.log("OFFLINE DB SCRIPT LOADED");
+
 let db;
 
 /* =====================
    OTEVŘENÍ DB
 ===================== */
-const request = indexedDB.open("TrainingDB", 1);
+const openReq = indexedDB.open("TrainingDB", 1);
 
-request.onupgradeneeded = e => {
+openReq.onupgradeneeded = e => {
   db = e.target.result;
-
   if (!db.objectStoreNames.contains("exercises")) {
     db.createObjectStore("exercises", { keyPath: "id" });
   }
 };
 
-request.onsuccess = e => {
+openReq.onsuccess = e => {
   db = e.target.result;
+  console.log("DB OPENED");
 
-  // ⬅️ IMPORT AŽ PO OTEVŘENÍ DB
-  importFromTacticalPad();
-
+  // 👉 AŽ TADY připojuj tlačítka
+  initUI();
   renderList();
 };
 
-request.onerror = () => {
-  alert("❌ Nelze otevřít databázi");
+openReq.onerror = () => {
+  alert("❌ IndexedDB nelze otevřít");
 };
 
 /* =====================
-   ULOŽENÍ Z FORMULÁŘE
+   UI – AŽ PO DB
 ===================== */
-document.getElementById("saveBtn").onclick = () => {
-  const titleInput = document.getElementById("title");
-  const noteInput = document.getElementById("note");
+function initUI() {
+  document.getElementById("saveBtn").onclick = saveExercise;
+}
+
+/* =====================
+   ULOŽENÍ
+===================== */
+function saveExercise() {
+  console.log("SAVE CLICKED");
+
+  const titleInput = document.getElementById("titleInput");
+  const noteInput = document.getElementById("noteInput");
 
   const title = titleInput.value.trim();
   const note = noteInput.value.trim();
 
   if (!title) {
-    alert("Zadej název cvičení");
+    alert("Zadej název");
     return;
   }
 
   const tx = db.transaction("exercises", "readwrite");
   const store = tx.objectStore("exercises");
 
-  store.put({
+  store.add({
     id: Date.now(),
     title,
     note,
@@ -52,54 +62,17 @@ document.getElementById("saveBtn").onclick = () => {
   });
 
   tx.oncomplete = () => {
-    // ✅ RESET FORMULÁŘE
+    console.log("SAVED");
+
     titleInput.value = "";
     noteInput.value = "";
 
     renderList();
   };
-};
 
-/* =====================
-   IMPORT Z TACTICAL PAD
-===================== */
-function importFromTacticalPad() {
-  const raw = localStorage.getItem("OFFLINE_EXERCISE_IMPORT");
-  if (!raw) return;
-
-  try {
-    const ex = JSON.parse(raw);
-
-    const tx = db.transaction("exercises", "readwrite");
-    const store = tx.objectStore("exercises");
-
-    store.put({
-      id: Date.now(),
-      title: ex.title,
-      note: "Importováno z TacticalPadu",
-      drawing: {
-        lines: ex.lines,
-        objects: ex.objects
-      },
-      created: ex.created
-    });
-
-    tx.oncomplete = () => {
-      // ✅ SMAZÁNÍ PŘENOSOVÝCH DAT
-      localStorage.removeItem("OFFLINE_EXERCISE_IMPORT");
-
-      // ✅ VYČIŠTĚNÍ FORMULÁŘE (PRO JISTOTU)
-      document.getElementById("title").value = "";
-      document.getElementById("note").value = "";
-
-      renderList();
-
-      alert("✅ Cvičení úspěšně importováno");
-    };
-
-  } catch (err) {
-    console.error("Import error:", err);
-  }
+  tx.onerror = () => {
+    alert("❌ Uložení selhalo");
+  };
 }
 
 /* =====================
@@ -116,17 +89,17 @@ function renderList() {
     const cursor = e.target.result;
     if (!cursor) return;
 
-    const item = document.createElement("div");
-    item.className = "item";
-    item.textContent = cursor.value.title;
+    const div = document.createElement("div");
+    div.className = "item";
+    div.textContent = cursor.value.title;
 
-    item.onclick = () => {
+    div.onclick = () => {
       if (confirm("Smazat cvičení?")) {
-        deleteItem(cursor.value.id);
+        deleteExercise(cursor.value.id);
       }
     };
 
-    list.appendChild(item);
+    list.appendChild(div);
     cursor.continue();
   };
 }
@@ -134,9 +107,12 @@ function renderList() {
 /* =====================
    SMAZÁNÍ
 ===================== */
-function deleteItem(id) {
+function deleteExercise(id) {
+  console.log("DELETE", id);
+
   const tx = db.transaction("exercises", "readwrite");
   const store = tx.objectStore("exercises");
+
   store.delete(id);
   tx.oncomplete = renderList;
 }
