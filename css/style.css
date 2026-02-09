@@ -126,6 +126,43 @@ textarea {
     width: 100%;
     min-height: 80px;
   }
+
+body {
+  margin: 0;
+  font-family: 'Orbitron', Arial, sans-serif;
+  background: radial-gradient(circle at top, #0f2027, #000);
+  color: #00fff7;
+}
+
+h1, h2, h3 {
+  color: #ff2fdc;
+  text-shadow: 0 0 8px #ff2fdc;
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid #00fff7;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  box-shadow: 0 0 20px rgba(0,255,247,0.3);
+}
+
+a.cyber-btn {
+  display: inline-block;
+  padding: 14px 20px;
+  color: #000;
+  background: linear-gradient(90deg, #00fff7, #ff2fdc);
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 0 0 15px #00fff7;
+}
+
+a.cyber-btn:hover {
+  filter: brightness(1.2);
+}
+
 </style>
 
 
