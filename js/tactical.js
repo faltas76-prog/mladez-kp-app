@@ -182,6 +182,27 @@ resetBtn.onclick = () => {
   redraw();
 };
 
+document.getElementById("exportOfflineBtn").onclick = () => {
+  const exercise = {
+    title: prompt("Název cvičení"),
+    lines,
+    objects,
+    created: new Date().toISOString()
+  };
+
+  if (!exercise.title) return;
+
+  localStorage.setItem(
+    "OFFLINE_EXERCISE_IMPORT",
+    JSON.stringify(exercise)
+  );
+
+  alert("Cvičení připraveno pro offline klienta");
+
+  // otevře offline klient
+  window.location.href = "offline/index.html";
+};
+
 /* ====== START ====== */
 resizeCanvas();
 
