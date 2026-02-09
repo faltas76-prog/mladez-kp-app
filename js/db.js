@@ -86,3 +86,37 @@ function deleteItem(id) {
   store.delete(id);
   tx.oncomplete = renderList;
 }
+
+/* =====================
+   IMPORT Z TACTICAL PAD
+===================== */
+const importData = localStorage.getItem("OFFLINE_EXERCISE_IMPORT");
+
+if (importData) {
+  try {
+    const ex = JSON.parse(importData);
+
+    const tx = db.transaction("exercises", "readwrite");
+    const store = tx.objectStore("exercises");
+
+    store.put({
+      id: Date.now(),
+      title: ex.title,
+      note: "Importováno z TacticalPadu",
+      drawing: {
+        lines: ex.lines,
+        objects: ex.objects
+      },
+      created: ex.created
+    });
+
+    tx.oncomplete = () => {
+      localStorage.removeItem("OFFLINE_EXERCISE_IMPORT");
+      renderList();
+      alert("Cvičení úspěšně importováno ✔");
+    };
+
+  } catch (e) {
+    console.error("Import error", e);
+  }
+}
