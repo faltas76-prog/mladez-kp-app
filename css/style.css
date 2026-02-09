@@ -1,3 +1,4 @@
+<style>
 body {
   margin: auto;
   font-family: 'Orbitron', Arial, sans-serif;
@@ -55,8 +56,6 @@ button {
   border-radius: 8px;
   margin-bottom: 8px;
 }
-
-<style>
 
 .toolbar {
   display: grid;
