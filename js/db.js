@@ -7,24 +7,34 @@ const request = indexedDB.open("TrainingDB", 1);
 
 request.onupgradeneeded = e => {
   db = e.target.result;
-  db.createObjectStore("exercises", { keyPath: "id" });
+
+  if (!db.objectStoreNames.contains("exercises")) {
+    db.createObjectStore("exercises", { keyPath: "id" });
+  }
 };
 
 request.onsuccess = e => {
   db = e.target.result;
+
+  // ⬅️ IMPORT AŽ PO OTEVŘENÍ DB
+  importFromTacticalPad();
+
   renderList();
 };
 
 request.onerror = () => {
-  alert("Nelze otevřít databázi");
+  alert("❌ Nelze otevřít databázi");
 };
 
 /* =====================
-   ULOŽENÍ
+   ULOŽENÍ Z FORMULÁŘE
 ===================== */
 document.getElementById("saveBtn").onclick = () => {
-  const title = document.getElementById("title").value.trim();
-  const note = document.getElementById("note").value.trim();
+  const titleInput = document.getElementById("title");
+  const noteInput = document.getElementById("note");
+
+  const title = titleInput.value.trim();
+  const note = noteInput.value.trim();
 
   if (!title) {
     alert("Zadej název cvičení");
@@ -42,11 +52,55 @@ document.getElementById("saveBtn").onclick = () => {
   });
 
   tx.oncomplete = () => {
-    document.getElementById("title").value = "";
-    document.getElementById("note").value = "";
+    // ✅ RESET FORMULÁŘE
+    titleInput.value = "";
+    noteInput.value = "";
+
     renderList();
   };
 };
+
+/* =====================
+   IMPORT Z TACTICAL PAD
+===================== */
+function importFromTacticalPad() {
+  const raw = localStorage.getItem("OFFLINE_EXERCISE_IMPORT");
+  if (!raw) return;
+
+  try {
+    const ex = JSON.parse(raw);
+
+    const tx = db.transaction("exercises", "readwrite");
+    const store = tx.objectStore("exercises");
+
+    store.put({
+      id: Date.now(),
+      title: ex.title,
+      note: "Importováno z TacticalPadu",
+      drawing: {
+        lines: ex.lines,
+        objects: ex.objects
+      },
+      created: ex.created
+    });
+
+    tx.oncomplete = () => {
+      // ✅ SMAZÁNÍ PŘENOSOVÝCH DAT
+      localStorage.removeItem("OFFLINE_EXERCISE_IMPORT");
+
+      // ✅ VYČIŠTĚNÍ FORMULÁŘE (PRO JISTOTU)
+      document.getElementById("title").value = "";
+      document.getElementById("note").value = "";
+
+      renderList();
+
+      alert("✅ Cvičení úspěšně importováno");
+    };
+
+  } catch (err) {
+    console.error("Import error:", err);
+  }
+}
 
 /* =====================
    VÝPIS
@@ -67,7 +121,7 @@ function renderList() {
     item.textContent = cursor.value.title;
 
     item.onclick = () => {
-      if (confirm("Smazat záznam?")) {
+      if (confirm("Smazat cvičení?")) {
         deleteItem(cursor.value.id);
       }
     };
@@ -85,38 +139,4 @@ function deleteItem(id) {
   const store = tx.objectStore("exercises");
   store.delete(id);
   tx.oncomplete = renderList;
-}
-
-/* =====================
-   IMPORT Z TACTICAL PAD
-===================== */
-const importData = localStorage.getItem("OFFLINE_EXERCISE_IMPORT");
-
-if (importData) {
-  try {
-    const ex = JSON.parse(importData);
-
-    const tx = db.transaction("exercises", "readwrite");
-    const store = tx.objectStore("exercises");
-
-    store.put({
-      id: Date.now(),
-      title: ex.title,
-      note: "Importováno z TacticalPadu",
-      drawing: {
-        lines: ex.lines,
-        objects: ex.objects
-      },
-      created: ex.created
-    });
-
-    tx.oncomplete = () => {
-      localStorage.removeItem("OFFLINE_EXERCISE_IMPORT");
-      renderList();
-      alert("Cvičení úspěšně importováno ✔");
-    };
-
-  } catch (e) {
-    console.error("Import error", e);
-  }
 }
