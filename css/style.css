@@ -1,3 +1,5 @@
+<style>
+
 body {
   margin: auto;
   font-family: 'Orbitron', Arial, sans-serif;
@@ -76,21 +78,7 @@ label,
 textarea {
   position: relative;
   z-index: 10;
-}
-
-<style>
-  body {
-    font-family: sans-serif;
-    margin: 8px;
-    background: #f5f5f5;
-  }
-
-  h2 {
-    font-size: 20px;
-    margin: 6px 0;
-    text-align: center;
-  }
-
+} 
   canvas {
   width: 100%;
   max-width: 100%;
