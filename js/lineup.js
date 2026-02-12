@@ -71,3 +71,24 @@ function exportImage() {
     link.click();
   });
 }
+document.getElementById("exportBtn").onclick = () => {
+  html2canvas(pitch).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "rozestaveni.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+};
+
+document.getElementById("exportPdfBtn").onclick = async () => {
+  const { jsPDF } = window.jspdf;
+  const canvas = await html2canvas(pitch);
+  const imgData = canvas.toDataURL("image/png");
+
+  const pdf = new jsPDF({
+    orientation: "portrait"
+  });
+
+  pdf.addImage(imgData, "PNG", 10, 10, 180, 260);
+  pdf.save("rozestaveni.pdf");
+};
