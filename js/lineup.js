@@ -1,4 +1,4 @@
-const pitch = document.getElementById("pitch");
+const pitch = document.getElementById("players-layer");
 let players = [];
 
 function createFormation() {
