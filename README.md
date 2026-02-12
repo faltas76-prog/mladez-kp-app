@@ -1,55 +1,178 @@
-# ⚽ Mládež KP – Trenérská aplikace (U7–U15)
-**Verze 2.0**
+# ⚽ Mládež KP App
 
-Offline webová a mobilní aplikace pro trenéry mládeže krajského přeboru.
-Navrženo pro použití **přímo u hřiště na mobilu nebo tabletu**.
+Moderní trenérská webová aplikace pro mládežnický fotbal.
 
----
+Aplikace je postavena jako **PWA (Progressive Web App)**, funguje online i offline a umožňuje trenérům pracovat s taktikou, sestavami, poznámkami a cvičeními.
 
-## 🎯 Pro koho je aplikace určena
-- trenéři mládeže (U7–U15)
-- fotbalové kluby
-- OFS / KFS
-- akademie a sportovní centra
+🌐 Live verze:
+[https://faltas76-prog.github.io/mladez-kp-app/](https://faltas76-prog.github.io/mladez-kp-app/)
 
 ---
 
-## 🧠 Hlavní funkce
-- výběr věkové kategorie U7–U15
-- generátor tréninku
-- tréninkový režim s časovačem
-- databáze až 30 hráčů na kategorii
-- docházka (trénink / zápas)
-- poznámky ke konkrétním hráčům
-- hodnocení výkonu 1–5
-- export poznámek do PDF
-- offline provoz (PWA)
+# 🚀 Funkce aplikace
+
+## 🏠 Hlavní stránka
+
+* Přehled navigace
+* Odkaz na TacticalPad
+* Odkaz na Match Lineup
+* Odkaz na Offline klienta
 
 ---
 
-## 🆕 Novinky ve verzi 2.0
-- sjednocený datový model (hráči, docházka, poznámky v jednom systému)
-- propojení hráč ↔ poznámky ↔ docházka
-- menší dlaždice kategorií (rychlá práce na mobilu)
-- čistší a přehlednější kód
-- připraveno na budoucí statistiky a přehledy
+## 🎯 TacticalPad
+
+Interaktivní kreslení tréninkových cvičení.
+
+Funkce:
+
+* Kreslení (tužka)
+* Mazání
+* Přidávání objektů (hráči, kužely, míče, branky)
+* Responzivní hřiště
+* Reset plochy
+* Uložení cvičení
 
 ---
 
-## 📂 Struktura aplikace
-- **Výběr kategorie** – úvodní obrazovka
-- **Dashboard** – přehled funkcí
-- **Hráči** – správa soupisky (max. 30)
-- **Docházka** – evidence účasti
-- **Poznámky** – hráčské poznámky + hodnocení
-- **Trénink** – časovaný režim u hřiště
+## ⚽ Match Lineup (Rozestavení)
+
+Grafické vytváření zápasové sestavy.
+
+Funkce:
+
+* Výběr rozestavení (1-4-4-2, 1-4-3-3, 1-4-2-3-1 atd.)
+* Automatické vytvoření 11 hráčů (včetně GK)
+* Drag & drop hráčů po hřišti
+* Lavička náhradníků
+* Editace jména hráče přes modal okno
+* Uložení sestavy (localStorage)
+* Export PNG
+* Export PDF
+* Responzivní zobrazení (PC / tablet / mobil)
 
 ---
 
-## 💾 Ukládání dat
-Veškerá data jsou:
-- ukládána **offline v zařízení**
-- rozdělena podle kategorií (U7–U15)
-- bezpečná bez nutnosti serveru
+## 📦 Offline klient
 
-Datový model:
+Slouží pro ukládání:
+
+* Tréninkových cvičení
+* Poznámek trenéra
+
+Technologie:
+
+* IndexedDB
+* Offline-first architektura
+
+---
+
+# 📱 PWA Podpora
+
+Aplikace je plně instalovatelná.
+
+Funkce:
+
+* Instalace do mobilu (Android / iOS)
+* Instalace do desktopu
+* Offline režim
+* Service Worker cache
+* Manifest.json konfigurace
+
+Instalace:
+
+1. Otevřít aplikaci v prohlížeči
+2. Zvolit „Install App“ nebo „Přidat na plochu“
+
+---
+
+# 🧠 Použité technologie
+
+* HTML5
+* CSS3 (responzivní layout, aspect-ratio)
+* Vanilla JavaScript
+* IndexedDB
+* LocalStorage
+* Service Worker
+* Manifest.json
+* html2canvas (export PNG)
+* jsPDF (export PDF)
+
+---
+
+# 📂 Struktura projektu
+
+```
+mladez-kp-app/
+│
+├── index.html
+├── tactical.html
+├── lineup.html
+├── manifest.json
+├── sw.js
+│
+├── js/
+│   ├── tactical.js
+│   └── lineup.js (pokud oddělen)
+│
+├── offline/
+│   ├── index.html
+│   ├── db.js
+│   └── sync.js
+│
+└── icons/
+    ├── icon-192.png
+    └── icon-512.png
+```
+
+---
+
+# 💾 Ukládání dat
+
+| Funkce          | Úložiště       |
+| --------------- | -------------- |
+| Sestava         | localStorage   |
+| Offline cvičení | IndexedDB      |
+| Cache aplikace  | Service Worker |
+
+---
+
+# 🔄 Aktualizace PWA
+
+Při změně kódu je nutné:
+
+1. Změnit verzi v `sw.js`
+
+```
+const CACHE_NAME = "mladez-kp-app-vX";
+```
+
+2. Pushnout změny na GitHub
+3. Hard refresh (Ctrl + Shift + R)
+
+---
+
+# 🛠 Budoucí rozšíření
+
+* Přihlášení trenérů (Firebase Auth)
+* Cloud sync sestav
+* Sdílení sestav
+* Statistiky hráčů
+* Export s logem klubu
+* Taktické šipky a animace
+
+---
+
+# 👤 Autor
+
+Projekt vytvořen pro trenérské využití mládeže KP.
+
+---
+
+# 📄 Licence
+
+Projekt je určen pro vzdělávací a trenérské účely.
+
+---
+
+⚽ "Moderní nástroj pro moderní trenéry."
