@@ -54,6 +54,14 @@ if ("serviceWorker" in navigator) {
       .catch(err => console.error('❌ SW registration failed', err));
   }
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/mladez-kp-app/sw.js")
+    .then(() => console.log("PWA aktivní ✔"))
+    .catch(err => console.error("SW chyba:", err));
+}
+</script>
 
 </body>
 </html>
