@@ -159,6 +159,55 @@ select, button {
     <button id="confirmNameBtn">OK</button>
   </div>
 </div>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const pitch = document.getElementById("pitch");
+  const saveBtn = document.getElementById("saveBtn");
+  const exportBtn = document.getElementById("exportBtn");
+  const exportPdfBtn = document.getElementById("exportPdfBtn");
+
+  /* ===== ULOŽENÍ ===== */
+  saveBtn.addEventListener("click", function() {
+    const data = [];
+    document.querySelectorAll(".player").forEach(p => {
+      data.push({
+        name: p.textContent,
+        x: p.style.left,
+        y: p.style.top
+      });
+    });
+
+    localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
+    alert("Sestava uložena ✔");
+  });
+
+  /* ===== EXPORT PNG ===== */
+  exportBtn.addEventListener("click", function() {
+    html2canvas(pitch).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "rozestaveni.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+
+  /* ===== EXPORT PDF ===== */
+  exportPdfBtn.addEventListener("click", async function() {
+    const { jsPDF } = window.jspdf;
+    const canvas = await html2canvas(pitch);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF();
+    pdf.addImage(imgData, "PNG", 10, 10, 180, 250);
+    pdf.save("rozestaveni.pdf");
+  });
+
+});
+</script>
 
 <script>
 const pitch = document.getElementById("pitch");
