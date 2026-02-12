@@ -88,5 +88,14 @@ select, button {
 <div id="pitch"></div>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="js/lineup.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    // Relativní cesta podle repozitáře:
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('🛠️ SW registered (PWA)'))
+      .catch(err => console.error('❌ SW registration failed', err));
+  }
+</script>
+
 </body>
 </html>
