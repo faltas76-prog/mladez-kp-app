@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Match Lineup</title>
+<title>Match Lineup PRO</title>
 
 <style>
 body {
   margin:0;
-  font-family: Arial, sans-serif;
+  font-family:Arial, sans-serif;
   background:#111;
   color:white;
 }
@@ -27,19 +27,17 @@ select, button {
   width:100%;
   padding:10px;
   margin:6px 0;
-  font-size:14px;
 }
 
 #pitch {
   position:relative;
   width:100%;
-  height:70vh;
+  height:60vh;
   background:#1b5e20;
   border:3px solid white;
   overflow:hidden;
 }
 
-/* hřiště čáry */
 .center-line {
   position:absolute;
   width:100%;
@@ -59,7 +57,6 @@ select, button {
   transform:translate(-50%,-50%);
 }
 
-/* hráči */
 .player {
   position:absolute;
   width:60px;
@@ -70,38 +67,62 @@ select, button {
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:10px;
+  font-size:11px;
   text-align:center;
   cursor:grab;
   z-index:10;
 }
 
-.player input {
-  width:100%;
-  background:transparent;
-  border:none;
-  text-align:center;
-  font-size:10px;
-  outline:none;
+#bench {
+  background:#222;
+  padding:10px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.bench-player {
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:#ff9800;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  cursor:pointer;
+}
+
+/* MODAL */
+#editModal {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+#modalContent {
+  background:#222;
+  padding:20px;
+  width:300px;
 }
 </style>
 </head>
 
 <body>
 
-<header>⚽ MATCH LINEUP BUILDER</header>
+<header>⚽ MATCH LINEUP PRO</header>
 
 <div class="controls">
   <select id="formationSelect">
     <option value="1-4-4-2">1-4-4-2</option>
     <option value="1-4-2-3-1">1-4-2-3-1</option>
     <option value="1-4-3-3">1-4-3-3</option>
-    <option value="1-3-5-2">1-3-5-2</option>
   </select>
 
   <button id="createBtn">Vytvořit rozestavení</button>
-  <button id="saveBtn">💾 Uložit sestavu</button>
-  <button id="exportBtn">📷 Export obrázku</button>
 </div>
 
 <div id="pitch">
@@ -109,67 +130,88 @@ select, button {
   <div class="center-circle"></div>
 </div>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<h3 style="padding:10px">🪑 Lavička náhradníků</h3>
+<div id="bench"></div>
+
+<!-- MODAL -->
+<div id="editModal">
+  <div id="modalContent">
+    <h3>Upravit hráče</h3>
+    <input id="playerNameInput" placeholder="Jméno hráče">
+    <button id="confirmNameBtn">OK</button>
+  </div>
+</div>
 
 <script>
 const pitch = document.getElementById("pitch");
 const createBtn = document.getElementById("createBtn");
-const saveBtn = document.getElementById("saveBtn");
-const exportBtn = document.getElementById("exportBtn");
 const formationSelect = document.getElementById("formationSelect");
+const bench = document.getElementById("bench");
+const editModal = document.getElementById("editModal");
+const playerNameInput = document.getElementById("playerNameInput");
+const confirmNameBtn = document.getElementById("confirmNameBtn");
 
-let players = [];
+let selectedPlayer = null;
 
-/* vytvoření rozestavení */
-createBtn.addEventListener("click", () => {
-
-  // smaž staré hráče
+/* VYTVOŘ ROZESTAVENÍ */
+createBtn.onclick = () => {
   pitch.querySelectorAll(".player").forEach(p => p.remove());
-  players = [];
+  bench.innerHTML = "";
 
   const rows = formationSelect.value.split("-").map(Number);
-
   const h = pitch.clientHeight;
   const w = pitch.clientWidth;
 
   rows.forEach((count, rowIndex) => {
-
     for (let i = 0; i < count; i++) {
 
-      const player = document.createElement("div");
-      player.className = "player";
+      const player = createPlayer(rowIndex === 0 && count === 1 ? "GK" : "Hráč");
 
-      const input = document.createElement("input");
-
-      // 🧤 GK – první řada a jeden hráč
-      if (rowIndex === 0 && count === 1) {
-        input.value = "GK";
-        player.style.background = "#ffcc00"; // jiná barva
-      } else {
-        input.placeholder = "Hráč";
-      }
-
-      player.appendChild(input);
-
-      // vertikální rozložení (odspodu nahoru)
       const y = h - (rowIndex + 1) * (h / (rows.length + 1));
-
-      // horizontální rozložení
       const x = (i + 1) * (w / (count + 1));
 
       player.style.left = x + "px";
       player.style.top = y + "px";
 
-      makeDraggable(player);
-
       pitch.appendChild(player);
-      players.push(player);
     }
   });
 
-});
+  // vytvoř 5 náhradníků
+  for (let i = 1; i <= 5; i++) {
+    const benchPlayer = document.createElement("div");
+    benchPlayer.className = "bench-player";
+    benchPlayer.textContent = "N" + i;
 
-/* drag */
+    benchPlayer.onclick = () => {
+      const newPlayer = createPlayer("N" + i);
+      newPlayer.style.left = "50%";
+      newPlayer.style.top = "50%";
+      pitch.appendChild(newPlayer);
+    };
+
+    bench.appendChild(benchPlayer);
+  }
+};
+
+/* VYTVOŘ HRÁČE */
+function createPlayer(name) {
+  const player = document.createElement("div");
+  player.className = "player";
+  player.textContent = name;
+
+  makeDraggable(player);
+
+  player.onclick = () => {
+    selectedPlayer = player;
+    playerNameInput.value = player.textContent;
+    editModal.style.display = "flex";
+  };
+
+  return player;
+}
+
+/* DRAG */
 function makeDraggable(el) {
   let offsetX, offsetY;
 
@@ -186,27 +228,13 @@ function makeDraggable(el) {
   });
 }
 
-/* uložit */
-saveBtn.addEventListener("click", () => {
-  const data = players.map(p => ({
-    name: p.querySelector("input").value,
-    x: p.style.left,
-    y: p.style.top
-  }));
-
-  localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
-  alert("Sestava uložena ✔");
-});
-
-/* export obrázku */
-exportBtn.addEventListener("click", () => {
-  html2canvas(pitch).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "sestava.png";
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-});
+/* POTVRZENÍ JMÉNA */
+confirmNameBtn.onclick = () => {
+  if (selectedPlayer) {
+    selectedPlayer.textContent = playerNameInput.value;
+  }
+  editModal.style.display = "none";
+};
 </script>
 
 </body>
