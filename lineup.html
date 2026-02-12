@@ -21,10 +21,19 @@ header {
 
 .controls {
   padding:15px;
-  <button id="exportBtn">📤 Export PNG</button>
- <button id="exportPdfBtn">📄 Export PDF</button>
+  position:relative;
+  z-index:100;
+  background:#111;
 }
-
+button {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  font-size:14px;
+  background:#00fff7;
+  border:none;
+  cursor:pointer;
+}
 select, button {
   width:100%;
   padding:10px;
@@ -128,7 +137,11 @@ select, button {
   </select>
 
   <button id="createBtn">Vytvořit rozestavení</button>
+  <button id="exportBtn">📤 Export PNG</button>
+  <button id="exportPdfBtn">📄 Export PDF</button>
+  <button id="saveBtn">💾 Uložit sestavu</button>
 </div>
+
 
 <div id="pitch">
   <div class="center-line"></div>
