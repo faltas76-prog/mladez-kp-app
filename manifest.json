@@ -1,26 +1,23 @@
 {
-  "name": "Trenérská aplikace",
-  "short_name": "TrainerApp",
-  "start_url": "index.html",
+  "name": "Mládež KP App",
+  "short_name": "KP Tactical",
+  "description": "Tactical football system pro mládež KP",
+  "start_url": "/mladez-kp-app/index.html",
+  "scope": "/mladez-kp-app/",
   "display": "standalone",
-  "background_color": "#2e7d32",
-  "theme_color": "#2e7d32",
-  "orientation": "landscape",
+  "background_color": "#05080f",
+  "theme_color": "#00fff7",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/mladez-kp-app/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "/mladez-kp-app/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
-}
-{
-  "start_url": "./index.html",
-  "scope": "./",
-  ...
 }
