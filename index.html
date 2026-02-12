@@ -45,12 +45,14 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
 </script>
+
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js")
-    .then(() => console.log("PWA ready"))
-    .catch(err => console.error(err));
-}
+  if ('serviceWorker' in navigator) {
+    // Relativní cesta podle repozitáře:
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('🛠️ SW registered (PWA)'))
+      .catch(err => console.error('❌ SW registration failed', err));
+  }
 </script>
 
 </body>
