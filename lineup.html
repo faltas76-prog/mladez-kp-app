@@ -122,27 +122,39 @@ let players = [];
 
 /* vytvoření rozestavení */
 createBtn.addEventListener("click", () => {
+
+  // smaž staré hráče
   pitch.querySelectorAll(".player").forEach(p => p.remove());
   players = [];
 
-  const formation = formationSelect.value;
-  const parts = formation.split("-").map(Number);
-  const rows = [1, ...parts];
+  const rows = formationSelect.value.split("-").map(Number);
 
   const h = pitch.clientHeight;
   const w = pitch.clientWidth;
 
   rows.forEach((count, rowIndex) => {
+
     for (let i = 0; i < count; i++) {
 
       const player = document.createElement("div");
       player.className = "player";
 
       const input = document.createElement("input");
-      input.placeholder = "Hráč";
+
+      // 🧤 GK – první řada a jeden hráč
+      if (rowIndex === 0 && count === 1) {
+        input.value = "GK";
+        player.style.background = "#ffcc00"; // jiná barva
+      } else {
+        input.placeholder = "Hráč";
+      }
+
       player.appendChild(input);
 
+      // vertikální rozložení (odspodu nahoru)
       const y = h - (rowIndex + 1) * (h / (rows.length + 1));
+
+      // horizontální rozložení
       const x = (i + 1) * (w / (count + 1));
 
       player.style.left = x + "px";
@@ -154,6 +166,7 @@ createBtn.addEventListener("click", () => {
       players.push(player);
     }
   });
+
 });
 
 /* drag */
