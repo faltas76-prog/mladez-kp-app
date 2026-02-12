@@ -88,16 +88,22 @@ select, button {
   <button onclick="exportImage()">📷 Export obrázku</button>
 </div>
 
-<div id="pitch"></div>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="js/lineup.js"></script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    // Relativní cesta podle repozitáře:
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log('🛠️ SW registered (PWA)'))
-      .catch(err => console.error('❌ SW registration failed', err));
-  }
+<div id="pitch">
+
+  <div class="center-line"></div>
+  <div class="center-circle"></div>
+
+  <div class="penalty-area top"></div>
+  <div class="penalty-area bottom"></div>
+
+  <div class="goal-area top"></div>
+  <div class="goal-area bottom"></div>
+
+  <div class="penalty-spot top"></div>
+  <div class="penalty-spot bottom"></div>
+
+</div>
+
 </script>
 
 </body>
