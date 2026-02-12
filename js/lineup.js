@@ -71,8 +71,22 @@ function exportImage() {
     link.click();
   });
 }
+document.getElementById("saveBtn").onclick = () => {
+  const data = [];
+  document.querySelectorAll(".player").forEach(p => {
+    data.push({
+      name: p.textContent,
+      x: p.style.left,
+      y: p.style.top
+    });
+  });
+
+  localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
+  alert("Sestava uložena ✔");
+};
+
 document.getElementById("exportBtn").onclick = () => {
-  html2canvas(pitch).then(canvas => {
+  html2canvas(document.getElementById("pitch")).then(canvas => {
     const link = document.createElement("a");
     link.download = "rozestaveni.png";
     link.href = canvas.toDataURL();
@@ -82,13 +96,10 @@ document.getElementById("exportBtn").onclick = () => {
 
 document.getElementById("exportPdfBtn").onclick = async () => {
   const { jsPDF } = window.jspdf;
-  const canvas = await html2canvas(pitch);
+  const canvas = await html2canvas(document.getElementById("pitch"));
   const imgData = canvas.toDataURL("image/png");
 
-  const pdf = new jsPDF({
-    orientation: "portrait"
-  });
-
-  pdf.addImage(imgData, "PNG", 10, 10, 180, 260);
+  const pdf = new jsPDF();
+  pdf.addImage(imgData, "PNG", 10, 10, 180, 250);
   pdf.save("rozestaveni.pdf");
 };
