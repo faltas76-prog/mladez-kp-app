@@ -68,6 +68,15 @@ textarea { width:100%; min-height:70px; }
   navigator.serviceWorker.register("service-worker.js");
 }
 </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    // Relativní cesta podle repozitáře:
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('🛠️ SW registered (PWA)'))
+      .catch(err => console.error('❌ SW registration failed', err));
+  }
+</script>
+
 </body>
 </html>
 
