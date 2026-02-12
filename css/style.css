@@ -117,6 +117,10 @@ textarea {
     width: 100%;
     min-height: 80px;
   }
+.player {
+  z-index: 10;
+}
+
 </style>
 
 
