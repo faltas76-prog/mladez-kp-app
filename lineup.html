@@ -21,6 +21,8 @@ header {
 
 .controls {
   padding:15px;
+  <button id="exportBtn">📤 Export PNG</button>
+ <button id="exportPdfBtn">📄 Export PDF</button>
 }
 
 select, button {
@@ -30,47 +32,50 @@ select, button {
 }
 
 #pitch {
-  position:relative;
-  width:100%;
-  height:60vh;
-  background:#1b5e20;
-  border:3px solid white;
-  overflow:hidden;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;   /* realistický poměr fotbalového hřiště */
+  max-height: 75vh;
+  background: #1b5e20;
+  border: 3px solid white;
+  margin: auto;
+  overflow: hidden;
 }
 
+/* Čáry */
 .center-line {
-  position:absolute;
-  width:100%;
-  height:2px;
-  background:white;
-  top:50%;
+  position: absolute;
+  width: 100%;
+  height: 0.3%;
+  background: white;
+  top: 50%;
 }
 
 .center-circle {
-  position:absolute;
-  width:140px;
-  height:140px;
-  border:2px solid white;
-  border-radius:50%;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
+  position: absolute;
+  width: 20%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
+/* Hráči – velikost se přizpůsobuje */
 .player {
-  position:absolute;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:#00fff7;
-  color:black;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  text-align:center;
-  cursor:grab;
-  z-index:10;
+  position: absolute;
+  width: 6%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #00fff7;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(8px, 1vw, 12px);
+  cursor: grab;
+  z-index: 10;
 }
 
 #bench {
@@ -167,11 +172,13 @@ createBtn.onclick = () => {
 
       const player = createPlayer(rowIndex === 0 && count === 1 ? "GK" : "Hráč");
 
-      const y = h - (rowIndex + 1) * (h / (rows.length + 1));
-      const x = (i + 1) * (w / (count + 1));
+      const yPercent = 100 - ((rowIndex + 1) * (100 / (rows.length + 1)));
+const xPercent = ((i + 1) * (100 / (count + 1)));
 
-      player.style.left = x + "px";
-      player.style.top = y + "px";
+player.style.left = xPercent + "%";
+player.style.top = yPercent + "%";
+player.style.transform = "translate(-50%, -50%)";
+
 
       pitch.appendChild(player);
     }
@@ -213,20 +220,24 @@ function createPlayer(name) {
 
 /* DRAG */
 function makeDraggable(el) {
-  let offsetX, offsetY;
-
   el.addEventListener("pointerdown", e => {
-    offsetX = e.offsetX;
-    offsetY = e.offsetY;
     el.setPointerCapture(e.pointerId);
   });
 
   el.addEventListener("pointermove", e => {
     if (e.buttons !== 1) return;
-    el.style.left = (e.pageX - pitch.offsetLeft - offsetX) + "px";
-    el.style.top = (e.pageY - pitch.offsetTop - offsetY) + "px";
+
+    const rect = pitch.getBoundingClientRect();
+
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    el.style.left = x + "%";
+    el.style.top = y + "%";
+    el.style.transform = "translate(-50%, -50%)";
   });
 }
+
 
 /* POTVRZENÍ JMÉNA */
 confirmNameBtn.onclick = () => {
