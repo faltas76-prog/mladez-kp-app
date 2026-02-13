@@ -134,12 +134,38 @@ el.style.top=y+"%";
 };
 }
 
-confirmNameBtn.onclick=()=>{
-if(!selectedLabel)return;
-selectedLabel.textContent=playerNameInput.value.trim()||"Hráč";
-editModal.style.display="none";
-selectedLabel=null;
-};
+/* =====================
+   EDITACE JMÉNA
+===================== */
+
+let selectedLabel = null;
+
+/* klik na text hráče */
+pitch.addEventListener("click", function(e){
+
+  if (e.target.classList.contains("player-label")) {
+
+    e.stopPropagation();
+
+    selectedLabel = e.target;
+    playerNameInput.value = selectedLabel.textContent;
+
+    editModal.style.display = "flex";
+  }
+});
+
+/* potvrzení */
+confirmNameBtn.addEventListener("click", function(){
+
+  if (!selectedLabel) return;
+
+  selectedLabel.textContent = playerNameInput.value.trim() || "Hráč";
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedLabel = null;
+});
+
 
 saveBtn.onclick=()=>{
 alert("Uloženo do localStorage");
