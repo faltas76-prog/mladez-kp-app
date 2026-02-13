@@ -67,10 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
     player.appendChild(pos);
 
     /* jméno */
-    const label = document.createElement("div");
-    label.className = "player-label";
-    label.textContent = "Hráč";
-    player.appendChild(label);
+   label.addEventListener("click", (e) => {
+  e.stopPropagation();
+  selectedLabel = label;
+  playerNameInput.value = label.textContent;
+  editModal.style.display = "flex";
+});
+
 
     /* ===== STŘÍDÁNÍ (klik) ===== */
     player.addEventListener("click", (e) => {
@@ -92,14 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       selectedForSwap.style.outline = "none";
       selectedForSwap = null;
-    });
-
-    /* ===== EDIT JMÉNA (dvojklik) ===== */
-    player.addEventListener("dblclick", (e) => {
-      e.stopPropagation();
-      selectedLabel = label;
-      playerNameInput.value = label.textContent;
-      editModal.style.display = "flex";
     });
 
     /* ===== KAPITÁN (Shift + dvojklik) ===== */
@@ -226,12 +221,15 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =======================
      EDIT POTVRZENÍ
   ======================== */
-  confirmNameBtn.addEventListener("click", () => {
-    if (selectedLabel) {
-      selectedLabel.textContent = playerNameInput.value || "Hráč";
-    }
-    editModal.style.display = "none";
-  });
+ confirmNameBtn.addEventListener("click", () => {
+  if (!selectedLabel) return;
+
+  selectedLabel.textContent = playerNameInput.value.trim() || "Hráč";
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedLabel = null;
+});
 
   /* =======================
      ULOŽENÍ
