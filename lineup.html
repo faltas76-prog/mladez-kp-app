@@ -102,6 +102,29 @@ select, button {
   white-space: nowrap;
 }
 
+  .player-position {
+  position:absolute;
+  top:-20%;
+  font-size: clamp(8px,1vw,12px);
+  color:white;
+}
+
+.player-label {
+  position:absolute;
+  top:110%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size: clamp(8px,1vw,12px);
+  color:white;
+  white-space:nowrap;
+}
+
+.captain::after {
+  content:" C";
+  color:red;
+  font-weight:bold;
+}
+
 
 #bench {
   background:#222;
