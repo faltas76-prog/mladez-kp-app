@@ -81,8 +81,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* EDITACE JMÉNA */
-    player.addEventListener("click", (e) => {
+   player.addEventListener("click", (e) => {
   e.stopPropagation();
+
+  // Pokud už je vybraný jiný hráč → zruš výběr
+  document.querySelectorAll(".player").forEach(p => {
+    p.style.outline = "none";
+  });
+
+  selectedForSwap = player;
+  player.style.outline = "3px solid red";
+});
+
 
   // CTRL + klik = střídání
   if (e.ctrlKey) {
