@@ -7,15 +7,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const exportPdfBtn = document.getElementById("exportPdfBtn");
   const saveBtn = document.getElementById("saveBtn");
   const bench = document.getElementById("bench");
-
   const editModal = document.getElementById("editModal");
   const playerNameInput = document.getElementById("playerNameInput");
   const confirmNameBtn = document.getElementById("confirmNameBtn");
-
   const logoUpload = document.getElementById("logoUpload");
 
-  let selectedLabel = null;
   let selectedForSwap = null;
+  let selectedLabel = null;
   let teamLogo = null;
 
   /* =======================
@@ -54,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const player = document.createElement("div");
     player.className = "player";
 
-    /* ČÍSLO */
+    /* číslo */
     const numberEl = document.createElement("div");
     numberEl.className = "player-number";
     numberEl.textContent = isGK ? "GK" : number;
@@ -62,81 +60,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isGK) player.style.background = "#ffcc00";
 
-    /* POZICE */
+    /* pozice */
     const pos = document.createElement("div");
     pos.className = "player-position";
     pos.textContent = position || "";
     player.appendChild(pos);
 
-    /* JMÉNO */
+    /* jméno */
     const label = document.createElement("div");
     label.className = "player-label";
     label.textContent = "Hráč";
     player.appendChild(label);
 
-    /* KAPITÁN */
-    player.addEventListener("dblclick", () => {
-      document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
-      player.classList.add("captain");
+    /* ===== STŘÍDÁNÍ (klik) ===== */
+    player.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (!selectedForSwap) {
+        selectedForSwap = player;
+        player.style.outline = "3px solid red";
+        return;
+      }
+
+      if (selectedForSwap === player) {
+        player.style.outline = "none";
+        selectedForSwap = null;
+        return;
+      }
+
+      swapPlayers(selectedForSwap, player);
+
+      selectedForSwap.style.outline = "none";
+      selectedForSwap = null;
     });
 
-    /* EDITACE JMÉNA */
-  player.addEventListener("click", (e) => {
-  e.stopPropagation();
+    /* ===== EDIT JMÉNA (dvojklik) ===== */
+    player.addEventListener("dblclick", (e) => {
+      e.stopPropagation();
+      selectedLabel = label;
+      playerNameInput.value = label.textContent;
+      editModal.style.display = "flex";
+    });
 
-  if (!selectedForSwap) {
-    selectedForSwap = player;
-    player.style.outline = "3px solid red";
-    return;
-  }
-
-  // pokud klikneš na jiného hráče → výměna
-  if (selectedForSwap !== player) {
-
-    const num1 = selectedForSwap.querySelector(".player-number").textContent;
-    const name1 = selectedForSwap.querySelector(".player-label").textContent;
-    const pos1 = selectedForSwap.querySelector(".player-position").textContent;
-
-    const num2 = player.querySelector(".player-number").textContent;
-    const name2 = player.querySelector(".player-label").textContent;
-    const pos2 = player.querySelector(".player-position").textContent;
-
-    selectedForSwap.querySelector(".player-number").textContent = num2;
-    selectedForSwap.querySelector(".player-label").textContent = name2;
-    selectedForSwap.querySelector(".player-position").textContent = pos2;
-
-    player.querySelector(".player-number").textContent = num1;
-    player.querySelector(".player-label").textContent = name1;
-    player.querySelector(".player-position").textContent = pos1;
-  }
-
-  selectedForSwap.style.outline = "none";
-  selectedForSwap = null;
-});
-
-
-
-  // CTRL + klik = střídání
-  if (e.ctrlKey) {
-    if (!selectedForSwap) {
-      selectedForSwap = player;
-      player.style.outline = "3px solid red";
-    } else if (selectedForSwap === player) {
-      player.style.outline = "none";
-      selectedForSwap = null;
-    }
-    return;
-  }
-
-  // Normální klik = editace jména
-  selectedLabel = player.querySelector(".player-label");
-  playerNameInput.value = selectedLabel.textContent;
-  editModal.style.display = "flex";
-});
+    /* ===== KAPITÁN (Shift + dvojklik) ===== */
+    player.addEventListener("dblclick", (e) => {
+      if (e.shiftKey) {
+        document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
+        player.classList.add("captain");
+      }
+    });
 
     makeDraggable(player);
 
     return player;
+  }
+
+  /* =======================
+     SWAP HRÁČ ↔ HRÁČ
+  ======================== */
+  function swapPlayers(p1, p2) {
+
+    const n1 = p1.querySelector(".player-number").textContent;
+    const nm1 = p1.querySelector(".player-label").textContent;
+    const ps1 = p1.querySelector(".player-position").textContent;
+
+    const n2 = p2.querySelector(".player-number").textContent;
+    const nm2 = p2.querySelector(".player-label").textContent;
+    const ps2 = p2.querySelector(".player-position").textContent;
+
+    p1.querySelector(".player-number").textContent = n2;
+    p1.querySelector(".player-label").textContent = nm2;
+    p1.querySelector(".player-position").textContent = ps2;
+
+    p2.querySelector(".player-number").textContent = n1;
+    p2.querySelector(".player-label").textContent = nm1;
+    p2.querySelector(".player-position").textContent = ps1;
   }
 
   /* =======================
@@ -178,26 +176,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    /* LAVIČKA */
+    /* lavička */
     for (let i = jersey; i <= 16; i++) {
 
       const benchPlayer = document.createElement("div");
       benchPlayer.className = "bench-player";
       benchPlayer.textContent = i;
 
-     benchPlayer.addEventListener("click", () => {
+      benchPlayer.addEventListener("click", () => {
 
-  if (!selectedForSwap) return;
+        if (!selectedForSwap) return;
 
-  const fieldNumberEl = selectedForSwap.querySelector(".player-number");
-  const temp = fieldNumberEl.textContent;
+        const fieldNumberEl = selectedForSwap.querySelector(".player-number");
+        const temp = fieldNumberEl.textContent;
 
-  fieldNumberEl.textContent = benchPlayer.textContent;
-  benchPlayer.textContent = temp;
+        fieldNumberEl.textContent = benchPlayer.textContent;
+        benchPlayer.textContent = temp;
 
-  selectedForSwap.style.outline = "none";
-  selectedForSwap = null;
-});
+        selectedForSwap.style.outline = "none";
+        selectedForSwap = null;
+      });
 
       bench.appendChild(benchPlayer);
     }
@@ -216,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.buttons !== 1) return;
 
       const rect = pitch.getBoundingClientRect();
-
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -227,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================
-     EDITACE POTVRZENÍ
+     EDIT POTVRZENÍ
   ======================== */
   confirmNameBtn.addEventListener("click", () => {
     if (selectedLabel) {
