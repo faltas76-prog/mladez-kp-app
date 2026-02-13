@@ -3,17 +3,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const pitch = document.getElementById("pitch");
   const formationSelect = document.getElementById("formationSelect");
   const createBtn = document.getElementById("createBtn");
+  const exportBtn = document.getElementById("exportBtn");
+  const exportPdfBtn = document.getElementById("exportPdfBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const bench = document.getElementById("bench");
+
   const editModal = document.getElementById("editModal");
   const playerNameInput = document.getElementById("playerNameInput");
   const confirmNameBtn = document.getElementById("confirmNameBtn");
 
-  let selectedPlayer = null;
+  const logoUpload = document.getElementById("logoUpload");
 
-  /* ========================
-     POZICE PODLE FORMACE
+  let selectedLabel = null;
+  let selectedForSwap = null;
+  let teamLogo = null;
+
+  /* =======================
+     POZICE MAPA
   ======================== */
   function getPositions(formation) {
-
     const map = {
       "1-4-4-2": [
         ["GK"],
@@ -35,66 +43,76 @@ document.addEventListener("DOMContentLoaded", () => {
         ["ST"]
       ]
     };
-
     return map[formation] || [];
   }
 
-  /* ========================
+  /* =======================
      VYTVOŘ HRÁČE
   ======================== */
   function createPlayer(number, position, isGK = false) {
 
-  const player = document.createElement("div");
-  player.className = "player";
+    const player = document.createElement("div");
+    player.className = "player";
 
-  /* ===== ČÍSLO ===== */
-  const numberEl = document.createElement("div");
-  numberEl.className = "player-number";
-  numberEl.textContent = isGK ? "GK" : number;
-  player.appendChild(numberEl);
+    /* ČÍSLO */
+    const numberEl = document.createElement("div");
+    numberEl.className = "player-number";
+    numberEl.textContent = isGK ? "GK" : number;
+    player.appendChild(numberEl);
 
-  if (isGK) {
-    player.style.background = "#ffcc00";
+    if (isGK) player.style.background = "#ffcc00";
+
+    /* POZICE */
+    const pos = document.createElement("div");
+    pos.className = "player-position";
+    pos.textContent = position || "";
+    player.appendChild(pos);
+
+    /* JMÉNO */
+    const label = document.createElement("div");
+    label.className = "player-label";
+    label.textContent = "Hráč";
+    player.appendChild(label);
+
+    /* KAPITÁN */
+    player.addEventListener("dblclick", () => {
+      document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
+      player.classList.add("captain");
+    });
+
+    /* EDITACE JMÉNA */
+    player.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (!selectedForSwap) {
+        selectedForSwap = player;
+        player.style.outline = "3px solid red";
+      } else if (selectedForSwap === player) {
+        player.style.outline = "none";
+        selectedForSwap = null;
+      }
+    });
+
+    player.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      selectedLabel = label;
+      playerNameInput.value = label.textContent;
+      editModal.style.display = "flex";
+    });
+
+    makeDraggable(player);
+
+    return player;
   }
 
-  /* ===== POZICE ===== */
-  const pos = document.createElement("div");
-  pos.className = "player-position";
-  pos.textContent = position || "";
-  player.appendChild(pos);
-
-  /* ===== JMÉNO ===== */
-  const label = document.createElement("div");
-  label.className = "player-label";
-  label.textContent = "Hráč";
-  player.appendChild(label);
-
-  /* ===== KAPITÁN ===== */
-  player.addEventListener("dblclick", () => {
-    document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
-    player.classList.add("captain");
-  });
-
-  /* ===== EDIT ===== */
-  player.addEventListener("click", (e) => {
-    e.stopPropagation();
-    selectedPlayer = label;
-    playerNameInput.value = label.textContent;
-    editModal.style.display = "flex";
-  });
-
-  makeDraggable(player);
-
-  return player;
-}
-
-
-  /* ========================
-     GENEROVÁNÍ ROZESTAVENÍ
+  /* =======================
+     ROZESTAVENÍ
   ======================== */
   createBtn.addEventListener("click", () => {
 
     pitch.querySelectorAll(".player").forEach(p => p.remove());
+    bench.innerHTML = "";
+    selectedForSwap = null;
 
     const formation = formationSelect.value;
     const rows = formation.split("-").map(Number);
@@ -111,8 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (rowIndex === 0 && count === 1) {
           player = createPlayer(null, "GK", true);
         } else {
-          const pos = positions[rowIndex]?.[i] || "";
-          player = createPlayer(jersey, pos);
+          player = createPlayer(jersey, positions[rowIndex]?.[i]);
           jersey++;
         }
 
@@ -127,9 +144,32 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    /* LAVIČKA */
+    for (let i = jersey; i <= 16; i++) {
+
+      const benchPlayer = document.createElement("div");
+      benchPlayer.className = "bench-player";
+      benchPlayer.textContent = i;
+
+      benchPlayer.addEventListener("click", () => {
+
+        if (!selectedForSwap) return;
+
+        const fieldNumber = selectedForSwap.querySelector(".player-number");
+        const temp = fieldNumber.textContent;
+
+        fieldNumber.textContent = benchPlayer.textContent;
+        benchPlayer.textContent = temp;
+
+        selectedForSwap.style.outline = "none";
+        selectedForSwap = null;
+      });
+
+      bench.appendChild(benchPlayer);
+    }
   });
 
-  /* ========================
+  /* =======================
      DRAG
   ======================== */
   function makeDraggable(el) {
@@ -152,14 +192,83 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ========================
-     POTVRZENÍ JMÉNA
+  /* =======================
+     EDITACE POTVRZENÍ
   ======================== */
   confirmNameBtn.addEventListener("click", () => {
-    if (selectedPlayer) {
-      selectedPlayer.textContent = playerNameInput.value || "Hráč";
+    if (selectedLabel) {
+      selectedLabel.textContent = playerNameInput.value || "Hráč";
     }
     editModal.style.display = "none";
+  });
+
+  /* =======================
+     ULOŽENÍ
+  ======================== */
+  saveBtn.addEventListener("click", () => {
+
+    const data = [];
+
+    document.querySelectorAll(".player").forEach(p => {
+      data.push({
+        number: p.querySelector(".player-number").textContent,
+        position: p.querySelector(".player-position").textContent,
+        name: p.querySelector(".player-label").textContent,
+        x: p.style.left,
+        y: p.style.top
+      });
+    });
+
+    localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
+    alert("Sestava uložena ✔");
+  });
+
+  /* =======================
+     EXPORT PNG
+  ======================== */
+  exportBtn.addEventListener("click", () => {
+    html2canvas(pitch).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "rozestaveni.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+
+  /* =======================
+     LOGO
+  ======================== */
+  if (logoUpload) {
+    logoUpload.addEventListener("change", function(e){
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        teamLogo = event.target.result;
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    });
+  }
+
+  /* =======================
+     EXPORT A4 PDF
+  ======================== */
+  exportPdfBtn.addEventListener("click", async () => {
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("portrait", "mm", "a4");
+
+    if (teamLogo) {
+      pdf.addImage(teamLogo, "PNG", 80, 10, 50, 30);
+    }
+
+    pdf.setFontSize(16);
+    pdf.text("Match Lineup", 105, 50, { align: "center" });
+
+    const canvas = await html2canvas(pitch);
+    const imgData = canvas.toDataURL("image/png");
+
+    pdf.addImage(imgData, "PNG", 10, 60, 190, 220);
+
+    pdf.save("Match_Lineup_A4.pdf");
   });
 
 });
