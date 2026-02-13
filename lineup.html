@@ -74,25 +74,22 @@ select, button {
 /* Hráči – velikost se přizpůsobuje */
 .player {
   position: absolute;
-  width: 6%;
+  width: 7%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: #00fff7;
-  color: black;
-  font-weight: bold;
-  font-size: clamp(12px, 1.5vw, 18px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
   transform: translate(-50%, -50%);
-  border: 2px solid red;
+  z-index: 10;
+  overflow: visible;
 }
 
 /* štítek pod hráčem */
 .player-position {
   position: absolute;
-  top: -35%;
+  top: -30%;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(8px, 1vw, 12px);
@@ -107,19 +104,21 @@ select, button {
   transform: translateX(-50%);
   font-size: clamp(8px, 1vw, 12px);
   color: white;
+  white-space: nowrap;
   pointer-events: none;
 }
 
-  .player-number {
-  font-size: clamp(14px, 1.8vw, 20px);
+.player-number {
+  font-size: clamp(14px, 1.6vw, 20px);
   font-weight: bold;
   color: black;
+  pointer-events: none;
 }
 
 .captain::after {
-  content:" C";
-  color:red;
-  font-weight:bold;
+  content: " C";
+  color: red;
+  font-weight: bold;
 }
 
 #bench {
