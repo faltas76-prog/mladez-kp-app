@@ -82,23 +82,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* EDITACE JMÉNA */
     player.addEventListener("click", (e) => {
-      e.stopPropagation();
+  e.stopPropagation();
 
-      if (!selectedForSwap) {
-        selectedForSwap = player;
-        player.style.outline = "3px solid red";
-      } else if (selectedForSwap === player) {
-        player.style.outline = "none";
-        selectedForSwap = null;
-      }
-    });
+  // CTRL + klik = střídání
+  if (e.ctrlKey) {
+    if (!selectedForSwap) {
+      selectedForSwap = player;
+      player.style.outline = "3px solid red";
+    } else if (selectedForSwap === player) {
+      player.style.outline = "none";
+      selectedForSwap = null;
+    }
+    return;
+  }
 
-    player.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      selectedLabel = label;
-      playerNameInput.value = label.textContent;
-      editModal.style.display = "flex";
-    });
+  // Normální klik = editace jména
+  selectedLabel = player.querySelector(".player-label");
+  playerNameInput.value = selectedLabel.textContent;
+  editModal.style.display = "flex";
+});
 
     makeDraggable(player);
 
