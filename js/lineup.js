@@ -81,17 +81,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* EDITACE JMÉNA */
-   player.addEventListener("click", (e) => {
+  player.addEventListener("click", (e) => {
   e.stopPropagation();
 
-  // Pokud už je vybraný jiný hráč → zruš výběr
-  document.querySelectorAll(".player").forEach(p => {
-    p.style.outline = "none";
-  });
+  if (!selectedForSwap) {
+    selectedForSwap = player;
+    player.style.outline = "3px solid red";
+    return;
+  }
 
-  selectedForSwap = player;
-  player.style.outline = "3px solid red";
+  // pokud klikneš na jiného hráče → výměna
+  if (selectedForSwap !== player) {
+
+    const num1 = selectedForSwap.querySelector(".player-number").textContent;
+    const name1 = selectedForSwap.querySelector(".player-label").textContent;
+    const pos1 = selectedForSwap.querySelector(".player-position").textContent;
+
+    const num2 = player.querySelector(".player-number").textContent;
+    const name2 = player.querySelector(".player-label").textContent;
+    const pos2 = player.querySelector(".player-position").textContent;
+
+    selectedForSwap.querySelector(".player-number").textContent = num2;
+    selectedForSwap.querySelector(".player-label").textContent = name2;
+    selectedForSwap.querySelector(".player-position").textContent = pos2;
+
+    player.querySelector(".player-number").textContent = num1;
+    player.querySelector(".player-label").textContent = name1;
+    player.querySelector(".player-position").textContent = pos1;
+  }
+
+  selectedForSwap.style.outline = "none";
+  selectedForSwap = null;
 });
+
 
 
   // CTRL + klik = střídání
@@ -163,20 +185,14 @@ document.addEventListener("DOMContentLoaded", () => {
       benchPlayer.className = "bench-player";
       benchPlayer.textContent = i;
 
-      benchPlayer.addEventListener("click", () => {
-
-        if (!selectedForSwap) return;
-
-        benchPlayer.addEventListener("click", () => {
+     benchPlayer.addEventListener("click", () => {
 
   if (!selectedForSwap) return;
 
   const fieldNumberEl = selectedForSwap.querySelector(".player-number");
-  const benchNumber = benchPlayer.textContent;
-
   const temp = fieldNumberEl.textContent;
 
-  fieldNumberEl.textContent = benchNumber;
+  fieldNumberEl.textContent = benchPlayer.textContent;
   benchPlayer.textContent = temp;
 
   selectedForSwap.style.outline = "none";
