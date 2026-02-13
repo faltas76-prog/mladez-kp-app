@@ -45,11 +45,20 @@ select, button {
   position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
-  background: #1b5e20;
   border: 4px solid white;
   margin: auto;
   overflow: hidden;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #1b5e20 0%,
+      #1b5e20 10%,
+      #2e7d32 10%,
+      #2e7d32 20%
+    );
 }
+
 
 /* ===== STŘED ===== */
 .center-line {
@@ -129,6 +138,25 @@ select, button {
 .penalty-spot.bottom {
   bottom: 18%;
 }
+.penalty-arc {
+  position: absolute;
+  width: 20%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  clip-path: inset(50% 0 0 0);
+}
+
+.penalty-arc.bottom {
+  bottom: 15%;
+  clip-path: inset(0 0 50% 0);
+}
+
+.penalty-arc.top {
+  top: 15%;
+}
 
 /* ===== BRANKA ===== */
 .goal {
@@ -166,6 +194,37 @@ select, button {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.corner {
+  position: absolute;
+  width: 6%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.corner.tl {
+  top: -3%;
+  left: -3%;
+  clip-path: inset(0 0 50% 50%);
+}
+
+.corner.tr {
+  top: -3%;
+  right: -3%;
+  clip-path: inset(0 50% 50% 0);
+}
+
+.corner.bl {
+  bottom: -3%;
+  left: -3%;
+  clip-path: inset(50% 0 0 50%);
+}
+
+.corner.br {
+  bottom: -3%;
+  right: -3%;
+  clip-path: inset(50% 50% 0 0);
 }
 
 /* Hráči – velikost se přizpůsobuje */
@@ -279,6 +338,11 @@ select, button {
   <!-- STŘED -->
   <div class="center-line"></div>
   <div class="center-circle"></div>
+  <div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
 
   <!-- DOLNÍ POLOVINA -->
   <div class="penalty-area bottom"></div>
@@ -293,7 +357,8 @@ select, button {
   <div class="goal top"></div>
 
 </div>
-
+<div class="penalty-arc top"></div>
+<div class="penalty-arc bottom"></div>
 
 <h3 style="padding:10px">🪑 Lavička náhradníků</h3>
 <div id="bench"></div>
