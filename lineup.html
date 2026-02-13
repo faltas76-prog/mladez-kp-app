@@ -3,50 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Match Lineup PRO</title>
+<title>Match Lineup</title>
 
 <style>
+
 body {
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#111;
-  color:white;
+  margin: 0;
+  background: #111;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
 }
 
-header {
-  text-align:center;
-  padding:15px;
-  font-size:22px;
-}
-
-.controls {
-  padding:15px;
-  position:relative;
-  z-index:100;
-  background:#111;
-}
-button {
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  font-size:14px;
-  background:#00fff7;
-  border:none;
-  cursor:pointer;
-}
-select, button {
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-}
-
-/* ===== ZÁKLAD HŘIŠTĚ ===== */
+/* ===== HŘIŠTĚ ===== */
 #pitch {
   position: relative;
   width: 100%;
   max-width: 900px;
   aspect-ratio: 2 / 3;
-  margin: auto;
+  margin: 20px auto;
   border: 4px solid white;
   overflow: hidden;
 
@@ -58,13 +33,6 @@ select, button {
       #2e7d32 8%,
       #2e7d32 16%
     );
-}
-
-/* ===== OBECNÉ ČÁRY ===== */
-.pitch-line {
-  position: absolute;
-  border: 2px solid white;
-  pointer-events: none;
 }
 
 /* ===== STŘED ===== */
@@ -174,13 +142,8 @@ select, button {
   background: white;
 }
 
-.goal.top {
-  top: 0;
-}
-
-.goal.bottom {
-  bottom: 0;
-}
+.goal.top { top: 0; }
+.goal.bottom { bottom: 0; }
 
 /* ===== ROHY ===== */
 .corner {
@@ -196,8 +159,7 @@ select, button {
 .corner.bl { bottom: -3%; left: -3%; clip-path: inset(50% 0 0 50%); }
 .corner.br { bottom: -3%; right: -3%; clip-path: inset(50% 50% 0 0); }
 
-
-/* Hráči – velikost se přizpůsobuje */
+/* ===== HRÁČI ===== */
 .player {
   position: absolute;
   width: 7%;
@@ -209,18 +171,20 @@ select, button {
   justify-content: center;
   transform: translate(-50%, -50%);
   z-index: 10;
-  overflow: visible;
 }
 
-/* štítek pod hráčem */
+.player-number {
+  font-weight: bold;
+  font-size: clamp(14px, 1.5vw, 20px);
+  color: black;
+}
+
 .player-position {
   position: absolute;
   top: -30%;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(8px, 1vw, 12px);
-  color: white;
-  pointer-events: none;
 }
 
 .player-label {
@@ -229,16 +193,6 @@ select, button {
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(8px, 1vw, 12px);
-  color: white;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.player-number {
-  font-size: clamp(14px, 1.6vw, 20px);
-  font-weight: bold;
-  color: black;
-  pointer-events: none;
 }
 
 .captain::after {
@@ -247,61 +201,46 @@ select, button {
   font-weight: bold;
 }
 
+/* ===== LAVIČKA ===== */
 #bench {
-  background:#222;
-  padding:10px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .bench-player {
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:#ff9800;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  cursor:pointer;
+  width: 40px;
+  height: 40px;
+  background: orange;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-/* MODAL */
-#editModal {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-#modalContent {
-  background:#222;
-  padding:20px;
-  width:300px;
-}
 </style>
 </head>
 
 <body>
 
-<header>⚽ MATCH LINEUP PRO</header>
+<h2>Match Lineup</h2>
 
-<div class="controls">
-  <select id="formationSelect">
-    <option value="1-4-4-2">1-4-4-2</option>
-    <option value="1-4-2-3-1">1-4-2-3-1</option>
-    <option value="1-4-3-3">1-4-3-3</option>
-  </select>
+<select id="formationSelect">
+  <option value="1-4-4-2">1-4-4-2</option>
+  <option value="1-4-3-3">1-4-3-3</option>
+  <option value="1-4-2-3-1">1-4-2-3-1</option>
+</select>
 
-  <button id="createBtn">Vytvořit rozestavení</button>
-  <button id="exportBtn">📤 Export PNG</button>
-  <button id="exportPdfBtn">📄 Export PDF</button>
-  <button id="saveBtn">💾 Uložit sestavu</button>
-</div>
+<button id="createBtn">Vytvořit rozestavení</button>
+<button id="saveBtn">Uložit</button>
+<button id="exportBtn">Export PNG</button>
+<button id="exportPdfBtn">Export PDF</button>
 
+<br><br>
+
+<input type="file" id="logoUpload" accept="image/*">
 
 <div id="pitch">
 
@@ -327,187 +266,8 @@ select, button {
 
 </div>
 
-
-
- 
-
-<h3 style="padding:10px">🪑 Lavička náhradníků</h3>
+<h3>Lavička</h3>
 <div id="bench"></div>
-
-<!-- MODAL -->
-<div id="editModal">
-  <div id="modalContent">
-    <h3>Upravit hráče</h3>
-    <input id="playerNameInput" placeholder="Jméno hráče">
-    <button id="confirmNameBtn">OK</button>
-  </div>
-</div>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-
-  const pitch = document.getElementById("pitch");
-  const saveBtn = document.getElementById("saveBtn");
-  const exportBtn = document.getElementById("exportBtn");
-  const exportPdfBtn = document.getElementById("exportPdfBtn");
-
-  /* ===== ULOŽENÍ ===== */
-  saveBtn.addEventListener("click", function() {
-    const data = [];
-    document.querySelectorAll(".player").forEach(p => {
-      data.push({
-        name: p.textContent,
-        x: p.style.left,
-        y: p.style.top
-      });
-    });
-
-    localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
-    alert("Sestava uložena ✔");
-  });
-
-  /* ===== EXPORT PNG ===== */
-  exportBtn.addEventListener("click", function() {
-    html2canvas(pitch).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "rozestaveni.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  });
-
-  /* ===== EXPORT PDF ===== */
-  exportPdfBtn.addEventListener("click", async function() {
-    const { jsPDF } = window.jspdf;
-    const canvas = await html2canvas(pitch);
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF();
-    pdf.addImage(imgData, "PNG", 10, 10, 180, 250);
-    pdf.save("rozestaveni.pdf");
-  });
-
-});
-</script>
-
-<script>
-const pitch = document.getElementById("pitch");
-const createBtn = document.getElementById("createBtn");
-const formationSelect = document.getElementById("formationSelect");
-const bench = document.getElementById("bench");
-const editModal = document.getElementById("editModal");
-const playerNameInput = document.getElementById("playerNameInput");
-const confirmNameBtn = document.getElementById("confirmNameBtn");
-
-let selectedPlayer = null;
-
-/* VYTVOŘ ROZESTAVENÍ */
-createBtn.onclick = () => {
-  pitch.querySelectorAll(".player").forEach(p => p.remove());
-  bench.innerHTML = "";
-
-  const rows = formationSelect.value.split("-").map(Number);
-  const h = pitch.clientHeight;
-  const w = pitch.clientWidth;
-
-  rows.forEach((count, rowIndex) => {
-    for (let i = 0; i < count; i++) {
-
-      const player = createPlayer(rowIndex === 0 && count === 1 ? "GK" : "Hráč");
-
-      const yPercent = 100 - ((rowIndex + 1) * (100 / (rows.length + 1)));
-const xPercent = ((i + 1) * (100 / (count + 1)));
-
-player.style.left = xPercent + "%";
-player.style.top = yPercent + "%";
-player.style.transform = "translate(-50%, -50%)";
-
-
-      pitch.appendChild(player);
-    }
-  });
-
-  // vytvoř 5 náhradníků
-  for (let i = 1; i <= 5; i++) {
-    const benchPlayer = document.createElement("div");
-    benchPlayer.className = "bench-player";
-    benchPlayer.textContent = "N" + i;
-
-    benchPlayer.onclick = () => {
-      const newPlayer = createPlayer("N" + i);
-      newPlayer.style.left = "50%";
-      newPlayer.style.top = "50%";
-      pitch.appendChild(newPlayer);
-    };
-
-    bench.appendChild(benchPlayer);
-  }
-};
-
-/* VYTVOŘ HRÁČE */
-function createPlayer(number, isGK = false) {
-
-  const player = document.createElement("div");
-  player.className = "player";
-
-  // číslo hráče
-  player.textContent = isGK ? "GK" : number;
-
-  if (isGK) {
-    player.style.background = "#ffcc00";
-  }
-
-  // štítek se jménem
-  const label = document.createElement("div");
-  label.className = "player-label";
-  label.textContent = "Hráč";
-
-  player.appendChild(label);
-
-  makeDraggable(player);
-
-  player.onclick = (e) => {
-    e.stopPropagation();
-    selectedPlayer = label;
-    playerNameInput.value = label.textContent;
-    editModal.style.display = "flex";
-  };
-
-  return player;
-}
-
-
-/* DRAG */
-function makeDraggable(el) {
-  el.addEventListener("pointerdown", e => {
-    el.setPointerCapture(e.pointerId);
-  });
-
-  el.addEventListener("pointermove", e => {
-    if (e.buttons !== 1) return;
-
-    const rect = pitch.getBoundingClientRect();
-
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    el.style.left = x + "%";
-    el.style.top = y + "%";
-    el.style.transform = "translate(-50%, -50%)";
-  });
-}
-
-
-/* POTVRZENÍ JMÉNA */
-confirmNameBtn.onclick = () => {
-  if (selectedPlayer) {
-    selectedPlayer.textContent = playerNameInput.value;
-  }
-  editModal.style.display = "none";
-};
-</script>
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
