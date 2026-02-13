@@ -167,15 +167,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!selectedForSwap) return;
 
-        const fieldNumber = selectedForSwap.querySelector(".player-number");
-        const temp = fieldNumber.textContent;
+        benchPlayer.addEventListener("click", () => {
 
-        fieldNumber.textContent = benchPlayer.textContent;
-        benchPlayer.textContent = temp;
+  if (!selectedForSwap) return;
 
-        selectedForSwap.style.outline = "none";
-        selectedForSwap = null;
-      });
+  const fieldNumberEl = selectedForSwap.querySelector(".player-number");
+  const benchNumber = benchPlayer.textContent;
+
+  const temp = fieldNumberEl.textContent;
+
+  fieldNumberEl.textContent = benchNumber;
+  benchPlayer.textContent = temp;
+
+  selectedForSwap.style.outline = "none";
+  selectedForSwap = null;
+});
 
       bench.appendChild(benchPlayer);
     }
