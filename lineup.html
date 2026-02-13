@@ -117,6 +117,37 @@ body{
   font-size:11px;
   color:white;
 }
+/* PENALTOVÝ OBLOUK */
+.penalty-arc{
+  position:absolute;
+  width:20%;
+  aspect-ratio:1;
+  border:2px solid white;
+  border-radius:50%;
+  left:50%;
+  transform:translateX(-50%);
+}
+.penalty-arc.top{
+  top:14%;
+  clip-path: inset(50% 0 0 0);
+}
+.penalty-arc.bottom{
+  bottom:14%;
+  clip-path: inset(0 0 50% 0);
+}
+
+/* ROHY */
+.corner{
+  position:absolute;
+  width:6%;
+  aspect-ratio:1;
+  border:2px solid white;
+  border-radius:50%;
+}
+.corner.tl{top:-3%;left:-3%;clip-path: inset(0 0 50% 50%);}
+.corner.tr{top:-3%;right:-3%;clip-path: inset(0 50% 50% 0);}
+.corner.bl{bottom:-3%;left:-3%;clip-path: inset(50% 0 0 50%);}
+.corner.br{bottom:-3%;right:-3%;clip-path: inset(50% 50% 0 0);}
 
 /* lavička */
 #bench{
@@ -181,6 +212,13 @@ body{
   <div class="penalty-area bottom"></div>
   <div class="goal-area bottom"></div>
   <div class="penalty-spot bottom"></div>
+  <div class="penalty-arc top"></div>
+<div class="penalty-arc bottom"></div>
+
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
 </div>
 
 <h3>Lavička</h3>
