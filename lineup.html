@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Match Lineup</title>
+<title>Lineup</title>
 
 <style>
 body{
@@ -14,7 +14,7 @@ body{
   text-align:center;
 }
 
-/* ===== HŘIŠTĚ ===== */
+/* ===== HŘIŠTĚ UEFA ===== */
 #pitch{
   position:relative;
   width:100%;
@@ -23,6 +23,7 @@ body{
   margin:20px auto;
   border:4px solid white;
   overflow:hidden;
+
   background:
     repeating-linear-gradient(
       to bottom,
@@ -52,7 +53,7 @@ body{
   transform:translate(-50%,-50%);
 }
 
-/* vápna */
+/* velké vápno */
 .penalty-area{
   position:absolute;
   width:62%;
@@ -63,6 +64,7 @@ body{
 .penalty-area.top{top:0;border-bottom:none;}
 .penalty-area.bottom{bottom:0;border-top:none;}
 
+/* malé vápno */
 .goal-area{
   position:absolute;
   width:32%;
@@ -73,6 +75,7 @@ body{
 .goal-area.top{top:0;border-bottom:none;}
 .goal-area.bottom{bottom:0;border-top:none;}
 
+/* penaltový bod */
 .penalty-spot{
   position:absolute;
   width:6px;
@@ -108,20 +111,11 @@ body{
   top:-25%;
   font-size:10px;
 }
-.player-label {
-  position: absolute;
-  top: 115%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 11px;
-  cursor: pointer;
-  z-index: 20;        /* důležité */
-  pointer-events: auto; /* důležité */
-}
-.captain::after{
-  content:" C";
-  color:red;
-  font-weight:bold;
+.player-label{
+  position:absolute;
+  top:115%;
+  font-size:11px;
+  color:white;
 }
 
 /* lavička */
@@ -142,23 +136,27 @@ body{
   cursor:pointer;
 }
 
-/* modal */
-<div id="editModal">
-  <div id="editBox">
-    <h3>Změna jména</h3>
-    <input id="playerNameInput" type="text">
-    <br><br>
-    <button id="confirmNameBtn">OK</button>
-    <button id="closeModalBtn">Zrušit</button>
-  </div>
-</div>
-
+/* MODAL */
+#editModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+#editBox{
+  background:#222;
+  padding:20px;
+  border:2px solid white;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Match Lineup</h2>
+<h2>Lineup</h2>
 
 <select id="formationSelect">
 <option value="1-4-4-2">1-4-4-2</option>
@@ -168,17 +166,15 @@ body{
 
 <button id="createBtn">Vytvořit</button>
 <button id="saveBtn">Uložit</button>
-<button id="exportBtn">PNG</button>
-<button id="exportPdfBtn">PDF</button>
-<button id="editNameBtn">Upravit jméno</button>
-
 
 <div id="pitch">
   <div class="center-line"></div>
   <div class="center-circle"></div>
+
   <div class="penalty-area top"></div>
   <div class="goal-area top"></div>
   <div class="penalty-spot top"></div>
+
   <div class="penalty-area bottom"></div>
   <div class="goal-area bottom"></div>
   <div class="penalty-spot bottom"></div>
@@ -187,20 +183,16 @@ body{
 <h3>Lavička</h3>
 <div id="bench"></div>
 
+<!-- MODAL -->
 <div id="editModal">
   <div id="editBox">
     <h3>Změna jména</h3>
-    <input id="playerNameInput" type="text">
+    <input id="playerNameInput">
     <br><br>
     <button id="confirmNameBtn">OK</button>
-    <button id="closeModalBtn">Zrušit</button>
   </div>
 </div>
 
-
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/lineup.js"></script>
-
 </body>
 </html>
