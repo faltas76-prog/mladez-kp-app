@@ -82,10 +82,26 @@ select, button {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(8px, 1vw, 12px);
+  font-weight: bold;
   cursor: grab;
   z-index: 10;
+  transform: translate(-50%, -50%);
 }
+
+/* štítek pod hráčem */
+.player-label {
+  position: absolute;
+  top: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(8px, 1vw, 12px);
+  background: rgba(0,0,0,0.6);
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: white;
+  white-space: nowrap;
+}
+
 
 #bench {
   background:#222;
@@ -264,21 +280,37 @@ player.style.transform = "translate(-50%, -50%)";
 };
 
 /* VYTVOŘ HRÁČE */
-function createPlayer(name) {
+function createPlayer(number, isGK = false) {
+
   const player = document.createElement("div");
   player.className = "player";
-  player.textContent = name;
+
+  // číslo hráče
+  player.textContent = isGK ? "GK" : number;
+
+  if (isGK) {
+    player.style.background = "#ffcc00";
+  }
+
+  // štítek se jménem
+  const label = document.createElement("div");
+  label.className = "player-label";
+  label.textContent = "Hráč";
+
+  player.appendChild(label);
 
   makeDraggable(player);
 
-  player.onclick = () => {
-    selectedPlayer = player;
-    playerNameInput.value = player.textContent;
+  player.onclick = (e) => {
+    e.stopPropagation();
+    selectedPlayer = label;
+    playerNameInput.value = label.textContent;
     editModal.style.display = "flex";
   };
 
   return player;
 }
+
 
 /* DRAG */
 function makeDraggable(el) {
