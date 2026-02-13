@@ -160,13 +160,16 @@ el.style.top=y+"%";
 }
 
 /* ===== POTVRZENÍ JMÉNA ===== */
-confirmNameBtn.addEventListener("click",function(){
-if(!selectedLabel)return;
-selectedLabel.textContent=playerNameInput.value.trim()||"Hráč";
-editModal.style.display="none";
-playerNameInput.value="";
-selectedLabel=null;
+confirmNameBtn.addEventListener("click", function(){
+  if (!selectedLabel) return;
+
+  selectedLabel.textContent = playerNameInput.value.trim() || "Hráč";
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedLabel = null;
 });
+
 
 /* ===== ULOŽENÍ ===== */
 saveBtn.addEventListener("click",function(){
