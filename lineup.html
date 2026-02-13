@@ -143,19 +143,16 @@ body{
 }
 
 /* modal */
-#editModal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
+<div id="editModal">
+  <div id="editBox">
+    <h3>Změna jména</h3>
+    <input id="playerNameInput" type="text">
+    <br><br>
+    <button id="confirmNameBtn">OK</button>
+    <button id="closeModalBtn">Zrušit</button>
+  </div>
+</div>
 
-#editBox{
-  background:#222;
-  padding:20px;
-}
 </style>
 </head>
 
