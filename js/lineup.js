@@ -160,15 +160,55 @@ el.style.top=y+"%";
 }
 
 /* ===== POTVRZENÍ JMÉNA ===== */
-confirmNameBtn.addEventListener("click", function(){
-  if (!selectedLabel) return;
+const editNameBtn = document.getElementById("editNameBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
 
-  selectedLabel.textContent = playerNameInput.value.trim() || "Hráč";
+let selectedForEdit = null;
 
-  editModal.style.display = "none";
-  playerNameInput.value = "";
-  selectedLabel = null;
+/* vyber hráče klikem */
+pitch.addEventListener("click", function(e){
+  const player = e.target.closest(".player");
+  if (!player) return;
+
+  selectedForEdit = player;
+
+  document.querySelectorAll(".player").forEach(p=>{
+    p.style.outline="none";
+  });
+
+  player.style.outline="3px solid yellow";
 });
+
+/* otevřít modal */
+editNameBtn.addEventListener("click", function(){
+
+  if (!selectedForEdit){
+    alert("Nejprve vyber hráče kliknutím.");
+    return;
+  }
+
+  const label = selectedForEdit.querySelector(".player-label");
+  playerNameInput.value = label.textContent;
+
+  editModal.style.display="flex";
+});
+
+/* potvrzení */
+confirmNameBtn.addEventListener("click", function(){
+
+  if (!selectedForEdit) return;
+
+  const label = selectedForEdit.querySelector(".player-label");
+  label.textContent = playerNameInput.value.trim() || "Hráč";
+
+  editModal.style.display="none";
+});
+
+/* zavření */
+closeModalBtn.addEventListener("click", function(){
+  editModal.style.display="none";
+});
+
 
 
 /* ===== ULOŽENÍ ===== */
