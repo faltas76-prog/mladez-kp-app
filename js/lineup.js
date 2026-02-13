@@ -44,45 +44,50 @@ document.addEventListener("DOMContentLoaded", () => {
   ======================== */
   function createPlayer(number, position, isGK = false) {
 
-    const player = document.createElement("div");
-    player.className = "player";
+  const player = document.createElement("div");
+  player.className = "player";
 
-    if (isGK) {
-      player.textContent = "GK";
-      player.style.background = "#ffcc00";
-    } else {
-      player.textContent = number;
-    }
+  /* ===== ČÍSLO ===== */
+  const numberEl = document.createElement("div");
+  numberEl.className = "player-number";
+  numberEl.textContent = isGK ? "GK" : number;
+  player.appendChild(numberEl);
 
-    /* POZICE */
-    const pos = document.createElement("div");
-    pos.className = "player-position";
-    pos.textContent = position;
-    player.appendChild(pos);
-
-    /* JMÉNO */
-    const label = document.createElement("div");
-    label.className = "player-label";
-    label.textContent = "Hráč";
-    player.appendChild(label);
-
-    /* KAPITÁN */
-    player.addEventListener("dblclick", () => {
-      document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
-      player.classList.add("captain");
-    });
-
-    /* EDITACE */
-    player.addEventListener("click", (e) => {
-      e.stopPropagation();
-      selectedPlayer = label;
-      playerNameInput.value = label.textContent;
-      editModal.style.display = "flex";
-    });
-
-    makeDraggable(player);
-    return player;
+  if (isGK) {
+    player.style.background = "#ffcc00";
   }
+
+  /* ===== POZICE ===== */
+  const pos = document.createElement("div");
+  pos.className = "player-position";
+  pos.textContent = position || "";
+  player.appendChild(pos);
+
+  /* ===== JMÉNO ===== */
+  const label = document.createElement("div");
+  label.className = "player-label";
+  label.textContent = "Hráč";
+  player.appendChild(label);
+
+  /* ===== KAPITÁN ===== */
+  player.addEventListener("dblclick", () => {
+    document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
+    player.classList.add("captain");
+  });
+
+  /* ===== EDIT ===== */
+  player.addEventListener("click", (e) => {
+    e.stopPropagation();
+    selectedPlayer = label;
+    playerNameInput.value = label.textContent;
+    editModal.style.display = "flex";
+  });
+
+  makeDraggable(player);
+
+  return player;
+}
+
 
   /* ========================
      GENEROVÁNÍ ROZESTAVENÍ
