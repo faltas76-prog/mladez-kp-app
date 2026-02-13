@@ -40,16 +40,113 @@ select, button {
   margin:6px 0;
 }
 
+/* ===== ZÁKLAD HŘIŠTĚ ===== */
 #pitch {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;   /* realistický poměr fotbalového hřiště */
-  max-height: 75vh;
+  aspect-ratio: 2 / 3;
   background: #1b5e20;
-  border: 3px solid white;
+  border: 4px solid white;
   margin: auto;
   overflow: hidden;
 }
+
+/* ===== STŘED ===== */
+.center-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: white;
+  top: 50%;
+}
+
+.center-circle {
+  position: absolute;
+  width: 20%;
+  aspect-ratio: 1;
+  border: 2px solid white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== VELKÉ VÁPNO ===== */
+.penalty-area {
+  position: absolute;
+  width: 60%;
+  height: 20%;
+  left: 20%;
+  border: 2px solid white;
+  border-top: none;
+}
+
+.penalty-area.top {
+  top: 0;
+  border-bottom: none;
+  border-top: 2px solid white;
+}
+
+.penalty-area.bottom {
+  bottom: 0;
+}
+
+/* ===== MALÉ VÁPNO ===== */
+.goal-area {
+  position: absolute;
+  width: 30%;
+  height: 10%;
+  left: 35%;
+  border: 2px solid white;
+  border-top: none;
+}
+
+.goal-area.top {
+  top: 0;
+  border-bottom: none;
+  border-top: 2px solid white;
+}
+
+.goal-area.bottom {
+  bottom: 0;
+}
+
+/* ===== PENALTOVÝ BOD ===== */
+.penalty-spot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.penalty-spot.top {
+  top: 18%;
+}
+
+.penalty-spot.bottom {
+  bottom: 18%;
+}
+
+/* ===== BRANKA ===== */
+.goal {
+  position: absolute;
+  width: 20%;
+  height: 3%;
+  left: 40%;
+  background: white;
+}
+
+.goal.top {
+  top: 0;
+}
+
+.goal.bottom {
+  bottom: 0;
+}
+
 
 /* Čáry */
 .center-line {
@@ -178,9 +275,25 @@ select, button {
 
 
 <div id="pitch">
+
+  <!-- STŘED -->
   <div class="center-line"></div>
   <div class="center-circle"></div>
+
+  <!-- DOLNÍ POLOVINA -->
+  <div class="penalty-area bottom"></div>
+  <div class="goal-area bottom"></div>
+  <div class="penalty-spot bottom"></div>
+  <div class="goal bottom"></div>
+
+  <!-- HORNÍ POLOVINA -->
+  <div class="penalty-area top"></div>
+  <div class="goal-area top"></div>
+  <div class="penalty-spot top"></div>
+  <div class="goal top"></div>
+
 </div>
+
 
 <h3 style="padding:10px">🪑 Lavička náhradníků</h3>
 <div id="bench"></div>
