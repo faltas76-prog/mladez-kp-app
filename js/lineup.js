@@ -3,59 +3,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const pitch = document.getElementById("pitch");
   const formationSelect = document.getElementById("formationSelect");
   const createBtn = document.getElementById("createBtn");
-  const exportBtn = document.getElementById("exportBtn");
-  const exportPdfBtn = document.getElementById("exportPdfBtn");
-  const saveBtn = document.getElementById("saveBtn");
-
-  const bench = document.getElementById("bench");
-
   const editModal = document.getElementById("editModal");
   const playerNameInput = document.getElementById("playerNameInput");
   const confirmNameBtn = document.getElementById("confirmNameBtn");
 
-  let selectedLabel = null;
+  let selectedPlayer = null;
 
-  /* =========================
+  /* ========================
+     POZICE PODLE FORMACE
+  ======================== */
+  function getPositions(formation) {
+
+    const map = {
+      "1-4-4-2": [
+        ["GK"],
+        ["LB","CB","CB","RB"],
+        ["LM","CM","CM","RM"],
+        ["ST","ST"]
+      ],
+      "1-4-3-3": [
+        ["GK"],
+        ["LB","CB","CB","RB"],
+        ["CM","CM","CM"],
+        ["LW","ST","RW"]
+      ],
+      "1-4-2-3-1": [
+        ["GK"],
+        ["LB","CB","CB","RB"],
+        ["CDM","CDM"],
+        ["LAM","CAM","RAM"],
+        ["ST"]
+      ]
+    };
+
+    return map[formation] || [];
+  }
+
+  /* ========================
      VYTVOŘ HRÁČE
-  ========================== */
-  function createPlayer(number, isGK = false) {
+  ======================== */
+  function createPlayer(number, position, isGK = false) {
 
     const player = document.createElement("div");
     player.className = "player";
 
-    player.textContent = isGK ? "GK" : number;
+    if (isGK) {
+      player.textContent = "GK";
+      player.style.background = "#ffcc00";
+    } else {
+      player.textContent = number;
+    }
 
-    if (isGK) player.style.background = "#ffcc00";
+    /* POZICE */
+    const pos = document.createElement("div");
+    pos.className = "player-position";
+    pos.textContent = position;
+    player.appendChild(pos);
 
+    /* JMÉNO */
     const label = document.createElement("div");
     label.className = "player-label";
     label.textContent = "Hráč";
-
     player.appendChild(label);
 
-    makeDraggable(player);
+    /* KAPITÁN */
+    player.addEventListener("dblclick", () => {
+      document.querySelectorAll(".captain").forEach(p => p.classList.remove("captain"));
+      player.classList.add("captain");
+    });
 
+    /* EDITACE */
     player.addEventListener("click", (e) => {
       e.stopPropagation();
-      selectedLabel = label;
+      selectedPlayer = label;
       playerNameInput.value = label.textContent;
       editModal.style.display = "flex";
     });
 
+    makeDraggable(player);
     return player;
   }
 
-  /* =========================
-     ROZESTAVENÍ
-  ========================== */
+  /* ========================
+     GENEROVÁNÍ ROZESTAVENÍ
+  ======================== */
   createBtn.addEventListener("click", () => {
 
     pitch.querySelectorAll(".player").forEach(p => p.remove());
-    bench.innerHTML = "";
 
-    const rows = formationSelect.value.split("-").map(Number);
+    const formation = formationSelect.value;
+    const rows = formation.split("-").map(Number);
+    const positions = getPositions(formation);
 
-    let jerseyNumber = 2;
+    let jersey = 2;
 
     rows.forEach((count, rowIndex) => {
 
@@ -64,11 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
         let player;
 
         if (rowIndex === 0 && count === 1) {
-          player = createPlayer(null, true);
+          player = createPlayer(null, "GK", true);
         } else {
-          player = createPlayer(jerseyNumber);
-          jerseyNumber++;
-          if (jerseyNumber > 16) jerseyNumber = 16;
+          const pos = positions[rowIndex]?.[i] || "";
+          player = createPlayer(jersey, pos);
+          jersey++;
         }
 
         const yPercent = 100 - ((rowIndex + 1) * (100 / (rows.length + 1)));
@@ -82,29 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    /* vytvoř lavičku */
-    for (let i = jerseyNumber; i <= 16; i++) {
-
-      const benchPlayer = document.createElement("div");
-      benchPlayer.className = "bench-player";
-      benchPlayer.textContent = i;
-
-      benchPlayer.addEventListener("click", () => {
-        const newPlayer = createPlayer(i);
-        newPlayer.style.left = "50%";
-        newPlayer.style.top = "50%";
-        newPlayer.style.transform = "translate(-50%, -50%)";
-        pitch.appendChild(newPlayer);
-      });
-
-      bench.appendChild(benchPlayer);
-    }
-
   });
 
-  /* =========================
+  /* ========================
      DRAG
-  ========================== */
+  ======================== */
   function makeDraggable(el) {
 
     el.addEventListener("pointerdown", e => {
@@ -125,60 +147,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =========================
-     EDIT JMÉNA
-  ========================== */
+  /* ========================
+     POTVRZENÍ JMÉNA
+  ======================== */
   confirmNameBtn.addEventListener("click", () => {
-    if (selectedLabel) {
-      selectedLabel.textContent = playerNameInput.value || "Hráč";
+    if (selectedPlayer) {
+      selectedPlayer.textContent = playerNameInput.value || "Hráč";
     }
     editModal.style.display = "none";
-  });
-
-  /* =========================
-     ULOŽENÍ
-  ========================== */
-  saveBtn.addEventListener("click", () => {
-
-    const data = [];
-
-    document.querySelectorAll(".player").forEach(p => {
-      data.push({
-        number: p.firstChild.textContent,
-        name: p.querySelector(".player-label").textContent,
-        x: p.style.left,
-        y: p.style.top
-      });
-    });
-
-    localStorage.setItem("MATCH_LINEUP", JSON.stringify(data));
-    alert("Sestava uložena ✔");
-  });
-
-  /* =========================
-     EXPORT PNG
-  ========================== */
-  exportBtn.addEventListener("click", () => {
-    html2canvas(pitch).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "rozestaveni.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  });
-
-  /* =========================
-     EXPORT PDF
-  ========================== */
-  exportPdfBtn.addEventListener("click", async () => {
-
-    const { jsPDF } = window.jspdf;
-    const canvas = await html2canvas(pitch);
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF();
-    pdf.addImage(imgData, "PNG", 10, 10, 180, 250);
-    pdf.save("rozestaveni.pdf");
   });
 
 });
