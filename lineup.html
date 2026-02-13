@@ -108,11 +108,15 @@ body{
   top:-25%;
   font-size:10px;
 }
-.player-label{
-  position:absolute;
-  top:110%;
-  font-size:10px;
-  cursor:pointer;
+.player-label {
+  position: absolute;
+  top: 115%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  cursor: pointer;
+  z-index: 20;        /* důležité */
+  pointer-events: auto; /* důležité */
 }
 .captain::after{
   content:" C";
