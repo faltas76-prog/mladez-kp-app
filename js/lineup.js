@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const editModal = document.getElementById("editModal");
   const playerNameInput = document.getElementById("playerNameInput");
   const confirmNameBtn = document.getElementById("confirmNameBtn");
+  const exportPngBtn = document.getElementById("exportPngBtn");
+  const exportPdfBtn = document.getElementById("exportPdfBtn");
+
+
 
   let selectedPlayer = null;
 
@@ -117,5 +121,30 @@ document.addEventListener("DOMContentLoaded", function () {
     editModal.style.display = "none";
     selectedPlayer = null;
   });
+
+});
+/* ===== EXPORT PNG ===== */
+exportPngBtn.addEventListener("click", function(){
+
+  html2canvas(pitch).then(canvas=>{
+    const link=document.createElement("a");
+    link.download="lineup.png";
+    link.href=canvas.toDataURL();
+    link.click();
+  });
+
+});
+
+/* ===== EXPORT PDF ===== */
+exportPdfBtn.addEventListener("click", async function(){
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("portrait","mm","a4");
+
+  const canvas = await html2canvas(pitch);
+  const imgData = canvas.toDataURL("image/png");
+
+  pdf.addImage(imgData,"PNG",10,10,190,270);
+  pdf.save("lineup.pdf");
 
 });
