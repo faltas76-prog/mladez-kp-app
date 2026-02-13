@@ -173,6 +173,8 @@ body{
 <button id="saveBtn">Uložit</button>
 <button id="exportBtn">PNG</button>
 <button id="exportPdfBtn">PDF</button>
+<button id="editNameBtn">Upravit jméno</button>
+
 
 <div id="pitch">
   <div class="center-line"></div>
@@ -190,10 +192,14 @@ body{
 
 <div id="editModal">
   <div id="editBox">
-    <input id="playerNameInput">
+    <h3>Změna jména</h3>
+    <input id="playerNameInput" type="text">
+    <br><br>
     <button id="confirmNameBtn">OK</button>
+    <button id="closeModalBtn">Zrušit</button>
   </div>
 </div>
+
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
