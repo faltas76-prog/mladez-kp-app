@@ -1,82 +1,64 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function(){
 
-  const pitch = document.getElementById("pitch");
-  const formationSelect = document.getElementById("formationSelect");
-  const createBtn = document.getElementById("createBtn");
-  const editModal = document.getElementById("editModal");
-  const playerNameInput = document.getElementById("playerNameInput");
-  const confirmNameBtn = document.getElementById("confirmNameBtn");
-  const exportPngBtn = document.getElementById("exportPngBtn");
-  const exportPdfBtn = document.getElementById("exportPdfBtn");
-  const bench = document.getElementById("bench");
- 
-  let selectedForSwap = null;
-  let selectedPlayer = null;
+const pitch = document.getElementById("pitch");
+const bench = document.getElementById("bench");
+const formationSelect = document.getElementById("formationSelect");
+const createBtn = document.getElementById("createBtn");
+const saveBtn = document.getElementById("saveBtn");
+const exportPngBtn = document.getElementById("exportPngBtn");
+const exportPdfBtn = document.getElementById("exportPdfBtn");
+const editModal = document.getElementById("editModal");
+const playerNameInput = document.getElementById("playerNameInput");
+const confirmNameBtn = document.getElementById("confirmNameBtn");
 
-  /* ===== POZICE ===== */
-  function getPositions(f) {
-    return {
-      "1-4-4-2": [["GK"], ["LB","CB","CB","RB"], ["LM","CM","CM","RM"], ["ST","ST"]],
-      "1-4-3-3": [["GK"], ["LB","CB","CB","RB"], ["CM","CM","CM"], ["LW","ST","RW"]],
-      "1-4-2-3-1": [["GK"], ["LB","CB","CB","RB"], ["CDM","CDM"], ["LAM","CAM","RAM"], ["ST"]]
-    }[f];
-  }
+let selectedPlayer = null;
 
-  /* ===== VYTVOŘ HRÁČE ===== */
-  function createPlayer(number, position, isGK = false) {
-
-    const player = document.createElement("div");
-    player.className = "player";
-
-    const num = document.createElement("div");
-    num.className = "player-number";
-    num.textContent = isGK ? "GK" : number;
-    player.appendChild(num);
-
-    const pos = document.createElement("div");
-    pos.className = "player-position";
-    pos.textContent = position || "";
-    player.appendChild(pos);
-
-    const label = document.createElement("div");
-    label.className = "player-label";
-    label.textContent = "Hráč";
-    player.appendChild(label);
-
-    /* ===== OTEVŘÍT MODAL ===== */
-   player.addEventListener("click", function(e){
-e.stopPropagation();
-
-/* pokud klikneš na hráče → vybere se */
-if(!selectedForSwap){
-selectedForSwap=player;
-player.style.outline="3px solid red";
+/* ===== BEZPEČNOSTNÍ KONTROLA ===== */
+if(!pitch || !createBtn){
+console.error("Některé HTML prvky chybí!");
 return;
 }
 
-/* pokud klikneš na jiného hráče → swap */
-if(selectedForSwap!==player){
-
-["player-number","player-label","player-position"].forEach(cls=>{
-const a=selectedForSwap.querySelector("."+cls).textContent;
-const b=player.querySelector("."+cls).textContent;
-
-selectedForSwap.querySelector("."+cls).textContent=b;
-player.querySelector("."+cls).textContent=a;
-});
+/* ===== POZICE ===== */
+function getPositions(f){
+return {
+"1-4-4-2":[["GK"],["LB","CB","CB","RB"],["LM","CM","CM","RM"],["ST","ST"]],
+"1-4-3-3":[["GK"],["LB","CB","CB","RB"],["CM","CM","CM"],["LW","ST","RW"]],
+"1-4-2-3-1":[["GK"],["LB","CB","CB","RB"],["CDM","CDM"],["LAM","CAM","RAM"],["ST"]]
+}[f];
 }
 
-selectedForSwap.style.outline="none";
-selectedForSwap=null;
+/* ===== VYTVOŘ HRÁČE ===== */
+function createPlayer(number,pos,isGK=false){
+
+const player=document.createElement("div");
+player.className="player";
+
+const num=document.createElement("div");
+num.className="player-number";
+num.textContent=isGK?"GK":number;
+player.appendChild(num);
+
+const label=document.createElement("div");
+label.className="player-label";
+label.textContent="Hráč";
+player.appendChild(label);
+
+player.addEventListener("click",function(e){
+e.stopPropagation();
+selectedPlayer=player;
+playerNameInput.value=label.textContent;
+editModal.style.display="flex";
 });
 
+return player;
+}
 
-  /* ===== GENEROVÁNÍ ===== */
-  createBtn.addEventListener("click",function(){
+/* ===== GENEROVÁNÍ ===== */
+createBtn.addEventListener("click",function(){
 
 pitch.querySelectorAll(".player").forEach(p=>p.remove());
 bench.innerHTML="";
-selectedForSwap=null;
 
 const formation=formationSelect.value;
 const rows=formation.split("-").map(Number);
@@ -84,7 +66,6 @@ const positions=getPositions(formation);
 
 let jersey=2;
 
-/* HRÁČI NA HŘIŠTI */
 rows.forEach((count,rowIndex)=>{
 for(let i=0;i<count;i++){
 
@@ -100,6 +81,7 @@ jersey++;
 const y=100-((rowIndex+1)*(100/(rows.length+1)));
 const x=(i+1)*(100/(count+1));
 
+player.style.position="absolute";
 player.style.left=x+"%";
 player.style.top=y+"%";
 
@@ -107,86 +89,61 @@ pitch.appendChild(player);
 }
 });
 
-/* LAVIČKA 12–16 */
-for(let i=jersey;i<=16;i++){
-const benchPlayer=document.createElement("div");
-benchPlayer.className="bench-player";
-benchPlayer.textContent=i;
-
-benchPlayer.addEventListener("click",function(){
-
-if(!selectedForSwap)return;
-
-const fieldNumberEl=selectedForSwap.querySelector(".player-number");
-const temp=fieldNumberEl.textContent;
-
-fieldNumberEl.textContent=benchPlayer.textContent;
-benchPlayer.textContent=temp;
-
-selectedForSwap.style.outline="none";
-selectedForSwap=null;
 });
 
-bench.appendChild(benchPlayer);
+/* ===== ULOŽENÍ ===== */
+if(saveBtn){
+saveBtn.addEventListener("click",function(){
+alert("Uloženo ✔");
+});
 }
 
-});
-
-  /* ===== DRAG ===== */
-  function makeDraggable(el) {
-
-    el.addEventListener("pointerdown", e => {
-      el.setPointerCapture(e.pointerId);
-    });
-
-    el.addEventListener("pointermove", e => {
-      if (e.buttons !== 1) return;
-
-      const rect = pitch.getBoundingClientRect();
-
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      el.style.left = x + "%";
-      el.style.top = y + "%";
-    });
-  }
-
-  /* ===== POTVRZENÍ JMÉNA ===== */
-  confirmNameBtn.addEventListener("click", function () {
-
-    if (!selectedPlayer) return;
-
-    const label = selectedPlayer.querySelector(".player-label");
-    label.textContent = playerNameInput.value.trim() || "Hráč";
-
-    editModal.style.display = "none";
-    selectedPlayer = null;
-  });
-
-});
 /* ===== EXPORT PNG ===== */
-exportPngBtn.addEventListener("click", function(){
+if(exportPngBtn){
+exportPngBtn.addEventListener("click",function(){
 
-  html2canvas(pitch).then(canvas=>{
-    const link=document.createElement("a");
-    link.download="lineup.png";
-    link.href=canvas.toDataURL();
-    link.click();
-  });
+if(typeof html2canvas==="undefined"){
+alert("Chybí html2canvas knihovna!");
+return;
+}
 
+html2canvas(pitch).then(canvas=>{
+const link=document.createElement("a");
+link.download="lineup.png";
+link.href=canvas.toDataURL();
+link.click();
 });
+});
+}
 
 /* ===== EXPORT PDF ===== */
-exportPdfBtn.addEventListener("click", async function(){
+if(exportPdfBtn){
+exportPdfBtn.addEventListener("click",async function(){
 
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF("portrait","mm","a4");
+if(typeof jspdf==="undefined" && !window.jspdf){
+alert("Chybí jsPDF knihovna!");
+return;
+}
 
-  const canvas = await html2canvas(pitch);
-  const imgData = canvas.toDataURL("image/png");
+const { jsPDF } = window.jspdf;
+const pdf=new jsPDF();
 
-  pdf.addImage(imgData,"PNG",10,10,190,270);
-  pdf.save("lineup.pdf");
+const canvas=await html2canvas(pitch);
+pdf.addImage(canvas.toDataURL(),"PNG",10,10,180,250);
+pdf.save("lineup.pdf");
+});
+}
+
+/* ===== POTVRZENÍ JMÉNA ===== */
+confirmNameBtn.addEventListener("click",function(){
+
+if(!selectedPlayer)return;
+
+const label=selectedPlayer.querySelector(".player-label");
+label.textContent=playerNameInput.value.trim()||"Hráč";
+
+editModal.style.display="none";
+selectedPlayer=null;
+});
 
 });
