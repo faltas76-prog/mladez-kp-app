@@ -224,21 +224,37 @@ if(saved){
   alert("Sestava uložena ✔");
 });
 
-  exportPngBtn.addEventListener("click", () => {
-    html2canvas(pitch).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "lineup.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    });
+  exportPngBtn.addEventListener("click", function(){
+
+  const originalBg = pitch.style.background;
+  pitch.style.background = "#1b5e20"; // pevná zelená
+
+  html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
+
+    const link = document.createElement("a");
+    link.download = "lineup.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    pitch.style.background = originalBg; // vrátit původní styl
   });
 
-  exportPdfBtn.addEventListener("click", async () => {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation:"portrait" });
-    const canvas = await html2canvas(pitch);
-    pdf.addImage(canvas.toDataURL(), "PNG", 10, 10, 190, 270);
-    pdf.save("lineup.pdf");
+});
+
+
+ exportPngBtn.addEventListener("click", function(){
+
+  const originalBg = pitch.style.background;
+  pitch.style.background = "#1b5e20"; // pevná zelená
+
+  html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
+
+    const link = document.createElement("a");
+    link.download = "lineup.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    pitch.style.background = originalBg; // vrátit původní styl
   });
 
 });
