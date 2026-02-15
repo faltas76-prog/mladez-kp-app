@@ -77,6 +77,31 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 }
 
+/* ===== NAČTENÍ ULOŽENÉ SESTAVY ===== */
+const saved = localStorage.getItem("SAVED_LINEUP");
+
+if(saved){
+
+  const data = JSON.parse(saved);
+
+  data.forEach(playerData => {
+
+    const player = createPlayer(
+      playerData.number === "GK" ? null : playerData.number,
+      playerData.position,
+      playerData.number === "GK"
+    );
+
+    player.querySelector(".player-label").textContent = playerData.name;
+
+    player.style.position = "absolute";
+    player.style.left = playerData.left;
+    player.style.top = playerData.top;
+
+    pitch.appendChild(player);
+  });
+
+}
 
     // Klik pro výběr hráče ke střídání
     player.addEventListener("click", (e) => {
@@ -180,20 +205,24 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedPlayer = null;
   });
 
-  saveBtn.addEventListener("click", () => {
-    const data = [];
-    pitch.querySelectorAll(".player").forEach(p => {
-      data.push({
-        number: p.querySelector(".player-number").textContent,
-        position: p.querySelector(".player-position").textContent,
-        name: p.querySelector(".player-label").textContent,
-        left: p.style.left,
-        top: p.style.top
-      });
+  saveBtn.addEventListener("click", function(){
+
+  const data = [];
+
+  document.querySelectorAll(".player").forEach(p => {
+    data.push({
+      number: p.querySelector(".player-number").textContent,
+      position: p.querySelector(".player-position").textContent,
+      name: p.querySelector(".player-label").textContent,
+      left: p.style.left,
+      top: p.style.top
     });
-    localStorage.setItem("lineup_data", JSON.stringify(data));
-    alert("Uloženo ✔");
   });
+
+  localStorage.setItem("SAVED_LINEUP", JSON.stringify(data));
+
+  alert("Sestava uložena ✔");
+});
 
   exportPngBtn.addEventListener("click", () => {
     html2canvas(pitch).then(canvas => {
