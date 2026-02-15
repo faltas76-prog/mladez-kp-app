@@ -224,37 +224,43 @@ if(saved){
   alert("Sestava uložena ✔");
 });
 
+  /* ===== EXPORT PNG ===== */
+if(exportPngBtn){
   exportPngBtn.addEventListener("click", function(){
 
-  const originalBg = pitch.style.background;
-  pitch.style.background = "#1b5e20"; // pevná zelená
+    if(typeof html2canvas === "undefined"){
+      alert("Chybí html2canvas knihovna.");
+      return;
+    }
 
-  html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
-
-    const link = document.createElement("a");
-    link.download = "lineup.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-
-    pitch.style.background = originalBg; // vrátit původní styl
+    html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "lineup.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
   });
+}
 
-});
+/* ===== EXPORT PDF ===== */
+if(exportPdfBtn){
+  exportPdfBtn.addEventListener("click", async function(){
 
+    if(!window.jspdf){
+      alert("Chybí jsPDF knihovna.");
+      return;
+    }
 
- exportPngBtn.addEventListener("click", function(){
+    const { jsPDF } = window.jspdf;
 
-  const originalBg = pitch.style.background;
-  pitch.style.background = "#1b5e20"; // pevná zelená
+    const canvas = await html2canvas(pitch, {
+      backgroundColor: "#1b5e20"
+    });
 
-  html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
 
-    const link = document.createElement("a");
-    link.download = "lineup.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-
-    pitch.style.background = originalBg; // vrátit původní styl
+    const pdf = new jsPDF("portrait","mm","a4");
+    pdf.addImage(imgData,"PNG",10,10,190,270);
+    pdf.save("lineup.pdf");
   });
-
-});
+}
