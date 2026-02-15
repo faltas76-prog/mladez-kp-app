@@ -114,13 +114,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* EDIT JMÉNA */
-    nameLabel.addEventListener("click", e => {
-      e.stopPropagation();
-      selectedPlayer = player;
-      playerNameInput.value = nameLabel.textContent;
-      editModal.style.display = "flex";
-    });
+    nameLabel.addEventListener("pointerdown", function(e){
 
+  e.stopPropagation();          // zabrání střídání
+  selectedForSwap = null;       // zruší výběr pro swap
+
+  selectedPlayer = player;
+
+  playerNameInput.value = nameLabel.textContent;
+  editModal.style.display = "flex";
+});
     makeDraggable(player);
 
     return player;
@@ -184,15 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===== POTVRZENÍ JMÉNA ===== */
-  confirmNameBtn.addEventListener("click", () => {
-    if (!selectedPlayer) return;
+ confirmNameBtn.addEventListener("click", function(){
 
-    selectedPlayer.querySelector(".player-label").textContent =
-      playerNameInput.value.trim() || "Hráč";
+  if(!selectedPlayer) return;
 
-    editModal.style.display = "none";
-    selectedPlayer = null;
-  });
+  const label = selectedPlayer.querySelector(".player-label");
+
+  label.textContent = playerNameInput.value.trim() || "Hráč";
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+
+  selectedPlayer = null;
+});
+
 
   /* ===== ULOŽENÍ ===== */
   if (saveBtn) {
