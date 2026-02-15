@@ -127,30 +127,53 @@ pitch.appendChild(player);
 }
 });
 
-/* ===== LAVIČKA ===== */
 for(let i=jersey;i<=16;i++){
-const benchPlayer=document.createElement("div");
-benchPlayer.className="bench-player";
-benchPlayer.textContent=i;
 
-benchPlayer.addEventListener("click",function(){
+  const benchPlayer=document.createElement("div");
+  benchPlayer.className="bench-player";
 
-if(!selectedForSwap)return;
+  const number=document.createElement("div");
+  number.className="bench-number";
+  number.textContent=i;
+  benchPlayer.appendChild(number);
 
-const fieldNum=selectedForSwap.querySelector(".player-number");
-const temp=fieldNum.textContent;
+  const name=document.createElement("div");
+  name.className="bench-name";
+  name.textContent="Hráč";
+  benchPlayer.appendChild(name);
 
-fieldNum.textContent=benchPlayer.textContent;
-benchPlayer.textContent=temp;
+  /* STŘÍDÁNÍ */
+  benchPlayer.addEventListener("click",function(){
 
-selectedForSwap.style.outline="";
-selectedForSwap=null;
-});
+    if(!selectedForSwap)return;
 
-bench.appendChild(benchPlayer);
+    const fieldNumber=selectedForSwap.querySelector(".player-number");
+    const fieldName=selectedForSwap.querySelector(".player-label");
+
+    const tempNumber=fieldNumber.textContent;
+    const tempName=fieldName.textContent;
+
+    fieldNumber.textContent=number.textContent;
+    fieldName.textContent=name.textContent;
+
+    number.textContent=tempNumber;
+    name.textContent=tempName;
+
+    selectedForSwap.style.outline="";
+    selectedForSwap=null;
+  });
+
+  /* EDIT JMÉNA NA LAVIČCE */
+  name.addEventListener("contextmenu",function(e){
+    e.preventDefault();
+    selectedPlayer=benchPlayer;
+    playerNameInput.value=name.textContent;
+    editModal.style.display="flex";
+  });
+
+  bench.appendChild(benchPlayer);
 }
 
-});
 
 /* ================== DRAG FUNKCE ================== */
 
@@ -256,13 +279,20 @@ pdf.save("lineup.pdf");
 
 confirmNameBtn.addEventListener("click",function(){
 
-if(!selectedPlayer)return;
+  if(!selectedPlayer) return;
 
-selectedPlayer.querySelector(".player-label").textContent=
-playerNameInput.value.trim()||"Hráč";
+  /* pokud je to hráč na hřišti */
+  if(selectedPlayer.classList.contains("player")){
+    selectedPlayer.querySelector(".player-label").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
 
-editModal.style.display="none";
-selectedPlayer=null;
-});
+  /* pokud je to lavička */
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
 
+  editModal.style.display="none";
+  selectedPlayer=null;
 });
