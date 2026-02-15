@@ -77,6 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 }
 
+if(!createBtn || !pitch){
+  console.error("HTML prvky nebyly nalezeny.");
+  return;
+}
+
 /* ===== NAČTENÍ ULOŽENÉ SESTAVY ===== */
 const saved = localStorage.getItem("SAVED_LINEUP");
 
