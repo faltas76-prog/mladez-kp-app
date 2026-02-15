@@ -40,6 +40,44 @@ document.addEventListener("DOMContentLoaded", () => {
     nameLabel.textContent = "Hráč";
     player.appendChild(nameLabel);
 
+    function makeDraggable(el){
+
+  let offsetX = 0;
+  let offsetY = 0;
+  let dragging = false;
+
+  el.addEventListener("pointerdown", function(e){
+
+    const rect = el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+
+    dragging = true;
+    el.setPointerCapture(e.pointerId);
+  });
+
+  el.addEventListener("pointermove", function(e){
+
+    if(!dragging) return;
+
+    const pitchRect = pitch.getBoundingClientRect();
+
+    let x = e.clientX - pitchRect.left - offsetX + el.offsetWidth/2;
+    let y = e.clientY - pitchRect.top - offsetY + el.offsetHeight/2;
+
+    x = Math.max(0, Math.min(x, pitchRect.width));
+    y = Math.max(0, Math.min(y, pitchRect.height));
+
+    el.style.left = (x / pitchRect.width * 100) + "%";
+    el.style.top  = (y / pitchRect.height * 100) + "%";
+  });
+
+  el.addEventListener("pointerup", function(){
+    dragging = false;
+  });
+}
+
+
     // Klik pro výběr hráče ke střídání
     player.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -76,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playerNameInput.value = nameLabel.textContent;
       editModal.style.display = "flex";
     });
-
+    makeDraggable(player);
     return player;
   }
 
