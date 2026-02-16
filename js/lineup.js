@@ -201,10 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
   selectedPlayer = null;
 });
 
-  editModal.style.display = "none";
-  playerNameInput.value = "";
-  selectedPlayer = null;
-});
 
   /* ===== ULOŽENÍ ===== */
   if (saveBtn) {
