@@ -159,38 +159,76 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* LAVIČKA */
-    for (let i=jersey;i<=16;i++) {
-      const b = document.createElement("div");
-      b.className = "bench-player";
-      b.textContent = i;
+    for (let i = jersey; i <= 16; i++) {
 
-      b.addEventListener("click", () => {
-        if (!selectedForSwap) return;
+  const benchPlayer = document.createElement("div");
+  benchPlayer.className = "bench-player";
 
-        const temp = selectedForSwap.querySelector(".player-number").textContent;
-        selectedForSwap.querySelector(".player-number").textContent = b.textContent;
-        b.textContent = temp;
+  benchPlayer.innerHTML = `
+    <div class="bench-number">${i}</div>
+    <div class="bench-name">Hráč</div>
+  `;
 
-        selectedForSwap.style.outline = "";
-        selectedForSwap = null;
-      });
+  // Edit jména náhradníka
+  benchPlayer.querySelector(".bench-name")
+    .addEventListener("pointerdown", function(e){
+      e.stopPropagation();
+      selectedPlayer = benchPlayer;
+      playerNameInput.value = this.textContent;
+      editModal.style.display = "flex";
+    });
 
-      bench.appendChild(b);
-    }
+  // Střídání
+  benchPlayer.addEventListener("click", function(){
 
+    if(!selectedForSwap) return;
+
+    const fieldNumber = selectedForSwap.querySelector(".player-number");
+    const fieldName = selectedForSwap.querySelector(".player-label");
+
+    const benchNumber = benchPlayer.querySelector(".bench-number");
+    const benchName = benchPlayer.querySelector(".bench-name");
+
+    // swap čísla
+    const tempNumber = fieldNumber.textContent;
+    fieldNumber.textContent = benchNumber.textContent;
+    benchNumber.textContent = tempNumber;
+
+    // swap jména
+    const tempName = fieldName.textContent;
+    fieldName.textContent = benchName.textContent;
+    benchName.textContent = tempName;
+
+    selectedForSwap.style.outline = "";
+    selectedForSwap = null;
   });
+
+  bench.appendChild(benchPlayer);
+}
+
 
   /* ===== POTVRZENÍ JMÉNA ===== */
-  confirmNameBtn.addEventListener("click", () => {
-    if (!selectedPlayer) return;
+  confirmNameBtn.addEventListener("click", function(){
 
+  if(!selectedPlayer) return;
+
+  // Hráč na hřišti
+  if(selectedPlayer.classList.contains("player")){
     selectedPlayer.querySelector(".player-label").textContent =
       playerNameInput.value.trim() || "Hráč";
+  }
 
-    editModal.style.display = "none";
-    playerNameInput.value = "";
-    selectedPlayer = null;
-  });
+  // Náhradník
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedPlayer = null;
+});
+
 
   /* ===== ULOŽENÍ ===== */
   if (saveBtn) {
@@ -258,8 +296,11 @@ if (exportPdfBtn) {
 
       const pageWidth = 190;
       const pageHeight = 260;
+pdf.setFontSize(14);
+pdf.text(document.getElementById("matchName").value || "Zápas", 10, 10);
+pdf.text(document.getElementById("matchDate").value || "", 150, 10);
 
-      pdf.addImage(imgData, "PNG", 10, 10, pageWidth, pageHeight);
+      pdf.addImage(imgData,"PNG",10,20,190,250);
       pdf.save("lineup.pdf");
 
     } catch (err) {
