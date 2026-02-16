@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  console.log("Lineup JS loaded");
+
   const pitch = document.getElementById("pitch");
   const bench = document.getElementById("bench");
   const formationSelect = document.getElementById("formationSelect");
@@ -7,21 +9,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const saveBtn = document.getElementById("saveBtn");
   const exportPngBtn = document.getElementById("exportPngBtn");
   const exportPdfBtn = document.getElementById("exportPdfBtn");
-  const editModal = document.getElementById("editModal");
-  const playerNameInput = document.getElementById("playerNameInput");
-  const confirmNameBtn = document.getElementById("confirmNameBtn");
 
   if (!pitch || !createBtn) {
-    console.error("HTML prvky nebyly nalezeny.");
+    console.error("Chybí HTML prvky – zkontroluj ID.");
     return;
   }
 
   let selectedForSwap = null;
-  let selectedPlayer = null;
 
-  /* =========================
-     POZICE
-  ========================= */
+  /* ================= POZICE ================= */
   function getPositions(f) {
     return {
       "1-4-4-2": [["GK"], ["LB","CB","CB","RB"], ["LM","CM","CM","RM"], ["ST","ST"]],
@@ -30,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }[f] || [];
   }
 
-  /* =========================
-     DRAG
-  ========================= */
+  /* ================= DRAG ================= */
   function makeDraggable(el) {
 
     let dragging = false;
@@ -67,9 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  /* =========================
-     VYTVOŘ HRÁČE
-  ========================= */
+  /* ================= VYTVOŘ HRÁČE ================= */
   function createPlayer(number, pos, isGK = false) {
 
     const player = document.createElement("div");
@@ -83,15 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
     num.textContent = isGK ? "GK" : number;
     player.appendChild(num);
 
-    const posLabel = document.createElement("div");
-    posLabel.className = "player-position";
-    posLabel.textContent = pos || "";
-    player.appendChild(posLabel);
-
-    const nameLabel = document.createElement("div");
-    nameLabel.className = "player-label";
-    nameLabel.textContent = "Hráč";
-    player.appendChild(nameLabel);
+    const name = document.createElement("div");
+    name.className = "player-label";
+    name.textContent = "Hráč";
+    player.appendChild(name);
 
     /* STŘÍDÁNÍ */
     player.addEventListener("click", function (e) {
@@ -109,39 +96,27 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      ["player-number","player-label","player-position"].forEach(cls => {
-        const a = selectedForSwap.querySelector("." + cls).textContent;
-        const b = player.querySelector("." + cls).textContent;
+      const a = selectedForSwap.querySelector(".player-number").textContent;
+      const b = player.querySelector(".player-number").textContent;
 
-        selectedForSwap.querySelector("." + cls).textContent = b;
-        player.querySelector("." + cls).textContent = a;
-      });
+      selectedForSwap.querySelector(".player-number").textContent = b;
+      player.querySelector(".player-number").textContent = a;
 
       selectedForSwap.style.outline = "";
       selectedForSwap = null;
     });
 
-    /* EDIT JMÉNA */
-    nameLabel.addEventListener("pointerdown", function (e) {
-      e.stopPropagation();
-      selectedPlayer = player;
-      playerNameInput.value = nameLabel.textContent;
-      editModal.style.display = "flex";
-    });
-
     makeDraggable(player);
-
     return player;
   }
 
-  /* =========================
-     VYTVOŘENÍ SESTAVY
-  ========================= */
+  /* ================= VYTVOŘIT ================= */
   createBtn.addEventListener("click", function () {
+
+    console.log("Create clicked");
 
     pitch.querySelectorAll(".player").forEach(p => p.remove());
     bench.innerHTML = "";
-    selectedForSwap = null;
 
     const formation = formationSelect.value;
     const rows = formation.split("-").map(Number);
@@ -171,133 +146,48 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    /* LAVIČKA */
-   for (let i = jersey; i <= 16; i++) {
-
-  const benchPlayer = document.createElement("div");
-  benchPlayer.className = "bench-player";
-
-  benchPlayer.innerHTML = `
-    <div class="bench-number">${i}</div>
-    <div class="bench-name">Hráč</div>
-  `;
-
-  /* EDIT JMÉNA NÁHRADNÍKA */
-  benchPlayer.querySelector(".bench-name")
-    .addEventListener("pointerdown", function(e){
-      e.stopPropagation();
-      selectedPlayer = benchPlayer;
-      playerNameInput.value = this.textContent;
-      editModal.style.display = "flex";
-    });
-
-  /* STŘÍDÁNÍ */
-  benchPlayer.addEventListener("click", function(){
-
-    if(!selectedForSwap) return;
-
-    const fieldNumber = selectedForSwap.querySelector(".player-number");
-    const fieldName = selectedForSwap.querySelector(".player-label");
-
-    const benchNumber = benchPlayer.querySelector(".bench-number");
-    const benchName = benchPlayer.querySelector(".bench-name");
-
-    // swap čísla
-    const tempNumber = fieldNumber.textContent;
-    fieldNumber.textContent = benchNumber.textContent;
-    benchNumber.textContent = tempNumber;
-
-    // swap jména
-    const tempName = fieldName.textContent;
-    fieldName.textContent = benchName.textContent;
-    benchName.textContent = tempName;
-
-    selectedForSwap.style.outline = "";
-    selectedForSwap = null;
   });
 
-  bench.appendChild(benchPlayer);
-}
-
-
-  /* =========================
-     POTVRZENÍ JMÉNA
-  ========================= */
-  confirmNameBtn.addEventListener("click", function(){
-
-  if(!selectedPlayer) return;
-
-  // hráč na hřišti
-  if(selectedPlayer.classList.contains("player")){
-    selectedPlayer.querySelector(".player-label").textContent =
-      playerNameInput.value.trim() || "Hráč";
-  }
-
-  // náhradník
-  if(selectedPlayer.classList.contains("bench-player")){
-    selectedPlayer.querySelector(".bench-name").textContent =
-      playerNameInput.value.trim() || "Hráč";
-  }
-
-  editModal.style.display = "none";
-  playerNameInput.value = "";
-  selectedPlayer = null;
-});
-
-
-  /* =========================
-     ULOŽENÍ
-  ========================= */
+  /* ================= ULOŽIT ================= */
   if (saveBtn) {
     saveBtn.addEventListener("click", function () {
-      alert("Sestava uložena ✔");
+      console.log("Save clicked");
+      alert("Uloženo ✔");
     });
   }
 
-});
+  /* ================= PNG ================= */
+  if (exportPngBtn) {
+    exportPngBtn.addEventListener("click", async function () {
 
-  /* ================= EXPORT PNG ================= */
-if (exportPngBtn) {
-  exportPngBtn.addEventListener("click", async () => {
+      if (typeof html2canvas === "undefined") {
+        alert("html2canvas není načten.");
+        return;
+      }
 
-    if (typeof html2canvas === "undefined") {
-      alert("html2canvas není načten.");
-      return;
-    }
-
-    try {
       const canvas = await html2canvas(pitch, {
-        backgroundColor: "#1b5e20",
-        scale: 2
+        backgroundColor: "#1b5e20"
       });
 
       const link = document.createElement("a");
       link.download = "lineup.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
+    });
+  }
 
-    } catch (err) {
-      console.error(err);
-      alert("Chyba při exportu PNG.");
-    }
-  });
-}
+  /* ================= PDF ================= */
+  if (exportPdfBtn) {
+    exportPdfBtn.addEventListener("click", async function () {
 
-/* ================= EXPORT PDF ================= */
-if (exportPdfBtn) {
-  exportPdfBtn.addEventListener("click", async () => {
+      if (!window.jspdf) {
+        alert("jsPDF není načten.");
+        return;
+      }
 
-    if (!window.jspdf) {
-      alert("jsPDF není načten.");
-      return;
-    }
-
-    try {
       const { jsPDF } = window.jspdf;
-
       const canvas = await html2canvas(pitch, {
-        backgroundColor: "#1b5e20",
-        scale: 2
+        backgroundColor: "#1b5e20"
       });
 
       const imgData = canvas.toDataURL("image/png");
@@ -305,11 +195,7 @@ if (exportPdfBtn) {
       const pdf = new jsPDF("portrait","mm","a4");
       pdf.addImage(imgData,"PNG",10,10,190,260);
       pdf.save("lineup.pdf");
+    });
+  }
 
-    } catch (err) {
-      console.error(err);
-      alert("Chyba při exportu PDF.");
-    }
-  });
-}
-
+});
