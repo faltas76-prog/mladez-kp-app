@@ -233,68 +233,47 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
-const exportContainer = document.getElementById("lineupExport");
 
-/* ================= PNG ================= */
-if (exportPngBtn) {
-  exportPngBtn.addEventListener("click", async function () {
+  /* ================= PNG ================= */
+  if (exportPngBtn) {
+    exportPngBtn.addEventListener("click", async function () {
 
-    if (typeof html2canvas === "undefined") {
-      alert("html2canvas není načten.");
-      return;
-    }
+      if (typeof html2canvas === "undefined") {
+        alert("html2canvas není načten.");
+        return;
+      }
 
-    try {
-
-      const canvas = await html2canvas(exportContainer, {
-        backgroundColor: "#1b5e20",
-        scale: 2
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20"
       });
 
       const link = document.createElement("a");
       link.download = "lineup.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
+    });
+  }
 
-    } catch (err) {
-      console.error(err);
-      alert("Chyba při exportu PNG.");
-    }
-  });
-}
+  /* ================= PDF ================= */
+  if (exportPdfBtn) {
+    exportPdfBtn.addEventListener("click", async function () {
 
-
-/* ================= PDF ================= */
-if (exportPdfBtn) {
-  exportPdfBtn.addEventListener("click", async function () {
-
-    if (!window.jspdf) {
-      alert("jsPDF není načten.");
-      return;
-    }
-
-    try {
+      if (!window.jspdf) {
+        alert("jsPDF není načten.");
+        return;
+      }
 
       const { jsPDF } = window.jspdf;
-
-      const canvas = await html2canvas(exportContainer, {
-        backgroundColor: "#1b5e20",
-        scale: 2
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20"
       });
 
       const imgData = canvas.toDataURL("image/png");
 
       const pdf = new jsPDF("portrait","mm","a4");
-
-      const pageWidth = 190;
-      const pageHeight = 260;
-
-      pdf.addImage(imgData,"PNG",10,10,pageWidth,pageHeight);
+      pdf.addImage(imgData,"PNG",10,10,190,260);
       pdf.save("lineup.pdf");
+    });
+  }
 
-    } catch (err) {
-      console.error(err);
-      alert("Chyba při exportu PDF.");
-    }
-  });
-}
+});
