@@ -233,3 +233,59 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
+/* ================= EXPORT PNG ================= */
+if (exportPngBtn) {
+  exportPngBtn.addEventListener("click", async () => {
+
+    if (typeof html2canvas === "undefined") {
+      alert("html2canvas není načten.");
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20",
+        scale: 2
+      });
+
+      const link = document.createElement("a");
+      link.download = "lineup.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+
+    } catch (err) {
+      console.error(err);
+      alert("Chyba při exportu PNG.");
+    }
+  });
+}
+
+/* ================= EXPORT PDF ================= */
+if (exportPdfBtn) {
+  exportPdfBtn.addEventListener("click", async () => {
+
+    if (!window.jspdf) {
+      alert("jsPDF není načten.");
+      return;
+    }
+
+    try {
+      const { jsPDF } = window.jspdf;
+
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20",
+        scale: 2
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("portrait","mm","a4");
+      pdf.addImage(imgData,"PNG",10,10,190,260);
+      pdf.save("lineup.pdf");
+
+    } catch (err) {
+      console.error(err);
+      alert("Chyba při exportu PDF.");
+    }
+  });
+}
