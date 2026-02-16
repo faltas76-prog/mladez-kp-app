@@ -6,63 +6,58 @@
 <title>Lineup</title>
 
 <style>
+
 body{
-  margin:0;
-  background:#111;
-  color:white;
   font-family:Arial;
   text-align:center;
+  background:#111;
+  color:white;
 }
-  
-<div class="match-info">
-  <input type="text" id="matchName" placeholder="Název zápasu (např. KP U15 vs Sparta)">
-  <input type="date" id="matchDate">
-</div>
 
-  .match-info{
-  display:flex;
-  justify-content:center;
-  gap:15px;
+.controls{
   margin:15px;
 }
 
-.match-info input{
-  padding:8px;
-  font-size:14px;
+button{
+  padding:8px 14px;
+  margin:5px;
+  cursor:pointer;
 }
 
-/* ===== HŘIŠTĚ UEFA ===== */
+#lineupExport{
+  background:#1b5e20;
+  padding:20px;
+  display:inline-block;
+}
+
 #pitch{
   position:relative;
-  width:100%;
-  max-width:900px;
-  aspect-ratio:2/3;
-  margin:20px auto;
-  border:4px solid white;
+  width:900px;
+  height:600px;
+  background:#2e7d32;
+  margin:auto;
   overflow:hidden;
-  box-sizing: border-box;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      #1b5e20 0%,
-      #1b5e20 8%,
-      #2e7d32 8%,
-      #2e7d32 16%
-    );
 }
 
-/* střed */
+/* UEFA ČÁRY */
+
+.pitch-line{
+  position:absolute;
+  border:2px solid white;
+  box-sizing:border-box;
+}
+
 .center-line{
-  position:absolute;
   width:100%;
-  height:2px;
-  background:white;
-  top:50%;
+  height:100%;
+  border-left:2px solid white;
+  left:50%;
+  transform:translateX(-50%);
 }
+
 .center-circle{
-  position:absolute;
-  width:18%;
-  aspect-ratio:1;
+  width:150px;
+  height:150px;
   border:2px solid white;
   border-radius:50%;
   top:50%;
@@ -70,271 +65,177 @@ body{
   transform:translate(-50%,-50%);
 }
 
-/* velké vápno */
 .penalty-area{
-  position:absolute;
-  width:62%;
-  height:22%;
-  left:19%;
-  border:2px solid white;
-}
-.penalty-area.top{top:0;border-bottom:none;}
-.penalty-area.bottom{bottom:0;border-top:none;}
-
-/* malé vápno */
-.goal-area{
-  position:absolute;
-  width:32%;
-  height:10%;
-  left:34%;
-  border:2px solid white;
-}
-.goal-area.top{top:0;border-bottom:none;}
-.goal-area.bottom{bottom:0;border-top:none;}
-
-/* penaltový bod */
-.penalty-spot{
-  position:absolute;
-  width:6px;
-  height:6px;
-  background:white;
-  border-radius:50%;
+  width:300px;
+  height:180px;
   left:50%;
   transform:translateX(-50%);
 }
-.penalty-spot.top{top:18%;}
-.penalty-spot.bottom{bottom:18%;}
 
-/* hráči */
-.player{
-  position:absolute;
-  width:7%;
-  aspect-ratio:1;
-  border-radius:50%;
-  background:#00fff7;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform:translate(-50%,-50%);
-  z-index:10;
-  cursor:pointer;
-  touch-action: none;
-}
-.player-number{
-  font-weight:bold;
-  color:black;
-}
-.player-position{
-  position:absolute;
-  top:-25%;
-  font-size:10px;
-}
-.player-label{
-  position:absolute;
-  top:115%;
+.penalty-area.top{ top:0; border-bottom:none; }
+.penalty-area.bottom{ bottom:0; border-top:none; }
+
+.goal-area{
+  width:140px;
+  height:80px;
   left:50%;
   transform:translateX(-50%);
-  cursor:pointer;
-  z-index:20;
-  pointer-events:auto;
 }
 
-/* ===== VELKÉ VÁPNO ===== */
-.penalty-area{
-  position:absolute;
-  width:60%;
-  height:22%;
-  left:20%;
-  border:2px solid white;
-  box-sizing:border-box;
-  z-index:1;
-}
+.goal-area.top{ top:0; border-bottom:none; }
+.goal-area.bottom{ bottom:0; border-top:none; }
 
-.penalty-area.top{
-  top:0;
-  border-bottom:none;
-}
-
-.penalty-area.bottom{
-  bottom:0;
-  border-top:none;
-}
-
-/* ===== MALÉ VÁPNO ===== */
-.goal-area{
-  position:absolute;
-  width:30%;
-  height:10%;
-  left:35%;
-  border:2px solid white;
-  box-sizing:border-box;
-  z-index:1;
-}
-
-.goal-area.top{
-  top:0;
-  border-bottom:none;
-}
-
-.goal-area.bottom{
-  bottom:0;
-  border-top:none;
-}
-
-/* ===== PENALTOVÝ BOD ===== */
 .penalty-spot{
-  position:absolute;
   width:8px;
   height:8px;
   background:white;
   border-radius:50%;
   left:50%;
   transform:translateX(-50%);
-  z-index:1;
 }
 
-.penalty-spot.top{
-  top:17%;
-}
+.penalty-spot.top{ top:120px; }
+.penalty-spot.bottom{ bottom:120px; }
 
-.penalty-spot.bottom{
-  bottom:17%;
-}
-
-/* ===== PENALTOVÝ OBLOUK ===== */
 .penalty-arc{
-  position:absolute;
-  width:22%;
-  aspect-ratio:1;
+  width:120px;
+  height:120px;
   border:2px solid white;
   border-radius:50%;
   left:50%;
   transform:translateX(-50%);
-  z-index:1;
 }
 
 .penalty-arc.top{
-  top:14%;
+  top:90px;
   clip-path: inset(50% 0 0 0);
 }
 
 .penalty-arc.bottom{
-  bottom:14%;
+  bottom:90px;
   clip-path: inset(0 0 50% 0);
 }
 
-/* ROHY */
-.corner{
-  position:absolute;
-  width:6%;
-  aspect-ratio:1;
-  border:2px solid white;
-  border-radius:50%;
-}
-.corner.tl{top:-3%;left:-3%;clip-path: inset(0 0 50% 50%);}
-.corner.tr{top:-3%;right:-3%;clip-path: inset(0 50% 50% 0);}
-.corner.bl{bottom:-3%;left:-3%;clip-path: inset(50% 0 0 50%);}
-.corner.br{bottom:-3%;right:-3%;clip-path: inset(50% 50% 0 0);}
+/* HRÁČ */
 
-/* lavička */
+.player{
+  position:absolute;
+  width:60px;
+  height:60px;
+  background:#1976d2;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  cursor:pointer;
+  touch-action:none;
+}
+
+.player-number{
+  font-weight:bold;
+}
+
+.player-label{
+  position:absolute;
+  top:70px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* LAVIČKA */
+
 #bench{
+  margin-top:15px;
   display:flex;
   justify-content:center;
-  flex-wrap:wrap;
   gap:10px;
 }
+
 .bench-player{
   width:70px;
   height:70px;
   background:orange;
-  border-radius:10px;
+  border-radius:8px;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  font-size:12px;
-}
-
-.bench-number{
-  font-weight:bold;
 }
 
 .bench-name{
   font-size:11px;
   cursor:pointer;
 }
-  
+
 /* MODAL */
+
 #editModal{
+  display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.7);
-  display:none;
-  align-items:center;
+  background:rgba(0,0,0,0.6);
   justify-content:center;
-  z-index:9999;
+  align-items:center;
 }
+
 #editBox{
-  background:#222;
+  background:white;
   padding:20px;
-  border:2px solid white;
+  color:black;
 }
+
 </style>
 </head>
-
 <body>
 
-<h2>Lineup</h2>
+<div class="controls">
+  <select id="formationSelect">
+    <option value="1-4-4-2">1-4-4-2</option>
+    <option value="1-4-3-3">1-4-3-3</option>
+    <option value="1-4-2-3-1">1-4-2-3-1</option>
+  </select>
 
-<select id="formationSelect">
-<option value="1-4-4-2">1-4-4-2</option>
-<option value="1-4-3-3">1-4-3-3</option>
-<option value="1-4-2-3-1">1-4-2-3-1</option>
-</select>
-
-<button id="createBtn">Vytvořit</button>
-<button id="saveBtn">Uložit</button>
-<button id="exportPngBtn">Export PNG</button>
-<button id="exportPdfBtn">Export PDF</button>
-
-
-
- <div id="pitch"></div>
-  <div class="center-line"></div>
-  <div class="center-circle"></div>
-
-  <div class="penalty-area top"></div>
-  <div class="goal-area top"></div>
-  <div class="penalty-spot top"></div>
-
-  <div class="penalty-area bottom"></div>
-  <div class="goal-area bottom"></div>
-  <div class="penalty-spot bottom"></div>
-  <div class="penalty-arc top"></div>
-  <div class="penalty-arc bottom"></div>
-
-<div class="corner tl"></div>
-<div class="corner tr"></div>
-<div class="corner bl"></div>
-<div class="corner br"></div>
+  <button id="createBtn">Vytvořit</button>
+  <button id="exportPngBtn">PNG</button>
+  <button id="exportPdfBtn">PDF</button>
 </div>
 
-<h3>Lavička</h3>
+<div id="lineupExport">
+
+<div id="pitch">
+
+<div class="pitch-line center-line"></div>
+<div class="pitch-line center-circle"></div>
+
+<div class="pitch-line penalty-area top"></div>
+<div class="pitch-line penalty-area bottom"></div>
+
+<div class="pitch-line goal-area top"></div>
+<div class="pitch-line goal-area bottom"></div>
+
+<div class="penalty-spot top"></div>
+<div class="penalty-spot bottom"></div>
+
+<div class="penalty-arc top"></div>
+<div class="penalty-arc bottom"></div>
+
+</div>
+
 <div id="bench"></div>
 
-<!-- MODAL -->
+</div>
+
 <div id="editModal">
   <div id="editBox">
-    <h3>Změna jména</h3>
     <input id="playerNameInput">
-    <br><br>
     <button id="confirmNameBtn">OK</button>
   </div>
 </div>
-  
+
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="js/lineup.js"></script>
+<script src="lineup.js"></script>
+
 </body>
 </html>
