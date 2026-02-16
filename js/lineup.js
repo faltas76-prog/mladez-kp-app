@@ -165,39 +165,76 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* LAVIČKA */
-    for (let i = jersey; i <= 16; i++) {
-      const b = document.createElement("div");
-      b.className = "bench-player";
-      b.textContent = i;
+   for (let i = jersey; i <= 16; i++) {
 
-      b.addEventListener("click", () => {
-        if (!selectedForSwap) return;
+  const benchPlayer = document.createElement("div");
+  benchPlayer.className = "bench-player";
 
-        const temp = selectedForSwap.querySelector(".player-number").textContent;
-        selectedForSwap.querySelector(".player-number").textContent = b.textContent;
-        b.textContent = temp;
+  benchPlayer.innerHTML = `
+    <div class="bench-number">${i}</div>
+    <div class="bench-name">Hráč</div>
+  `;
 
-        selectedForSwap.style.outline = "";
-        selectedForSwap = null;
-      });
+  /* EDIT JMÉNA NÁHRADNÍKA */
+  benchPlayer.querySelector(".bench-name")
+    .addEventListener("pointerdown", function(e){
+      e.stopPropagation();
+      selectedPlayer = benchPlayer;
+      playerNameInput.value = this.textContent;
+      editModal.style.display = "flex";
+    });
 
-      bench.appendChild(b);
-    }
+  /* STŘÍDÁNÍ */
+  benchPlayer.addEventListener("click", function(){
 
+    if(!selectedForSwap) return;
+
+    const fieldNumber = selectedForSwap.querySelector(".player-number");
+    const fieldName = selectedForSwap.querySelector(".player-label");
+    const fieldPos = selectedForSwap.querySelector(".player-position");
+
+    const benchNumber = benchPlayer.querySelector(".bench-number");
+    const benchName = benchPlayer.querySelector(".bench-name");
+
+    // výměna čísla
+    const tempNumber = fieldNumber.textContent;
+    fieldNumber.textContent = benchNumber.textContent;
+    benchNumber.textContent = tempNumber;
+
+    // výměna jména
+    const tempName = fieldName.textContent;
+    fieldName.textContent = benchName.textContent;
+    benchName.textContent = tempName;
+
+    // pozice zůstává hráči na hřišti
+
+    selectedForSwap.style.outline = "";
+    selectedForSwap = null;
   });
+
+  bench.appendChild(benchPlayer);
+}
+
 
   /* ===== POTVRZENÍ JMÉNA ===== */
  confirmNameBtn.addEventListener("click", function(){
 
   if(!selectedPlayer) return;
 
-  const label = selectedPlayer.querySelector(".player-label");
+  // pokud je to hráč na hřišti
+  if(selectedPlayer.classList.contains("player")){
+    selectedPlayer.querySelector(".player-label").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
 
-  label.textContent = playerNameInput.value.trim() || "Hráč";
+  // pokud je to náhradník
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
 
   editModal.style.display = "none";
   playerNameInput.value = "";
-
   selectedPlayer = null;
 });
 
