@@ -113,48 +113,111 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ================= VYTVOŘIT ================= */
   createBtn.addEventListener("click", function () {
 
-    console.log("Create clicked");
+  pitch.querySelectorAll(".player").forEach(p => p.remove());
+  bench.innerHTML = "";
+  selectedForSwap = null;
 
-    pitch.querySelectorAll(".player").forEach(p => p.remove());
-    bench.innerHTML = "";
+  const formation = formationSelect.value;
+  const rows = formation.split("-").map(Number);
+  const positions = getPositions(formation);
 
-    const formation = formationSelect.value;
-    const rows = formation.split("-").map(Number);
-    const positions = getPositions(formation);
+  let jersey = 2;
 
-    let jersey = 2;
+  /* ===== HRÁČI NA HŘIŠTI ===== */
+  rows.forEach((count,rowIndex) => {
+    for (let i = 0; i < count; i++) {
 
-    rows.forEach((count,rowIndex) => {
-      for (let i = 0; i < count; i++) {
+      let player;
 
-        let player;
-
-        if (rowIndex === 0 && count === 1) {
-          player = createPlayer(null,"GK",true);
-        } else {
-          player = createPlayer(jersey,positions[rowIndex]?.[i]);
-          jersey++;
-        }
-
-        const y = 100 - ((rowIndex+1)*(100/(rows.length+1)));
-        const x = (i+1)*(100/(count+1));
-
-        player.style.left = x + "%";
-        player.style.top = y + "%";
-
-        pitch.appendChild(player);
+      if (rowIndex === 0 && count === 1) {
+        player = createPlayer(null,"GK",true);
+      } else {
+        player = createPlayer(jersey,positions[rowIndex]?.[i]);
+        jersey++;
       }
-    });
 
+      const y = 100 - ((rowIndex+1)*(100/(rows.length+1)));
+      const x = (i+1)*(100/(count+1));
+
+      player.style.left = x + "%";
+      player.style.top = y + "%";
+
+      pitch.appendChild(player);
+    }
   });
 
-  /* ================= ULOŽIT ================= */
-  if (saveBtn) {
-    saveBtn.addEventListener("click", function () {
-      console.log("Save clicked");
-      alert("Uloženo ✔");
-    });
+  /* ===== LAVIČKA ===== */
+  confirmNameBtn.addEventListener("click", function(){
+
+  if(!selectedPlayer) return;
+
+  // hráč na hřišti
+  if(selectedPlayer.classList.contains("player")){
+    selectedPlayer.querySelector(".player-label").textContent =
+      playerNameInput.value.trim() || "Hráč";
   }
+
+  // náhradník
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedPlayer = null;
+});
+
+    for (let i = jersey; i <= 16; i++) {
+
+    const benchPlayer = document.createElement("div");
+    benchPlayer.className = "bench-player";
+
+    benchPlayer.innerHTML = `
+      <div class="bench-number">${i}</div>
+      <div class="bench-name">Hráč</div>
+    `;
+
+    /* EDIT JMÉNA NÁHRADNÍKA */
+    const nameEl = benchPlayer.querySelector(".bench-name");
+
+    nameEl.addEventListener("pointerdown", function(e){
+      e.stopPropagation();
+      selectedPlayer = benchPlayer;
+      playerNameInput.value = nameEl.textContent;
+      editModal.style.display = "flex";
+    });
+
+    /* STŘÍDÁNÍ */
+    benchPlayer.addEventListener("click", function(){
+
+      if(!selectedForSwap) return;
+
+      const fieldNumber = selectedForSwap.querySelector(".player-number");
+      const fieldName = selectedForSwap.querySelector(".player-label");
+
+      const benchNumber = benchPlayer.querySelector(".bench-number");
+      const benchName = benchPlayer.querySelector(".bench-name");
+
+      // swap čísla
+      const tempNumber = fieldNumber.textContent;
+      fieldNumber.textContent = benchNumber.textContent;
+      benchNumber.textContent = tempNumber;
+
+      // swap jména
+      const tempName = fieldName.textContent;
+      fieldName.textContent = benchName.textContent;
+      benchName.textContent = tempName;
+
+      selectedForSwap.style.outline = "";
+      selectedForSwap = null;
+    });
+
+    bench.appendChild(benchPlayer);
+  }
+
+});
+
 
   /* ================= PNG ================= */
   if (exportPngBtn) {
