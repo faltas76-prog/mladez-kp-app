@@ -172,41 +172,78 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* LAVIČKA */
-    for (let i = jersey; i <= 16; i++) {
+   for (let i = jersey; i <= 16; i++) {
 
-      const b = document.createElement("div");
-      b.className = "bench-player";
-      b.textContent = i;
+  const benchPlayer = document.createElement("div");
+  benchPlayer.className = "bench-player";
 
-      b.addEventListener("click", function () {
-        if (!selectedForSwap) return;
+  benchPlayer.innerHTML = `
+    <div class="bench-number">${i}</div>
+    <div class="bench-name">Hráč</div>
+  `;
 
-        const temp = selectedForSwap.querySelector(".player-number").textContent;
-        selectedForSwap.querySelector(".player-number").textContent = b.textContent;
-        b.textContent = temp;
+  /* EDIT JMÉNA NÁHRADNÍKA */
+  benchPlayer.querySelector(".bench-name")
+    .addEventListener("pointerdown", function(e){
+      e.stopPropagation();
+      selectedPlayer = benchPlayer;
+      playerNameInput.value = this.textContent;
+      editModal.style.display = "flex";
+    });
 
-        selectedForSwap.style.outline = "";
-        selectedForSwap = null;
-      });
+  /* STŘÍDÁNÍ */
+  benchPlayer.addEventListener("click", function(){
 
-      bench.appendChild(b);
-    }
+    if(!selectedForSwap) return;
 
+    const fieldNumber = selectedForSwap.querySelector(".player-number");
+    const fieldName = selectedForSwap.querySelector(".player-label");
+
+    const benchNumber = benchPlayer.querySelector(".bench-number");
+    const benchName = benchPlayer.querySelector(".bench-name");
+
+    // swap čísla
+    const tempNumber = fieldNumber.textContent;
+    fieldNumber.textContent = benchNumber.textContent;
+    benchNumber.textContent = tempNumber;
+
+    // swap jména
+    const tempName = fieldName.textContent;
+    fieldName.textContent = benchName.textContent;
+    benchName.textContent = tempName;
+
+    selectedForSwap.style.outline = "";
+    selectedForSwap = null;
   });
+
+  bench.appendChild(benchPlayer);
+}
+
 
   /* =========================
      POTVRZENÍ JMÉNA
   ========================= */
-  confirmNameBtn.addEventListener("click", function () {
-    if (!selectedPlayer) return;
+  confirmNameBtn.addEventListener("click", function(){
 
+  if(!selectedPlayer) return;
+
+  // hráč na hřišti
+  if(selectedPlayer.classList.contains("player")){
     selectedPlayer.querySelector(".player-label").textContent =
       playerNameInput.value.trim() || "Hráč";
+  }
 
-    editModal.style.display = "none";
-    playerNameInput.value = "";
-    selectedPlayer = null;
-  });
+  // náhradník
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedPlayer = null;
+});
+
 
   /* =========================
      ULOŽENÍ
@@ -218,3 +255,61 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+
+  /* ================= EXPORT PNG ================= */
+if (exportPngBtn) {
+  exportPngBtn.addEventListener("click", async () => {
+
+    if (typeof html2canvas === "undefined") {
+      alert("html2canvas není načten.");
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20",
+        scale: 2
+      });
+
+      const link = document.createElement("a");
+      link.download = "lineup.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+
+    } catch (err) {
+      console.error(err);
+      alert("Chyba při exportu PNG.");
+    }
+  });
+}
+
+/* ================= EXPORT PDF ================= */
+if (exportPdfBtn) {
+  exportPdfBtn.addEventListener("click", async () => {
+
+    if (!window.jspdf) {
+      alert("jsPDF není načten.");
+      return;
+    }
+
+    try {
+      const { jsPDF } = window.jspdf;
+
+      const canvas = await html2canvas(pitch, {
+        backgroundColor: "#1b5e20",
+        scale: 2
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("portrait","mm","a4");
+      pdf.addImage(imgData,"PNG",10,10,190,260);
+      pdf.save("lineup.pdf");
+
+    } catch (err) {
+      console.error(err);
+      alert("Chyba při exportu PDF.");
+    }
+  });
+}
+
