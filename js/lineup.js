@@ -201,6 +201,16 @@ document.addEventListener("DOMContentLoaded", () => {
   selectedPlayer = null;
 });
 
+ // náhradník
+  if(selectedPlayer.classList.contains("bench-player")){
+    selectedPlayer.querySelector(".bench-name").textContent =
+      playerNameInput.value.trim() || "Hráč";
+  }
+
+  editModal.style.display = "none";
+  playerNameInput.value = "";
+  selectedPlayer = null;
+});
 
   /* ===== ULOŽENÍ ===== */
   if (saveBtn) {
