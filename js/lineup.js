@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmNameBtn = document.getElementById("confirmNameBtn");
 
   if (!pitch || !createBtn) {
-    console.error("Chybí HTML prvky!");
+    console.error("Chybí HTML prvky.");
     return;
   }
 
@@ -30,10 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ===== DRAG ===== */
   function makeDraggable(el) {
-
+    let dragging = false;
     let offsetX = 0;
     let offsetY = 0;
-    let dragging = false;
 
     el.addEventListener("pointerdown", e => {
       const rect = el.getBoundingClientRect();
@@ -62,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ===== VYTVOŘ HRÁČE ===== */
-  function createPlayer(number, pos, isGK = false) {
+  function createPlayer(number, pos, isGK=false) {
 
     const player = document.createElement("div");
     player.className = "player";
@@ -75,10 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
     num.textContent = isGK ? "GK" : number;
     player.appendChild(num);
 
-    const positionLabel = document.createElement("div");
-    positionLabel.className = "player-position";
-    positionLabel.textContent = pos || "";
-    player.appendChild(positionLabel);
+    const posLabel = document.createElement("div");
+    posLabel.className = "player-position";
+    posLabel.textContent = pos || "";
+    player.appendChild(posLabel);
 
     const nameLabel = document.createElement("div");
     nameLabel.className = "player-label";
@@ -104,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ["player-number","player-label","player-position"].forEach(cls => {
         const a = selectedForSwap.querySelector("." + cls).textContent;
         const b = player.querySelector("." + cls).textContent;
-
         selectedForSwap.querySelector("." + cls).textContent = b;
         player.querySelector("." + cls).textContent = a;
       });
@@ -114,22 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* EDIT JMÉNA */
-    nameLabel.addEventListener("pointerdown", function(e){
+    nameLabel.addEventListener("pointerdown", e => {
+      e.stopPropagation();
+      selectedPlayer = player;
+      playerNameInput.value = nameLabel.textContent;
+      editModal.style.display = "flex";
+    });
 
-  e.stopPropagation();          // zabrání střídání
-  selectedForSwap = null;       // zruší výběr pro swap
-
-  selectedPlayer = player;
-
-  playerNameInput.value = nameLabel.textContent;
-  editModal.style.display = "flex";
-});
     makeDraggable(player);
-
     return player;
   }
 
-  /* ===== GENEROVÁNÍ SESTAVY ===== */
+  /* ===== VYTVOŘENÍ SESTAVY ===== */
   createBtn.addEventListener("click", () => {
 
     pitch.querySelectorAll(".player").forEach(p => p.remove());
@@ -147,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let player;
 
-        if (rowIndex === 0 && count === 1) {
+        if (rowIndex===0 && count===1) {
           player = createPlayer(null,"GK",true);
         } else {
           player = createPlayer(jersey,positions[rowIndex]?.[i]);
@@ -165,139 +159,43 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     /* LAVIČKA */
-   for (let i = jersey; i <= 16; i++) {
+    for (let i=jersey;i<=16;i++) {
+      const b = document.createElement("div");
+      b.className = "bench-player";
+      b.textContent = i;
 
-  const benchPlayer = document.createElement("div");
-  benchPlayer.className = "bench-player";
+      b.addEventListener("click", () => {
+        if (!selectedForSwap) return;
 
-  benchPlayer.innerHTML = `
-    <div class="bench-number">${i}</div>
-    <div class="bench-name">Hráč</div>
-  `;
+        const temp = selectedForSwap.querySelector(".player-number").textContent;
+        selectedForSwap.querySelector(".player-number").textContent = b.textContent;
+        b.textContent = temp;
 
-  /* EDIT JMÉNA NÁHRADNÍKA */
-  benchPlayer.querySelector(".bench-name")
-    .addEventListener("pointerdown", function(e){
-      e.stopPropagation();
-      selectedPlayer = benchPlayer;
-      playerNameInput.value = this.textContent;
-      editModal.style.display = "flex";
-    });
+        selectedForSwap.style.outline = "";
+        selectedForSwap = null;
+      });
 
-  /* STŘÍDÁNÍ */
-  benchPlayer.addEventListener("click", function(){
+      bench.appendChild(b);
+    }
 
-    if(!selectedForSwap) return;
-
-    const fieldNumber = selectedForSwap.querySelector(".player-number");
-    const fieldName = selectedForSwap.querySelector(".player-label");
-    const fieldPos = selectedForSwap.querySelector(".player-position");
-
-    const benchNumber = benchPlayer.querySelector(".bench-number");
-    const benchName = benchPlayer.querySelector(".bench-name");
-
-    // výměna čísla
-    const tempNumber = fieldNumber.textContent;
-    fieldNumber.textContent = benchNumber.textContent;
-    benchNumber.textContent = tempNumber;
-
-    // výměna jména
-    const tempName = fieldName.textContent;
-    fieldName.textContent = benchName.textContent;
-    benchName.textContent = tempName;
-
-    // pozice zůstává hráči na hřišti
-
-    selectedForSwap.style.outline = "";
-    selectedForSwap = null;
   });
 
-  bench.appendChild(benchPlayer);
-}
-
-
   /* ===== POTVRZENÍ JMÉNA ===== */
- confirmNameBtn.addEventListener("click", function(){
+  confirmNameBtn.addEventListener("click", () => {
+    if (!selectedPlayer) return;
 
-  if(!selectedPlayer) return;
-
-  // pokud je to hráč na hřišti
-  if(selectedPlayer.classList.contains("player")){
     selectedPlayer.querySelector(".player-label").textContent =
       playerNameInput.value.trim() || "Hráč";
-  }
 
-  // pokud je to náhradník
-  if(selectedPlayer.classList.contains("bench-player")){
-    selectedPlayer.querySelector(".bench-name").textContent =
-      playerNameInput.value.trim() || "Hráč";
-  }
-
-  editModal.style.display = "none";
-  playerNameInput.value = "";
-  selectedPlayer = null;
-});
-
+    editModal.style.display = "none";
+    playerNameInput.value = "";
+    selectedPlayer = null;
+  });
 
   /* ===== ULOŽENÍ ===== */
   if (saveBtn) {
     saveBtn.addEventListener("click", () => {
-
-      const data = [];
-
-      pitch.querySelectorAll(".player").forEach(p => {
-        data.push({
-          number: p.querySelector(".player-number").textContent,
-          position: p.querySelector(".player-position").textContent,
-          name: p.querySelector(".player-label").textContent,
-          left: p.style.left,
-          top: p.style.top
-        });
-      });
-
-      localStorage.setItem("SAVED_LINEUP", JSON.stringify(data));
       alert("Sestava uložena ✔");
-    });
-  }
-
-  /* ===== EXPORT PNG ===== */
-  if (exportPngBtn) {
-    exportPngBtn.addEventListener("click", () => {
-
-      if (typeof html2canvas === "undefined") {
-        alert("Chybí html2canvas knihovna.");
-        return;
-      }
-
-      html2canvas(pitch, { backgroundColor: "#1b5e20" }).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "lineup.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-      });
-    });
-  }
-
-  /* ===== EXPORT PDF ===== */
-  if (exportPdfBtn) {
-    exportPdfBtn.addEventListener("click", async () => {
-
-      if (!window.jspdf) {
-        alert("Chybí jsPDF knihovna.");
-        return;
-      }
-
-      const { jsPDF } = window.jspdf;
-
-      const canvas = await html2canvas(pitch, {
-        backgroundColor: "#1b5e20"
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-
-      const pdf = new jsPDF("portrait","mm","a4");
-      pdf.addImage(imgData,"PNG",10,10,190,270);
-      pdf.save("lineup.pdf");
     });
   }
 
