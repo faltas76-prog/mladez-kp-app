@@ -13,6 +13,23 @@ body{
   font-family:Arial;
   text-align:center;
 }
+  
+<div class="match-info">
+  <input type="text" id="matchName" placeholder="Název zápasu (např. KP U15 vs Sparta)">
+  <input type="date" id="matchDate">
+</div>
+
+  .match-info{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin:15px;
+}
+
+.match-info input{
+  padding:8px;
+  font-size:14px;
+}
 
 /* ===== HŘIŠTĚ UEFA ===== */
 #pitch{
