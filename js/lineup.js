@@ -233,9 +233,11 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
 });
-/* ================= EXPORT PNG ================= */
+const exportContainer = document.getElementById("lineupExport");
+
+/* ================= PNG ================= */
 if (exportPngBtn) {
-  exportPngBtn.addEventListener("click", async () => {
+  exportPngBtn.addEventListener("click", async function () {
 
     if (typeof html2canvas === "undefined") {
       alert("html2canvas není načten.");
@@ -243,7 +245,8 @@ if (exportPngBtn) {
     }
 
     try {
-      const canvas = await html2canvas(pitch, {
+
+      const canvas = await html2canvas(exportContainer, {
         backgroundColor: "#1b5e20",
         scale: 2
       });
@@ -260,9 +263,10 @@ if (exportPngBtn) {
   });
 }
 
-/* ================= EXPORT PDF ================= */
+
+/* ================= PDF ================= */
 if (exportPdfBtn) {
-  exportPdfBtn.addEventListener("click", async () => {
+  exportPdfBtn.addEventListener("click", async function () {
 
     if (!window.jspdf) {
       alert("jsPDF není načten.");
@@ -270,9 +274,10 @@ if (exportPdfBtn) {
     }
 
     try {
+
       const { jsPDF } = window.jspdf;
 
-      const canvas = await html2canvas(pitch, {
+      const canvas = await html2canvas(exportContainer, {
         backgroundColor: "#1b5e20",
         scale: 2
       });
@@ -280,7 +285,11 @@ if (exportPdfBtn) {
       const imgData = canvas.toDataURL("image/png");
 
       const pdf = new jsPDF("portrait","mm","a4");
-      pdf.addImage(imgData,"PNG",10,10,190,260);
+
+      const pageWidth = 190;
+      const pageHeight = 260;
+
+      pdf.addImage(imgData,"PNG",10,10,pageWidth,pageHeight);
       pdf.save("lineup.pdf");
 
     } catch (err) {
