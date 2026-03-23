@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>Poznámky trenéra</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="manifest" href="manifest.json">
 <link rel="manifest" href="/mladez-kp-app/manifest.json">
-<meta name="theme-color" content="#00fff7">
 <link rel="apple-touch-icon" href="/mladez-kp-app/icons/icon-192.png">
 
 <meta name="theme-color" content="#2e7d32">
@@ -20,6 +20,16 @@ body {
 
 h2 {
   text-align: center;
+}
+
+/* INFO BOX */
+.notes-info{
+  background:#fff;
+  padding:10px;
+  border-radius:6px;
+  margin-bottom:10px;
+  font-size:14px;
+  line-height:1.4;
 }
 
 textarea {
@@ -48,9 +58,16 @@ input, button {
 
 <h2>📝 Poznámky trenéra</h2>
 
+<!-- 🔥 NOVĚ PŘIDANÝ POPIS -->
+<div class="notes-info">
+  <strong>📋 Jak používat poznámky:</strong><br>
+  Poznámky můžeš kdykoliv upravovat a doplňovat.<br>
+  Uložený text není finální – můžeš ho znovu otevřít, přepsat nebo rozšířit o další informace.
+</div>
+
 <input id="noteTitle" placeholder="Název poznámky">
 
-<textarea id="noteText" placeholder="Text poznámky"></textarea>
+<textarea id="noteText" placeholder="Text poznámky (můžeš ji později upravit nebo doplnit)"></textarea>
 
 <button id="saveNoteBtn">💾 Uložit poznámku</button>
 
@@ -59,7 +76,8 @@ input, button {
 <div id="notesList"></div>
 
 <script src="js/notes.js"></script>
-  <script>
+
+<script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
