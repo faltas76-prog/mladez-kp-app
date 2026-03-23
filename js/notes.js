@@ -1,59 +1,84 @@
-const NOTES_KEY = "coach_notes_v1";
+document.addEventListener("DOMContentLoaded", () => {
 
-function loadNotes() {
-  try {
-    return JSON.parse(localStorage.getItem(NOTES_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
+const noteTitle = document.getElementById("noteTitle");
+const noteText = document.getElementById("noteText");
+const saveBtn = document.getElementById("saveNoteBtn");
+const notesList = document.getElementById("notesList");
 
-function saveNotes(notes) {
-  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-}
+let editIndex = null;
 
-function renderNotes() {
-  const box = document.getElementById("notesList");
-  const notes = loadNotes();
+/* ===== NAČTENÍ ===== */
+function loadNotes(){
+  const notes = JSON.parse(localStorage.getItem("NOTES")) || [];
+  notesList.innerHTML = "";
 
-  box.innerHTML = "";
+  notes.forEach((note, index) => {
 
-  notes.forEach(n => {
     const div = document.createElement("div");
     div.className = "note";
+
     div.innerHTML = `
-      <strong>${n.title}</strong>
-      <p>${n.text}</p>
-      <button data-id="${n.id}">❌</button>
+      <strong>${note.title}</strong><br>
+      <p>${note.text}</p>
+      <button onclick="editNote(${index})">✏️ Upravit</button>
+      <button onclick="deleteNote(${index})">🗑️ Smazat</button>
     `;
 
-    div.querySelector("button").onclick = () => {
-      const updated = loadNotes().filter(x => x.id !== n.id);
-      saveNotes(updated);
-      renderNotes();
-    };
-
-    box.appendChild(div);
+    notesList.appendChild(div);
   });
 }
 
-document.getElementById("saveNoteBtn").onclick = () => {
-  const title = noteTitle.value.trim();
-  const text = noteText.value.trim();
-  if (!title || !text) return;
+/* ===== ULOŽENÍ / EDITACE ===== */
+saveBtn.addEventListener("click", () => {
 
-  const notes = loadNotes();
-  notes.push({
-    id: Date.now().toString(),
-    title,
-    text,
-    createdAt: Date.now()
-  });
+  const notes = JSON.parse(localStorage.getItem("NOTES")) || [];
 
-  saveNotes(notes);
+  const newNote = {
+    title: noteTitle.value.trim() || "Bez názvu",
+    text: noteText.value.trim()
+  };
+
+  if(editIndex !== null){
+    notes[editIndex] = newNote; // 🔥 EDITACE
+    editIndex = null;
+  } else {
+    notes.push(newNote); // NOVÁ POZNÁMKA
+  }
+
+  localStorage.setItem("NOTES", JSON.stringify(notes));
+
   noteTitle.value = "";
   noteText.value = "";
-  renderNotes();
+
+  loadNotes();
+});
+
+/* ===== EDITACE ===== */
+window.editNote = function(index){
+
+  const notes = JSON.parse(localStorage.getItem("NOTES")) || [];
+
+  noteTitle.value = notes[index].title;
+  noteText.value = notes[index].text;
+
+  editIndex = index;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-renderNotes();
+/* ===== SMAZÁNÍ ===== */
+window.deleteNote = function(index){
+
+  const notes = JSON.parse(localStorage.getItem("NOTES")) || [];
+
+  notes.splice(index,1);
+
+  localStorage.setItem("NOTES", JSON.stringify(notes));
+
+  loadNotes();
+};
+
+/* ===== INIT ===== */
+loadNotes();
+
+});
