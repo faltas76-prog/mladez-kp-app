@@ -7,6 +7,18 @@ const notesList = document.getElementById("notesList");
 
 let editIndex = null;
 
+/* ===== FORMÁT DATUMU ===== */
+function formatDate(){
+  const d = new Date();
+  return d.toLocaleString("cs-CZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 /* ===== NAČTENÍ ===== */
 function loadNotes(){
   const notes = JSON.parse(localStorage.getItem("NOTES")) || [];
@@ -19,6 +31,7 @@ function loadNotes(){
 
     div.innerHTML = `
       <strong>${note.title}</strong><br>
+      <small>📅 ${note.date || ""}</small>
       <p>${note.text}</p>
       <button onclick="editNote(${index})">✏️ Upravit</button>
       <button onclick="deleteNote(${index})">🗑️ Smazat</button>
@@ -35,14 +48,15 @@ saveBtn.addEventListener("click", () => {
 
   const newNote = {
     title: noteTitle.value.trim() || "Bez názvu",
-    text: noteText.value.trim()
+    text: noteText.value.trim(),
+    date: formatDate() // 🔥 datum
   };
 
   if(editIndex !== null){
-    notes[editIndex] = newNote; // 🔥 EDITACE
+    notes[editIndex] = newNote;
     editIndex = null;
   } else {
-    notes.push(newNote); // NOVÁ POZNÁMKA
+    notes.push(newNote);
   }
 
   localStorage.setItem("NOTES", JSON.stringify(notes));
