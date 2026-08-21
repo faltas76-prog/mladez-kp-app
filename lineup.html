@@ -344,23 +344,39 @@ h1 {
 }
 
 
-/* Horní */
+/* =====================================================
+   HORNÍ "D"
+   ===================================================== */
 
-.penalty-area.top {
-    top: 0;
+.penalty-arc.top {
 
-    border-bottom: 2px solid #fff;
+    /*
+       Kruhový oblouk je vystředěn
+       kolem penaltového bodu.
+    */
+
+    top: 1.76%;
+
+    clip-path:
+        inset(
+            50% 0 0 0
+        );
 }
 
 
-/* Dolní */
+/* =====================================================
+   DOLNÍ "D"
+   ===================================================== */
 
-.penalty-area.bottom {
-    bottom: 0;
+.penalty-arc.bottom {
 
-    border-top: 2px solid #fff;
+    bottom: 1.76%;
+
+    clip-path:
+        inset(
+            0 0 50% 0
+        );
 }
-
 
 /* =====================================================
    MALÉ VÁPNO
