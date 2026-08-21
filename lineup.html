@@ -264,38 +264,61 @@ h1 {
 
 
 /* =====================================================
-   POKUTOVÉ ÚZEMÍ – 16,5 m
+   POKUTOVÉ ÚZEMÍ – VELKÉ VÁPNO
+   Skutečný rozměr:
+   40,32 m široké
+   16,50 m hluboké
    ===================================================== */
 
 .penalty-area {
     position: absolute;
 
     left: 50%;
-    width: 52.4%;
-    height: 24.25%;
+
+    /*
+       40,32 / 68 = 59,29 %
+    */
+    width: 59.3%;
+
+    /*
+       16,50 / 105 = 15,71 %
+    */
+    height: 15.71%;
 
     transform: translateX(-50%);
 
-    border-left: 2px solid #fff;
-    border-right: 2px solid #fff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
 
     z-index: 3;
+
     pointer-events: none;
 }
 
+
+/* Horní pokutové území */
+
 .penalty-area.top {
     top: 0;
-    border-bottom: 2px solid #fff;
+
+    border-bottom: 2px solid #ffffff;
 }
+
+
+/* Dolní pokutové území */
 
 .penalty-area.bottom {
     bottom: 0;
-    border-top: 2px solid #fff;
+
+    border-top: 2px solid #ffffff;
 }
 
 
 /* =====================================================
-   MALÉ BRANKOVÉ ÚZEMÍ – 5,5 m
+   MALÉ VÁPNO
+   Skutečný rozměr:
+   18,32 m široké
+   5,50 m hluboké
    ===================================================== */
 
 .goal-area {
@@ -303,31 +326,48 @@ h1 {
 
     left: 50%;
 
-    width: 26.7%;
-    height: 8.1%;
+    /*
+       18,32 / 68 = 26,94 %
+    */
+    width: 26.94%;
+
+    /*
+       5,50 / 105 = 5,24 %
+    */
+    height: 5.24%;
 
     transform: translateX(-50%);
 
-    border-left: 2px solid #fff;
-    border-right: 2px solid #fff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
 
     z-index: 4;
+
     pointer-events: none;
 }
 
+
+/* Horní malé vápno */
+
 .goal-area.top {
     top: 0;
-    border-bottom: 2px solid #fff;
+
+    border-bottom: 2px solid #ffffff;
 }
+
+
+/* Dolní malé vápno */
 
 .goal-area.bottom {
     bottom: 0;
-    border-top: 2px solid #fff;
+
+    border-top: 2px solid #ffffff;
 }
 
 
 /* =====================================================
    PENALTOVÝ BOD
+   11 metrů od brankové čáry
    ===================================================== */
 
 .penalty-spot {
@@ -340,40 +380,53 @@ h1 {
 
     transform: translateX(-50%);
 
-    background: #fff;
+    background: #ffffff;
+
     border-radius: 50%;
 
-    z-index: 6;
+    z-index: 7;
+
     pointer-events: none;
 }
 
 
 /*
-   11 m od brankové čáry
+   11 / 105 = 10,48 %
 */
 
 .penalty-spot.top {
-    top: 16.18%;
+    top: 10.48%;
 }
 
+
 .penalty-spot.bottom {
-    bottom: 16.18%;
+    bottom: 10.48%;
 }
 
 
 /* =====================================================
    PENALTOVÝ OBLOUK
+   "D" U VELKÉHO VÁPNA
+
+   Poloměr:
+   9,15 m
+
+   Průměr:
+   18,30 m
+
+   18,30 / 68 = 26,91 %
    ===================================================== */
 
 .penalty-arc {
     position: absolute;
 
-    width: 16.5%;
+    width: 26.91%;
     aspect-ratio: 1 / 1;
 
     left: 50%;
 
-    border: 2px solid #fff;
+    border: 2px solid #ffffff;
+
     border-radius: 50%;
 
     transform: translateX(-50%);
@@ -385,28 +438,39 @@ h1 {
 
 
 /*
-   HORNÍ BRANKA
+   HORNÍ "D"
 
-   Oblouk vychází z penaltového bodu
-   směrem do středu hřiště.
+   Střed oblouku je u penaltového bodu.
+
+   Poloměr:
+   9,15 / 105 = 8,71 %
+
+   Horní bod kruhu:
+   10,48 - 8,71 = 1,77 %
 */
 
 .penalty-arc.top {
-    top: 8.0%;
+    top: 1.77%;
 
+    /*
+       Zobrazíme pouze spodní
+       polovinu kruhu.
+    */
     clip-path: inset(50% 0 0 0);
 }
 
 
 /*
-   DOLNÍ BRANKA
-
-   Oblouk musí být zrcadlově obrácený.
+   DOLNÍ "D"
 */
 
 .penalty-arc.bottom {
-    bottom: 8.0%;
+    bottom: 1.77%;
 
+    /*
+       Zobrazíme pouze horní
+       polovinu kruhu.
+    */
     clip-path: inset(0 0 50% 0);
 }
 
@@ -421,16 +485,17 @@ h1 {
     width: 28px;
     height: 28px;
 
-    border: 2px solid #fff;
+    border: 2px solid #ffffff;
+
     border-radius: 50%;
 
-    z-index: 5;
+    z-index: 6;
 
     pointer-events: none;
 }
 
 
-/* LEVÝ HORNÍ */
+/* Levý horní roh */
 
 .corner-arc.top-left {
     left: -14px;
@@ -440,7 +505,7 @@ h1 {
 }
 
 
-/* PRAVÝ HORNÍ */
+/* Pravý horní roh */
 
 .corner-arc.top-right {
     right: -14px;
@@ -450,7 +515,7 @@ h1 {
 }
 
 
-/* LEVÝ DOLNÍ */
+/* Levý dolní roh */
 
 .corner-arc.bottom-left {
     left: -14px;
@@ -460,7 +525,7 @@ h1 {
 }
 
 
-/* PRAVÝ DOLNÍ */
+/* Pravý dolní roh */
 
 .corner-arc.bottom-right {
     right: -14px;
