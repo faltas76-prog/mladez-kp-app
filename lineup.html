@@ -326,23 +326,17 @@ h1 {
    ===================================================== */
 
 .penalty-area {
-
     position: absolute;
 
     left: 50%;
 
     width: 57.1%;
+    height: 15.71%;
 
-    height: 15.7%;
+    transform: translateX(-50%);
 
-    transform:
-        translateX(-50%);
-
-    border-left:
-        2px solid #ffffff;
-
-    border-right:
-        2px solid #ffffff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #fff;
 
     z-index: 3;
 
@@ -350,25 +344,21 @@ h1 {
 }
 
 
-/* HORNÍ VÁPNO */
+/* Horní */
 
 .penalty-area.top {
-
     top: 0;
 
-    border-bottom:
-        2px solid #ffffff;
+    border-bottom: 2px solid #fff;
 }
 
 
-/* DOLNÍ VÁPNO */
+/* Dolní */
 
 .penalty-area.bottom {
-
     bottom: 0;
 
-    border-top:
-        2px solid #ffffff;
+    border-top: 2px solid #fff;
 }
 
 
@@ -377,23 +367,17 @@ h1 {
    ===================================================== */
 
 .goal-area {
-
     position: absolute;
 
     left: 50%;
 
     width: 17.45%;
+    height: 5.24%;
 
-    height: 5.25%;
+    transform: translateX(-50%);
 
-    transform:
-        translateX(-50%);
-
-    border-left:
-        2px solid #ffffff;
-
-    border-right:
-        2px solid #ffffff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #fff;
 
     z-index: 4;
 
@@ -401,25 +385,21 @@ h1 {
 }
 
 
-/* HORNÍ MALÉ VÁPNO */
+/* Horní malé vápno */
 
 .goal-area.top {
-
     top: 0;
 
-    border-bottom:
-        2px solid #ffffff;
+    border-bottom: 2px solid #fff;
 }
 
 
-/* DOLNÍ MALÉ VÁPNO */
+/* Dolní malé vápno */
 
 .goal-area.bottom {
-
     bottom: 0;
 
-    border-top:
-        2px solid #ffffff;
+    border-top: 2px solid #fff;
 }
 
 
@@ -428,19 +408,16 @@ h1 {
    ===================================================== */
 
 .penalty-spot {
-
     position: absolute;
 
     width: 8px;
-
     height: 8px;
 
     left: 50%;
 
-    transform:
-        translateX(-50%);
+    transform: translateX(-50%);
 
-    background: #ffffff;
+    background: #fff;
 
     border-radius: 50%;
 
@@ -450,37 +427,53 @@ h1 {
 }
 
 
-.penalty-spot.top {
+/*
+   11 m z celkové délky 105 m
+*/
 
+.penalty-spot.top {
     top: 10.48%;
 }
 
 
 .penalty-spot.bottom {
-
     bottom: 10.48%;
 }
 
 
 /* =====================================================
-   PENALTOVÉ OBLOUKY – D
+   PENALTOVÉ OBLOUKY
    ===================================================== */
+
+/*
+   Tady je hlavní oprava.
+
+   D už NENÍ uvnitř .penalty-area.
+
+   Je přímo dítětem #pitch.
+
+   Díky tomu se všechny rozměry
+   počítají vůči celému hřišti.
+*/
 
 .penalty-arc {
 
     position: absolute;
 
+    left: 50%;
+
+    /*
+       Průměr 18,30 m
+       vůči délce hřiště 105 m
+    */
+
     width: 17.43%;
 
     aspect-ratio: 1 / 1;
 
-    left: 50%;
+    transform: translateX(-50%);
 
-    transform:
-        translateX(-50%);
-
-    border:
-        2px solid #ffffff;
+    border: 2px solid #fff;
 
     border-radius: 50%;
 
@@ -490,18 +483,38 @@ h1 {
 }
 
 
-/*
+/* =====================================================
    HORNÍ D
+   ===================================================== */
 
-   Oblouk je posunut směrem
-   k brance a jeho spodní
-   polovina zasahuje před
-   velké vápno.
+/*
+   Penaltový bod je 11 m od branky.
+
+   Poloměr D = 9,15 m.
+
+   D proto zasahuje od cca 1,85 m
+   od brankové čáry až za hranici
+   velkého vápna.
+
+   Zobrazujeme pouze část oblouku
+   mimo pokutové území.
 */
 
 .penalty-arc.top {
 
-    top: -2.97%;
+    /*
+       11 m - 9,15 m
+       = 1,85 m
+
+       1,85 / 105 = 1,76 %
+    */
+
+    top: 1.76%;
+
+    /*
+       Z kruhu zobrazíme pouze
+       část směrem do středu hřiště.
+    */
 
     clip-path:
         inset(
@@ -510,13 +523,13 @@ h1 {
 }
 
 
-/*
+/* =====================================================
    DOLNÍ D
-*/
+   ===================================================== */
 
 .penalty-arc.bottom {
 
-    bottom: -2.97%;
+    bottom: 1.76%;
 
     clip-path:
         inset(
@@ -534,11 +547,9 @@ h1 {
     position: absolute;
 
     width: 30px;
-
     height: 30px;
 
-    border:
-        2px solid #ffffff;
+    border: 2px solid #fff;
 
     border-radius: 50%;
 
@@ -548,12 +559,9 @@ h1 {
 }
 
 
-/* LEVÝ HORNÍ */
-
 .corner-arc.top-left {
 
     left: -15px;
-
     top: -15px;
 
     clip-path:
@@ -563,12 +571,9 @@ h1 {
 }
 
 
-/* PRAVÝ HORNÍ */
-
 .corner-arc.top-right {
 
     right: -15px;
-
     top: -15px;
 
     clip-path:
@@ -578,12 +583,9 @@ h1 {
 }
 
 
-/* LEVÝ DOLNÍ */
-
 .corner-arc.bottom-left {
 
     left: -15px;
-
     bottom: -15px;
 
     clip-path:
@@ -593,12 +595,9 @@ h1 {
 }
 
 
-/* PRAVÝ DOLNÍ */
-
 .corner-arc.bottom-right {
 
     right: -15px;
-
     bottom: -15px;
 
     clip-path:
@@ -606,8 +605,6 @@ h1 {
             0 50% 50% 0
         );
 }
-
-
 /* =====================================================
    HRÁČ
    ===================================================== */
@@ -1155,36 +1152,59 @@ h1 {
          HŘIŠTĚ
          ================================================= -->
 
-    <div id="pitch">
+  <div id="pitch">
+
+    <div class="field-border"></div>
+
+    <div class="halfway-line"></div>
+
+    <div class="center-circle"></div>
+
+    <div class="center-spot"></div>
 
 
-        <div class="field-border"></div>
+    <!-- HORNÍ POKUTOVÉ ÚZEMÍ -->
+
+    <div class="penalty-area top">
+
+        <div class="goal-area top"></div>
+
+        <div class="penalty-spot top"></div>
+
+    </div>
 
 
-        <div class="halfway-line"></div>
+    <!-- DOLNÍ POKUTOVÉ ÚZEMÍ -->
+
+    <div class="penalty-area bottom">
+
+        <div class="goal-area bottom"></div>
+
+        <div class="penalty-spot bottom"></div>
+
+    </div>
 
 
-        <div class="center-circle"></div>
+    <!-- PENALTOVÉ OBLOUKY -->
+        
+    <!-- MUSÍ BÝT PŘÍMO V HŘIŠTI -->
+
+    <div class="penalty-arc top"></div>
+
+    <div class="penalty-arc bottom"></div>
 
 
-        <div class="center-spot"></div>
+    <!-- ROHOVÉ OBLOUKY -->
 
+    <div class="corner-arc top-left"></div>
 
-        <!-- HORNÍ POKUTOVÉ ÚZEMÍ -->
+    <div class="corner-arc top-right"></div>
 
-        <div class="penalty-area top">
+    <div class="corner-arc bottom-left"></div>
 
+    <div class="corner-arc bottom-right"></div>
 
-            <div class="goal-area top"></div>
-
-
-            <div class="penalty-spot top"></div>
-
-
-            <div class="penalty-arc top"></div>
-
-
-        </div>
+</div>
 
 
         <!-- DOLNÍ POKUTOVÉ ÚZEMÍ -->
