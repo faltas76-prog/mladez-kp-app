@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -31,21 +32,27 @@ body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+
     background: #080b0d;
+
     color: #ffffff;
+
     min-height: 100vh;
 }
 
 
 /* =====================================================
-   HLAVNÍ KONTEJNER
+   KONTEJNER
    ===================================================== */
 
 .container {
     width: 100%;
-    max-width: 1200px;
+
+    max-width: 1350px;
+
     margin: 0 auto;
-    padding: 15px;
+
+    padding: 12px;
 }
 
 
@@ -55,8 +62,11 @@ body {
 
 h1 {
     text-align: center;
+
     color: #00fff7;
+
     margin: 5px 0 15px;
+
     font-size: 28px;
 }
 
@@ -66,50 +76,77 @@ h1 {
    ===================================================== */
 
 .match-info {
+
     display: flex;
+
     flex-wrap: wrap;
+
     justify-content: center;
+
     gap: 8px;
-    margin-bottom: 12px;
+
+    margin-bottom: 10px;
 }
 
 .match-info input {
+
     width: 260px;
+
     max-width: 100%;
+
     padding: 10px;
+
     border: 1px solid #00fff7;
+
     border-radius: 6px;
+
     background: #11181b;
+
     color: #ffffff;
+
     font-size: 15px;
 }
 
 
 /* =====================================================
-   OVLÁDÁNÍ
+   OVLÁDACÍ TLAČÍTKA
    ===================================================== */
 
 .controls {
+
     display: flex;
+
     flex-wrap: wrap;
+
     justify-content: center;
+
     gap: 7px;
+
     margin-bottom: 12px;
 }
 
 .controls select,
 .controls button {
+
     padding: 10px 14px;
+
     border-radius: 6px;
+
     border: 1px solid #00fff7;
+
     background: #10171a;
+
     color: #ffffff;
+
     font-size: 15px;
+
     cursor: pointer;
 }
 
 .controls button:hover {
+
     background: #00fff7;
+
     color: #000000;
 }
 
@@ -119,26 +156,34 @@ h1 {
    ===================================================== */
 
 #lineupExport {
+
     width: 100%;
+
     background: #164d20;
-    padding: 15px;
+
+    padding: 12px;
+
     border-radius: 8px;
 }
 
 
 /* =====================================================
-   MATCH LINEUP – HŘIŠTĚ
+   HŘIŠTĚ
    ===================================================== */
 
 #pitch {
+
     position: relative;
 
     width: 100%;
+
     max-width: 1250px;
 
     /*
-       Poměr 105 : 68
+       Poměr skutečného hřiště
+       105 : 68
     */
+
     aspect-ratio: 105 / 68;
 
     margin: 0 auto;
@@ -146,13 +191,16 @@ h1 {
     overflow: hidden;
 
     /*
-       Realistické pruhy trávníku
+       Pruhy trávy
     */
+
     background:
         repeating-linear-gradient(
             90deg,
+
             #21652a 0%,
             #21652a 7.14%,
+
             #2d7b35 7.14%,
             #2d7b35 14.28%
         );
@@ -173,6 +221,7 @@ h1 {
    ===================================================== */
 
 .field-border {
+
     position: absolute;
 
     left: 0;
@@ -193,9 +242,11 @@ h1 {
    ===================================================== */
 
 .halfway-line {
+
     position: absolute;
 
     left: 0;
+
     right: 0;
 
     top: 50%;
@@ -217,6 +268,7 @@ h1 {
    ===================================================== */
 
 .center-circle {
+
     position: absolute;
 
     width: 18.095%;
@@ -224,9 +276,11 @@ h1 {
     aspect-ratio: 1 / 1;
 
     left: 50%;
+
     top: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
     border: 2px solid #ffffff;
 
@@ -243,15 +297,19 @@ h1 {
    ===================================================== */
 
 .center-spot {
+
     position: absolute;
 
     width: 8px;
+
     height: 8px;
 
     left: 50%;
+
     top: 50%;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
     background: #ffffff;
 
@@ -267,13 +325,8 @@ h1 {
    VELKÉ VÁPNO
    ===================================================== */
 
-/*
-   Na obrázku je vápno širší a relativně hluboké.
-   Proto používáme samostatné hodnoty pro šířku
-   a hloubku.
-*/
-
 .penalty-area {
+
     position: absolute;
 
     left: 50%;
@@ -282,10 +335,14 @@ h1 {
 
     height: 15.7%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #ffffff;
+    border-left:
+        2px solid #ffffff;
+
+    border-right:
+        2px solid #ffffff;
 
     z-index: 3;
 
@@ -293,21 +350,25 @@ h1 {
 }
 
 
-/* Horní */
+/* HORNÍ VÁPNO */
 
 .penalty-area.top {
+
     top: 0;
 
-    border-bottom: 2px solid #ffffff;
+    border-bottom:
+        2px solid #ffffff;
 }
 
 
-/* Dolní */
+/* DOLNÍ VÁPNO */
 
 .penalty-area.bottom {
+
     bottom: 0;
 
-    border-top: 2px solid #ffffff;
+    border-top:
+        2px solid #ffffff;
 }
 
 
@@ -316,6 +377,7 @@ h1 {
    ===================================================== */
 
 .goal-area {
+
     position: absolute;
 
     left: 50%;
@@ -324,10 +386,14 @@ h1 {
 
     height: 5.25%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #ffffff;
+    border-left:
+        2px solid #ffffff;
+
+    border-right:
+        2px solid #ffffff;
 
     z-index: 4;
 
@@ -335,21 +401,25 @@ h1 {
 }
 
 
-/* Horní malé vápno */
+/* HORNÍ MALÉ VÁPNO */
 
 .goal-area.top {
+
     top: 0;
 
-    border-bottom: 2px solid #ffffff;
+    border-bottom:
+        2px solid #ffffff;
 }
 
 
-/* Dolní malé vápno */
+/* DOLNÍ MALÉ VÁPNO */
 
 .goal-area.bottom {
+
     bottom: 0;
 
-    border-top: 2px solid #ffffff;
+    border-top:
+        2px solid #ffffff;
 }
 
 
@@ -358,50 +428,46 @@ h1 {
    ===================================================== */
 
 .penalty-spot {
+
     position: absolute;
 
     width: 8px;
+
     height: 8px;
 
     left: 50%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
     background: #ffffff;
 
     border-radius: 50%;
 
-    z-index: 6;
+    z-index: 7;
 
     pointer-events: none;
 }
 
 
-/*
-   Penaltový bod 11 m od branky
-*/
-
 .penalty-spot.top {
+
     top: 10.48%;
 }
 
+
 .penalty-spot.bottom {
+
     bottom: 10.48%;
 }
 
 
 /* =====================================================
-   PENALTOVÉ "D"
+   PENALTOVÉ OBLOUKY – D
    ===================================================== */
 
-/*
-   D má poloměr 9,15 m.
-
-   Důležité:
-   kruh je umístěn kolem penaltového bodu.
-*/
-
 .penalty-arc {
+
     position: absolute;
 
     width: 17.43%;
@@ -410,9 +476,11 @@ h1 {
 
     left: 50%;
 
-    transform: translateX(-50%);
+    transform:
+        translateX(-50%);
 
-    border: 2px solid #ffffff;
+    border:
+        2px solid #ffffff;
 
     border-radius: 50%;
 
@@ -422,33 +490,16 @@ h1 {
 }
 
 
-/* =====================================================
-   HORNÍ D
-   ===================================================== */
-
 /*
-       pokutové území
-   ─────────────────────
-          ╭──────╮
-        ╱          ╲
-       ╱            ╲
-      •
-   penaltový bod
+   HORNÍ D
 
-   Zobrazíme pouze spodní
-   polovinu kruhu.
+   Oblouk je posunut směrem
+   k brance a jeho spodní
+   polovina zasahuje před
+   velké vápno.
 */
 
 .penalty-arc.top {
-
-    /*
-       bod = 10.48 %
-
-       průměr oblouku = 17.43 % šířky
-
-       výška kruhu odpovídá cca 26.9 %
-       výšky hřiště
-    */
 
     top: -2.97%;
 
@@ -459,9 +510,9 @@ h1 {
 }
 
 
-/* =====================================================
+/*
    DOLNÍ D
-   ===================================================== */
+*/
 
 .penalty-arc.bottom {
 
@@ -483,9 +534,11 @@ h1 {
     position: absolute;
 
     width: 30px;
+
     height: 30px;
 
-    border: 2px solid #ffffff;
+    border:
+        2px solid #ffffff;
 
     border-radius: 50%;
 
@@ -495,11 +548,12 @@ h1 {
 }
 
 
-/* Levý horní */
+/* LEVÝ HORNÍ */
 
 .corner-arc.top-left {
 
     left: -15px;
+
     top: -15px;
 
     clip-path:
@@ -509,11 +563,12 @@ h1 {
 }
 
 
-/* Pravý horní */
+/* PRAVÝ HORNÍ */
 
 .corner-arc.top-right {
 
     right: -15px;
+
     top: -15px;
 
     clip-path:
@@ -523,11 +578,12 @@ h1 {
 }
 
 
-/* Levý dolní */
+/* LEVÝ DOLNÍ */
 
 .corner-arc.bottom-left {
 
     left: -15px;
+
     bottom: -15px;
 
     clip-path:
@@ -537,11 +593,12 @@ h1 {
 }
 
 
-/* Pravý dolní */
+/* PRAVÝ DOLNÍ */
 
 .corner-arc.bottom-right {
 
     right: -15px;
+
     bottom: -15px;
 
     clip-path:
@@ -549,28 +606,36 @@ h1 {
             0 50% 50% 0
         );
 }
+
+
 /* =====================================================
    HRÁČ
    ===================================================== */
 
 .player {
+
     position: absolute;
 
     width: 52px;
+
     height: 52px;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
 
     background: #0878ff;
 
-    border: 2px solid #ffffff;
+    border:
+        2px solid #ffffff;
 
     border-radius: 50%;
 
     display: flex;
+
     flex-direction: column;
 
     align-items: center;
+
     justify-content: center;
 
     color: #ffffff;
@@ -586,22 +651,28 @@ h1 {
 
 
 .player:active {
+
     cursor: grabbing;
 }
 
 
 .player.selected {
-    outline: 3px solid #ff3030;
+
+    outline:
+        3px solid #ff3030;
+
     outline-offset: 3px;
 }
 
 
 /* =====================================================
-   ČÍSLO HRÁČE
+   ČÍSLO
    ===================================================== */
 
 .player-number {
+
     font-size: 15px;
+
     font-weight: bold;
 
     line-height: 17px;
@@ -613,6 +684,7 @@ h1 {
    ===================================================== */
 
 .player-position {
+
     font-size: 8px;
 
     line-height: 9px;
@@ -622,22 +694,28 @@ h1 {
 
 
 /* =====================================================
-   JMÉNO HRÁČE
+   JMÉNO
    ===================================================== */
 
 .player-label {
+
     position: absolute;
 
     left: 50%;
-    top: calc(100% + 5px);
 
-    transform: translateX(-50%);
+    top:
+        calc(100% + 5px);
+
+    transform:
+        translateX(-50%);
 
     min-width: 55px;
 
-    padding: 2px 5px;
+    padding:
+        2px 5px;
 
-    background: rgba(0,0,0,0.75);
+    background:
+        rgba(0,0,0,0.75);
 
     border-radius: 4px;
 
@@ -660,21 +738,32 @@ h1 {
    ===================================================== */
 
 .bench-wrapper {
+
     max-width: 1000px;
-    margin: 25px auto 0;
+
+    margin:
+        25px auto 0;
+
     padding-top: 5px;
 }
 
 
 .bench-title {
+
     text-align: center;
+
     color: #00fff7;
+
     font-size: 18px;
+
     font-weight: bold;
+
     margin-bottom: 12px;
 }
 
+
 #bench {
+
     display: flex;
 
     flex-wrap: wrap;
@@ -686,7 +775,9 @@ h1 {
 
 
 .bench-player {
+
     width: 85px;
+
     min-height: 68px;
 
     padding: 7px;
@@ -695,7 +786,8 @@ h1 {
 
     color: #000000;
 
-    border: 2px solid #ffffff;
+    border:
+        2px solid #ffffff;
 
     border-radius: 8px;
 
@@ -714,18 +806,24 @@ h1 {
 
 
 .bench-player.selected {
-    outline: 3px solid #ff3030;
+
+    outline:
+        3px solid #ff3030;
+
     outline-offset: 3px;
 }
 
 
 .bench-number {
+
     font-size: 18px;
+
     font-weight: bold;
 }
 
 
 .bench-name {
+
     margin-top: 3px;
 
     font-size: 11px;
@@ -747,9 +845,11 @@ h1 {
    ===================================================== */
 
 .help {
+
     max-width: 900px;
 
-    margin: 12px auto 0;
+    margin:
+        12px auto 0;
 
     padding: 8px;
 
@@ -766,13 +866,15 @@ h1 {
    ===================================================== */
 
 #editModal {
+
     display: none;
 
     position: fixed;
 
     inset: 0;
 
-    background: rgba(0,0,0,0.75);
+    background:
+        rgba(0,0,0,0.75);
 
     z-index: 1000;
 
@@ -785,12 +887,15 @@ h1 {
 
 
 #editBox {
+
     width: 100%;
+
     max-width: 400px;
 
     background: #11181b;
 
-    border: 2px solid #00fff7;
+    border:
+        2px solid #00fff7;
 
     border-radius: 10px;
 
@@ -799,6 +904,7 @@ h1 {
 
 
 #editBox h3 {
+
     margin-top: 0;
 
     color: #00fff7;
@@ -806,13 +912,15 @@ h1 {
 
 
 #playerNameInput {
+
     width: 100%;
 
     padding: 11px;
 
     font-size: 16px;
 
-    border: 1px solid #00fff7;
+    border:
+        1px solid #00fff7;
 
     border-radius: 6px;
 
@@ -823,6 +931,7 @@ h1 {
 
 
 .modal-buttons {
+
     display: flex;
 
     justify-content: flex-end;
@@ -834,13 +943,16 @@ h1 {
 
 
 .modal-buttons button {
-    padding: 9px 16px;
+
+    padding:
+        9px 16px;
 
     border-radius: 6px;
 
     cursor: pointer;
 
-    border: 1px solid #00fff7;
+    border:
+        1px solid #00fff7;
 
     background: #10171a;
 
@@ -849,69 +961,127 @@ h1 {
 
 
 /* =====================================================
-   MOBIL
+   TABLET
    ===================================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
 
     .container {
-        padding: 7px;
-    }
 
-    h1 {
-        font-size: 22px;
+        padding: 8px;
     }
 
     #lineupExport {
-        padding: 7px;
-    }
 
-    #pitch {
-        border-width: 2px;
+        padding: 8px;
     }
 
     .player {
-        width: 42px;
-        height: 42px;
-    }
 
-    .player-number {
-        font-size: 12px;
-    }
+        width: 46px;
 
-    .player-position {
-        font-size: 7px;
+        height: 46px;
     }
 
     .player-label {
-        font-size: 9px;
-        top: calc(100% + 3px);
-    }
 
-    .bench-player {
-        width: 72px;
-        min-height: 58px;
-    }
-
-    .bench-name {
         font-size: 10px;
     }
 }
 
+
+/* =====================================================
+   MOBIL
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    h1 {
+
+        font-size: 22px;
+    }
+
+    .container {
+
+        padding: 5px;
+    }
+
+    #lineupExport {
+
+        padding: 5px;
+    }
+
+    #pitch {
+
+        border-width: 3px;
+
+        box-shadow:
+            0 0 0 3px #174f23;
+    }
+
+    .player {
+
+        width: 38px;
+
+        height: 38px;
+    }
+
+    .player-number {
+
+        font-size: 11px;
+
+        line-height: 12px;
+    }
+
+    .player-position {
+
+        font-size: 6px;
+
+        line-height: 7px;
+    }
+
+    .player-label {
+
+        top:
+            calc(100% + 3px);
+
+        font-size: 8px;
+
+        min-width: 45px;
+    }
+
+    .bench-player {
+
+        width: 70px;
+
+        min-height: 58px;
+    }
+
+    .bench-title {
+
+        font-size: 16px;
+    }
+}
+
 </style>
+
 </head>
 
 
 <body>
 
+
 <div class="container">
 
-<h1>⚽ Match LineUP</h1>
+
+<h1>
+⚽ Match LineUP
+</h1>
 
 
-<!-- =================================================
-     INFORMACE O ZÁPASE
-     ================================================= -->
+<!-- =====================================================
+     NÁZEV A DATUM ZÁPASU
+     ===================================================== -->
 
 <div class="match-info">
 
@@ -927,11 +1097,12 @@ h1 {
 </div>
 
 
-<!-- =================================================
+<!-- =====================================================
      OVLÁDÁNÍ
-     ================================================= -->
+     ===================================================== -->
 
 <div class="controls">
+
 
     <select id="formationSelect">
 
@@ -969,56 +1140,71 @@ h1 {
         📄 Uložit PDF
     </button>
 
+
 </div>
 
 
-<!-- =================================================
+<!-- =====================================================
      EXPORT
-     ================================================= -->
+     ===================================================== -->
 
 <div id="lineupExport">
 
 
-    <!-- HŘIŠTĚ -->
+    <!-- =================================================
+         HŘIŠTĚ
+         ================================================= -->
 
     <div id="pitch">
 
+
         <div class="field-border"></div>
+
 
         <div class="halfway-line"></div>
 
+
         <div class="center-circle"></div>
+
 
         <div class="center-spot"></div>
 
 
-        <!-- HORNÍ VÁPNO -->
+        <!-- HORNÍ POKUTOVÉ ÚZEMÍ -->
 
         <div class="penalty-area top">
 
+
             <div class="goal-area top"></div>
+
 
             <div class="penalty-spot top"></div>
 
+
             <div class="penalty-arc top"></div>
+
 
         </div>
 
 
-        <!-- DOLNÍ VÁPNO -->
+        <!-- DOLNÍ POKUTOVÉ ÚZEMÍ -->
 
         <div class="penalty-area bottom">
 
+
             <div class="goal-area bottom"></div>
+
 
             <div class="penalty-spot bottom"></div>
 
+
             <div class="penalty-arc bottom"></div>
+
 
         </div>
 
 
-        <!-- ROHY -->
+        <!-- ROHOVÉ OBLOUKY -->
 
         <div class="corner-arc top-left"></div>
 
@@ -1027,6 +1213,7 @@ h1 {
         <div class="corner-arc bottom-left"></div>
 
         <div class="corner-arc bottom-right"></div>
+
 
     </div>
 
@@ -1037,11 +1224,14 @@ h1 {
 
     <div class="bench-wrapper">
 
+
         <div class="bench-title">
             🪑 NÁHRADNÍCI
         </div>
 
+
         <div id="bench"></div>
+
 
     </div>
 
@@ -1049,10 +1239,15 @@ h1 {
 </div>
 
 
+<!-- =====================================================
+     NÁPOVĚDA
+     ===================================================== -->
+
 <div class="help">
 
     Kliknutím na hráče jej označíš pro výměnu.
-    Kliknutím na druhého hráče nebo náhradníka provedeš výměnu.
+    Kliknutím na druhého hráče nebo náhradníka
+    provedeš výměnu.
     Kliknutím na jméno hráče můžeš jméno upravit.
     Hráče lze také přesouvat po hřišti.
 
@@ -1062,53 +1257,74 @@ h1 {
 </div>
 
 
-<!-- =================================================
-     MODAL PRO JMÉNO
-     ================================================= -->
+<!-- =====================================================
+     MODAL EDITACE JMÉNA
+     ===================================================== -->
 
 <div id="editModal">
 
+
     <div id="editBox">
 
-        <h3>✏️ Upravit jméno hráče</h3>
+
+        <h3>
+            ✏️ Upravit jméno hráče
+        </h3>
+
 
         <input
             type="text"
             id="playerNameInput"
             placeholder="Jméno hráče">
 
+
         <div class="modal-buttons">
+
 
             <button id="cancelNameBtn">
                 Zrušit
             </button>
 
+
             <button id="confirmNameBtn">
                 OK
             </button>
 
+
         </div>
 
+
     </div>
+
 
 </div>
 
 
-<!-- =================================================
-     KNIHOVNY PRO EXPORT
-     ================================================= -->
+<!-- =====================================================
+     KNIHOVNA PNG
+     ===================================================== -->
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script
+src="https://html2canvas.hertzen.com/dist/html2canvas.min.js">
+</script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- =====================================================
+     KNIHOVNA PDF
+     ===================================================== -->
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+</script>
 
 
-<!-- =================================================
-     VLASTNÍ JS
-     ================================================= -->
+<!-- =====================================================
+     VLASTNÍ JAVASCRIPT
+     ===================================================== -->
 
 <script src="js/lineup.js"></script>
 
 
 </body>
+
 </html>
