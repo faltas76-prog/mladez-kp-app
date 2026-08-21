@@ -499,15 +499,50 @@ h1 {
    18,30 / 68 = 26,91 %
 */
 
+/* =====================================================
+   PENALTOVÉ OBLOUKY – SPRÁVNÁ GEOMETRIE
+   ===================================================== */
+
+/*
+   Skutečné rozměry:
+
+   poloměr oblouku = 9,15 m
+   průměr = 18,30 m
+
+   Hřiště:
+   délka = 105 m
+   šířka = 68 m
+
+   18,30 / 105 = 17,43 %
+   18,30 / 68  = 26,91 %
+
+   Proto:
+   WIDTH  = 17,43 % šířky hřiště
+   HEIGHT = 26,91 % výšky hřiště
+
+   Tím vznikne skutečný KRUH,
+   nikoliv natažená elipsa.
+*/
+
 .penalty-arc {
 
     position: absolute;
 
     left: 50%;
 
-    width: 26.91%;
+    /*
+       Průměr 18,30 m
+       vůči délce hřiště
+    */
 
-    aspect-ratio: 1 / 1;
+    width: 17.43%;
+
+    /*
+       Průměr 18,30 m
+       vůči šířce hřiště
+    */
+
+    height: 26.91%;
 
     transform:
         translateX(-50%);
@@ -517,26 +552,44 @@ h1 {
 
     border-radius: 50%;
 
+    box-sizing: border-box;
+
     z-index: 5;
 
     pointer-events: none;
 }
 
 
-/* HORNÍ D */
+/* =====================================================
+   HORNÍ PENALTOVÝ OBLOUK
+   ===================================================== */
+
+/*
+   Penaltový bod:
+
+   11 m od brankové čáry
+
+   Poloměr:
+
+   9,15 m
+
+   Začátek kruhu:
+
+   11 - 9,15
+   = 1,85 m
+
+   1,85 / 105
+   = 1,76 %
+*/
 
 .penalty-arc.top {
 
-    /*
-       Střed kruhu je v místě
-       penaltového bodu.
-
-       11 - 9,15 = 1,85 m
-
-       1,85 / 105 = 1,76 %
-    */
-
     top: 1.76%;
+
+    /*
+       Zobrazit pouze část
+       směřující do hřiště.
+    */
 
     clip-path:
         inset(
@@ -545,11 +598,17 @@ h1 {
 }
 
 
-/* DOLNÍ D */
+/* =====================================================
+   DOLNÍ PENALTOVÝ OBLOUK
+   ===================================================== */
 
 .penalty-arc.bottom {
 
     bottom: 1.76%;
+
+    /*
+       Zobrazit horní část oblouku.
+    */
 
     clip-path:
         inset(
