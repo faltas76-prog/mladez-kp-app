@@ -1,32 +1,21 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
     "use strict";
 
+    /* =====================================================
+       ELEMENTY
+       ===================================================== */
 
-    /* =================================================
-       HTML ELEMENTY
-       ================================================= */
+    const pitch = document.getElementById("pitch");
+    const bench = document.getElementById("bench");
 
-    const pitch =
-        document.getElementById("pitch");
-
-    const bench =
-        document.getElementById("bench");
+    const createBtn = document.getElementById("createBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const exportPngBtn = document.getElementById("exportPngBtn");
+    const exportPdfBtn = document.getElementById("exportPdfBtn");
 
     const formationSelect =
         document.getElementById("formationSelect");
-
-    const createBtn =
-        document.getElementById("createBtn");
-
-    const saveBtn =
-        document.getElementById("saveBtn");
-
-    const exportPngBtn =
-        document.getElementById("exportPngBtn");
-
-    const exportPdfBtn =
-        document.getElementById("exportPdfBtn");
 
     const matchName =
         document.getElementById("matchName");
@@ -46,166 +35,367 @@ document.addEventListener("DOMContentLoaded", function () {
     const cancelNameBtn =
         document.getElementById("cancelNameBtn");
 
-    const exportContainer =
-        document.getElementById("lineupExport");
 
-
-    /* =================================================
+    /* =====================================================
        KONTROLA
-       ================================================= */
+       ===================================================== */
 
     if (!pitch) {
-        console.error("Chybí #pitch");
+        console.error("❌ Chybí #pitch");
         return;
     }
 
     if (!bench) {
-        console.error("Chybí #bench");
-        return;
-    }
-
-    if (!formationSelect) {
-        console.error("Chybí #formationSelect");
-        return;
-    }
-
-    if (!createBtn) {
-        console.error("Chybí #createBtn");
+        console.error("❌ Chybí #bench");
         return;
     }
 
 
-    /* =================================================
+    /* =====================================================
+       KONSTANTY
+       ===================================================== */
+
+    const STORAGE_KEY =
+        "match_lineup_data_v6";
+
+
+    /* =====================================================
        STAV
-       ================================================= */
+       ===================================================== */
 
-    let selectedForSwap = null;
+    let selectedPlayer = null;
 
-    let selectedForEdit = null;
+    let editingElement = null;
 
-    let isDragging = false;
+    let draggingPlayer = null;
+
+    let dragMoved = false;
 
 
-    /* =================================================
+    /* =====================================================
+       HRÁČI
+       ===================================================== */
+
+    const players = [];
+
+    for (let i = 1; i <= 16; i++) {
+
+        players.push({
+            number: i,
+            name: "Hráč",
+            captain: false
+        });
+
+    }
+
+
+    /* =====================================================
        ROZESTAVENÍ
-       ================================================= */
+       ===================================================== */
 
     const formations = {
 
         "1-4-4-2": [
-            ["GK"],
-            ["LB", "CB", "CB", "RB"],
-            ["LM", "CM", "CM", "RM"],
-            ["ST", "ST"]
+
+            {
+                position: "GK",
+                x: 50,
+                y: 91
+            },
+
+            {
+                position: "LB",
+                x: 18,
+                y: 73
+            },
+
+            {
+                position: "CB",
+                x: 40,
+                y: 77
+            },
+
+            {
+                position: "CB",
+                x: 60,
+                y: 77
+            },
+
+            {
+                position: "RB",
+                x: 82,
+                y: 73
+            },
+
+            {
+                position: "LM",
+                x: 18,
+                y: 53
+            },
+
+            {
+                position: "CM",
+                x: 40,
+                y: 57
+            },
+
+            {
+                position: "CM",
+                x: 60,
+                y: 57
+            },
+
+            {
+                position: "RM",
+                x: 82,
+                y: 53
+            },
+
+            {
+                position: "ST",
+                x: 40,
+                y: 29
+            },
+
+            {
+                position: "ST",
+                x: 60,
+                y: 29
+            }
+
         ],
+
 
         "1-4-3-3": [
-            ["GK"],
-            ["LB", "CB", "CB", "RB"],
-            ["CM", "CM", "CM"],
-            ["LW", "ST", "RW"]
+
+            {
+                position: "GK",
+                x: 50,
+                y: 91
+            },
+
+            {
+                position: "LB",
+                x: 18,
+                y: 73
+            },
+
+            {
+                position: "CB",
+                x: 40,
+                y: 77
+            },
+
+            {
+                position: "CB",
+                x: 60,
+                y: 77
+            },
+
+            {
+                position: "RB",
+                x: 82,
+                y: 73
+            },
+
+            {
+                position: "CM",
+                x: 28,
+                y: 54
+            },
+
+            {
+                position: "CM",
+                x: 50,
+                y: 51
+            },
+
+            {
+                position: "CM",
+                x: 72,
+                y: 54
+            },
+
+            {
+                position: "LW",
+                x: 22,
+                y: 28
+            },
+
+            {
+                position: "ST",
+                x: 50,
+                y: 23
+            },
+
+            {
+                position: "RW",
+                x: 78,
+                y: 28
+            }
+
         ],
 
+
         "1-4-2-3-1": [
-            ["GK"],
-            ["LB", "CB", "CB", "RB"],
-            ["CDM", "CDM"],
-            ["LW", "CAM", "RW"],
-            ["ST"]
+
+            {
+                position: "GK",
+                x: 50,
+                y: 91
+            },
+
+            {
+                position: "LB",
+                x: 18,
+                y: 73
+            },
+
+            {
+                position: "CB",
+                x: 40,
+                y: 77
+            },
+
+            {
+                position: "CB",
+                x: 60,
+                y: 77
+            },
+
+            {
+                position: "RB",
+                x: 82,
+                y: 73
+            },
+
+            {
+                position: "CM",
+                x: 38,
+                y: 58
+            },
+
+            {
+                position: "CM",
+                x: 62,
+                y: 58
+            },
+
+            {
+                position: "LW",
+                x: 20,
+                y: 38
+            },
+
+            {
+                position: "CAM",
+                x: 50,
+                y: 35
+            },
+
+            {
+                position: "RW",
+                x: 80,
+                y: 38
+            },
+
+            {
+                position: "ST",
+                x: 50,
+                y: 20
+            }
+
         ]
 
     };
 
 
-    /* =================================================
-       POZICE HRÁČŮ
-       ================================================= */
+    /* =====================================================
+       POMOCNÉ FUNKCE
+       ===================================================== */
 
-    function getPositions(formation) {
+    function getPlayer(number) {
 
-        return formations[formation]
-            || formations["1-4-4-2"];
+        return players.find(
+            player =>
+                Number(player.number) === Number(number)
+        );
 
     }
 
 
-    /* =================================================
-       ZRUŠENÍ VÝBĚRU
-       ================================================= */
+    function escapeHTML(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
 
     function clearSelection() {
 
-        if (selectedForSwap) {
-
-            selectedForSwap.classList.remove("selected");
-
-        }
-
         document
-            .querySelectorAll(".bench-player.selected")
-            .forEach(function (el) {
+            .querySelectorAll(
+                ".player.selected, .bench-player.selected"
+            )
+            .forEach(element => {
 
-                el.classList.remove("selected");
+                element.classList.remove("selected");
 
             });
 
-
-        selectedForSwap = null;
+        selectedPlayer = null;
 
     }
 
 
-    /* =================================================
-       EDITACE JMÉNA
-       ================================================= */
+    /* =====================================================
+       MODAL – OTEVŘENÍ EDITACE JMÉNA
+       ===================================================== */
 
-    function openNameEditor(element) {
+    function openNameModal(element) {
 
-        if (!element) {
+        if (!element || !editModal) {
             return;
         }
 
-        selectedForEdit = element;
-
-        let name = "";
+        editingElement = element;
 
 
-        if (
-            element.classList.contains("player")
-        ) {
-
-            const label =
-                element.querySelector(".player-label");
-
-            if (label) {
-                name = label.textContent;
-            }
-
-        }
+        let currentName =
+            element.dataset.name;
 
 
-        if (
-            element.classList.contains("bench-player")
-        ) {
+        if (!currentName) {
 
             const label =
-                element.querySelector(".bench-name");
+                element.querySelector(
+                    ".player-label, .bench-name"
+                );
 
             if (label) {
-                name = label.textContent;
+                currentName =
+                    label.textContent;
             }
 
         }
 
 
         playerNameInput.value =
-            name || "Hráč";
+            currentName === "Hráč"
+                ? ""
+                : currentName || "";
 
 
-        editModal.style.display = "flex";
+        editModal.style.display =
+            "flex";
 
 
-        setTimeout(function () {
+        setTimeout(() => {
 
             playerNameInput.focus();
 
@@ -216,81 +406,105 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       POTVRZENÍ JMÉNA
-       ================================================= */
+    /* =====================================================
+       ZAVŘENÍ MODALU
+       ===================================================== */
+
+    function closeNameModal() {
+
+        if (!editModal) {
+            return;
+        }
+
+        editModal.style.display =
+            "none";
+
+        editingElement = null;
+
+    }
+
+
+    /* =====================================================
+       ULOŽENÍ JMÉNA
+       ===================================================== */
+
+    function saveName() {
+
+        if (!editingElement) {
+            return;
+        }
+
+
+        let newName =
+            playerNameInput.value.trim();
+
+
+        if (!newName) {
+            newName = "Hráč";
+        }
+
+
+        const number =
+            Number(
+                editingElement.dataset.number
+            );
+
+
+        const player =
+            getPlayer(number);
+
+
+        if (player) {
+
+            player.name =
+                newName;
+
+        }
+
+
+        editingElement.dataset.name =
+            newName;
+
+
+        const label =
+            editingElement.querySelector(
+                ".player-label, .bench-name"
+            );
+
+
+        if (label) {
+
+            label.textContent =
+                newName;
+
+        }
+
+
+        saveDataSilently();
+
+        closeNameModal();
+
+    }
+
+
+    /* =====================================================
+       MODAL – TLAČÍTKA
+       ===================================================== */
 
     if (confirmNameBtn) {
 
         confirmNameBtn.addEventListener(
             "click",
-            function () {
+            function (event) {
 
-                if (!selectedForEdit) {
-                    return;
-                }
+                event.preventDefault();
 
+                event.stopPropagation();
 
-                const newName =
-                    playerNameInput.value.trim()
-                    || "Hráč";
-
-
-                /* HRÁČ */
-
-                if (
-                    selectedForEdit.classList.contains("player")
-                ) {
-
-                    const label =
-                        selectedForEdit
-                            .querySelector(".player-label");
-
-                    if (label) {
-                        label.textContent = newName;
-                    }
-
-                }
-
-
-                /* NÁHRADNÍK */
-
-                if (
-                    selectedForEdit.classList.contains(
-                        "bench-player"
-                    )
-                ) {
-
-                    const label =
-                        selectedForEdit
-                            .querySelector(".bench-name");
-
-                    if (label) {
-                        label.textContent = newName;
-                    }
-
-                }
-
-
-                closeNameEditor();
+                saveName();
 
             }
         );
-
-    }
-
-
-    /* =================================================
-       ZRUŠENÍ EDITACE
-       ================================================= */
-
-    function closeNameEditor() {
-
-        editModal.style.display = "none";
-
-        playerNameInput.value = "";
-
-        selectedForEdit = null;
 
     }
 
@@ -299,9 +513,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cancelNameBtn.addEventListener(
             "click",
-            function () {
+            function (event) {
 
-                closeNameEditor();
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                closeNameModal();
 
             }
         );
@@ -309,294 +527,176 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       ESC – ZAVŘENÍ MODALU
-       ================================================= */
+    if (editModal) {
 
-    document.addEventListener(
-        "keydown",
-        function (event) {
+        editModal.addEventListener(
+            "click",
+            function (event) {
 
-            if (
-                event.key === "Escape" &&
-                editModal.style.display === "flex"
-            ) {
+                if (
+                    event.target ===
+                    editModal
+                ) {
 
-                closeNameEditor();
+                    closeNameModal();
+
+                }
 
             }
-
-        }
-    );
-
-
-    /* =================================================
-       VÝMĚNA DVOU HRÁČŮ
-       ================================================= */
-
-    function swapFieldPlayers(
-        playerA,
-        playerB
-    ) {
-
-        if (!playerA || !playerB) {
-            return;
-        }
-
-
-        const numberA =
-            playerA.querySelector(".player-number");
-
-        const numberB =
-            playerB.querySelector(".player-number");
-
-
-        const nameA =
-            playerA.querySelector(".player-label");
-
-        const nameB =
-            playerB.querySelector(".player-label");
-
-
-        const positionA =
-            playerA.querySelector(".player-position");
-
-        const positionB =
-            playerB.querySelector(".player-position");
-
-
-        if (numberA && numberB) {
-
-            const temp =
-                numberA.textContent;
-
-            numberA.textContent =
-                numberB.textContent;
-
-            numberB.textContent =
-                temp;
-
-        }
-
-
-        if (nameA && nameB) {
-
-            const temp =
-                nameA.textContent;
-
-            nameA.textContent =
-                nameB.textContent;
-
-            nameB.textContent =
-                temp;
-
-        }
-
-
-        /*
-         * Pozice zůstává na místě.
-         *
-         * Proto NEVYMĚŇUJEME positionA/B.
-         */
+        );
 
     }
 
 
-    /* =================================================
-       VÝMĚNA HRÁČ ↔ NÁHRADNÍK
-       ================================================= */
+    if (playerNameInput) {
 
-    function swapWithBench(
-        fieldPlayer,
-        benchPlayer
-    ) {
+        playerNameInput.addEventListener(
+            "keydown",
+            function (event) {
 
-        if (!fieldPlayer || !benchPlayer) {
-            return;
-        }
+                if (
+                    event.key === "Enter"
+                ) {
 
+                    event.preventDefault();
 
-        const fieldNumber =
-            fieldPlayer.querySelector(
-                ".player-number"
-            );
+                    saveName();
 
-        const fieldName =
-            fieldPlayer.querySelector(
-                ".player-label"
-            );
+                }
 
 
-        const benchNumber =
-            benchPlayer.querySelector(
-                ".bench-number"
-            );
+                if (
+                    event.key === "Escape"
+                ) {
 
-        const benchName =
-            benchPlayer.querySelector(
-                ".bench-name"
-            );
+                    event.preventDefault();
 
+                    closeNameModal();
 
-        if (
-            !fieldNumber ||
-            !fieldName ||
-            !benchNumber ||
-            !benchName
-        ) {
-            return;
-        }
+                }
 
-
-        /* ČÍSLO */
-
-        const tempNumber =
-            fieldNumber.textContent;
-
-        fieldNumber.textContent =
-            benchNumber.textContent;
-
-        benchNumber.textContent =
-            tempNumber;
-
-
-        /* JMÉNO */
-
-        const tempName =
-            fieldName.textContent;
-
-        fieldName.textContent =
-            benchName.textContent;
-
-        benchName.textContent =
-            tempName;
+            }
+        );
 
     }
 
 
-    /* =================================================
-       VÝBĚR HRÁČE
-       ================================================= */
-
-    function selectFieldPlayer(player) {
-
-        if (!selectedForSwap) {
-
-            selectedForSwap = player;
-
-            player.classList.add("selected");
-
-            return;
-
-        }
-
-
-        if (
-            selectedForSwap === player
-        ) {
-
-            clearSelection();
-
-            return;
-
-        }
-
-
-        if (
-            selectedForSwap.classList.contains("player")
-        ) {
-
-            swapFieldPlayers(
-                selectedForSwap,
-                player
-            );
-
-        }
-
-
-        clearSelection();
-
-    }
-
-
-    /* =================================================
+    /* =====================================================
        VYTVOŘENÍ HRÁČE
-       ================================================= */
+       ===================================================== */
 
     function createPlayer(
-        number,
-        position,
-        isGK
+        playerData,
+        positionData
     ) {
 
         const player =
             document.createElement("div");
 
 
-        player.className = "player";
+        player.className =
+            "player";
 
 
-        /* ČÍSLO */
-
-        const numberEl =
-            document.createElement("div");
-
-        numberEl.className =
-            "player-number";
-
-        numberEl.textContent =
-            isGK ? "GK" : number;
+        player.dataset.number =
+            playerData.number;
 
 
-        player.appendChild(numberEl);
+        player.dataset.name =
+            playerData.name;
 
 
-        /* POZICE */
-
-        const positionEl =
-            document.createElement("div");
-
-        positionEl.className =
-            "player-position";
-
-        positionEl.textContent =
-            position || "";
+        player.dataset.position =
+            positionData.position;
 
 
-        player.appendChild(positionEl);
+        player.style.left =
+            positionData.x + "%";
 
 
-        /* JMÉNO */
-
-        const nameEl =
-            document.createElement("div");
-
-        nameEl.className =
-            "player-label";
-
-        nameEl.textContent =
-            "Hráč";
+        player.style.top =
+            positionData.y + "%";
 
 
-        player.appendChild(nameEl);
+        player.innerHTML = `
+
+            <div class="player-number">
+                ${escapeHTML(playerData.number)}
+            </div>
+
+            <div class="player-position">
+                ${escapeHTML(positionData.position)}
+            </div>
+
+            <div class="player-label">
+                ${escapeHTML(playerData.name)}
+            </div>
+
+        `;
 
 
         /* =================================================
-           KLIK NA JMÉNO
+           KAPITÁN
            ================================================= */
 
-        nameEl.addEventListener(
+        if (playerData.captain) {
+
+            addCaptainBadge(player);
+
+        }
+
+
+        const label =
+            player.querySelector(
+                ".player-label"
+            );
+
+
+        /* =================================================
+           JMÉNO – DŮLEŽITÉ
+           ================================================= */
+
+        label.addEventListener(
             "pointerdown",
             function (event) {
 
-                event.stopPropagation();
-
                 /*
-                 * Zabráníme zahájení drag
-                 * při kliknutí na jméno.
+                 * ZASTAVÍME DRAG.
                  */
 
-                openNameEditor(player);
+                event.preventDefault();
+
+                event.stopPropagation();
+
+            }
+        );
+
+
+        label.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                clearSelection();
+
+                openNameModal(player);
+
+            }
+        );
+
+
+        label.addEventListener(
+            "dblclick",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                openNameModal(player);
 
             }
         );
@@ -611,23 +711,13 @@ document.addEventListener("DOMContentLoaded", function () {
             function (event) {
 
                 /*
-                 * Pokud se právě táhlo,
-                 * click ignorujeme.
-                 */
-
-                if (isDragging) {
-                    return;
-                }
-
-
-                /*
-                 * Klik na jméno
-                 * neřešíme jako výměnu.
+                 * Pokud byl klik na jméno,
+                 * zde nic neděláme.
                  */
 
                 if (
-                    event.target.classList.contains(
-                        "player-label"
+                    event.target.closest(
+                        ".player-label"
                     )
                 ) {
 
@@ -636,37 +726,67 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                selectFieldPlayer(player);
+                /*
+                 * Pokud se hráč posouval,
+                 * není to klik pro střídání.
+                 */
+
+                if (dragMoved) {
+
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                clearSelection();
+
+
+                selectedPlayer =
+                    player;
+
+
+                player.classList.add(
+                    "selected"
+                );
 
             }
         );
 
 
         /* =================================================
-           DRAG – POINTER
+           PRAVÉ TLAČÍTKO = KAPITÁN
            ================================================= */
 
-        let dragStartX = 0;
+        player.addEventListener(
+            "contextmenu",
+            function (event) {
 
-        let dragStartY = 0;
+                event.preventDefault();
 
-        let startLeft = 0;
+                event.stopPropagation();
 
-        let startTop = 0;
+                setCaptain(player);
 
+            }
+        );
+
+
+        /* =================================================
+           POSOUVÁNÍ HRÁČE
+           ================================================= */
 
         player.addEventListener(
             "pointerdown",
             function (event) {
 
-                /*
-                 * Klik na jméno
-                 * není drag.
-                 */
-
                 if (
-                    event.target.classList.contains(
-                        "player-label"
+                    event.target.closest(
+                        ".player-label"
                     )
                 ) {
 
@@ -675,34 +795,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                const rect =
-                    player.getBoundingClientRect();
+                if (
+                    event.button !== undefined &&
+                    event.button !== 0
+                ) {
+
+                    return;
+
+                }
 
 
-                const pitchRect =
-                    pitch.getBoundingClientRect();
+                dragMoved = false;
 
-
-                dragStartX =
-                    event.clientX;
-
-                dragStartY =
-                    event.clientY;
-
-
-                startLeft =
-                    parseFloat(
-                        player.style.left
-                    ) || 50;
-
-
-                startTop =
-                    parseFloat(
-                        player.style.top
-                    ) || 50;
-
-
-                isDragging = false;
+                draggingPlayer =
+                    player;
 
 
                 try {
@@ -711,165 +817,180 @@ document.addEventListener("DOMContentLoaded", function () {
                         event.pointerId
                     );
 
-                } catch (error) {
-                    /* není kritické */
-                }
-
-            }
-        );
-
-
-        player.addEventListener(
-            "pointermove",
-            function (event) {
-
-                /*
-                 * Pokud není tlačítko/prst
-                 * aktivní, nic nedělej.
-                 */
-
-                if (
-                    event.buttons === 0
-                ) {
-
-                    return;
-
-                }
+                } catch (error) {}
 
 
                 const pitchRect =
                     pitch.getBoundingClientRect();
 
 
-                const deltaX =
-                    event.clientX -
-                    dragStartX;
+                function move(eventMove) {
+
+                    if (
+                        draggingPlayer !==
+                        player
+                    ) {
+
+                        return;
+
+                    }
 
 
-                const deltaY =
-                    event.clientY -
-                    dragStartY;
+                    const deltaX =
+                        eventMove.clientX -
+                        event.clientX;
 
 
-                /*
-                 * Až po malém pohybu
-                 * považujeme akci za drag.
-                 */
+                    const deltaY =
+                        eventMove.clientY -
+                        event.clientY;
 
-                if (
-                    Math.abs(deltaX) > 3 ||
-                    Math.abs(deltaY) > 3
-                ) {
 
-                    isDragging = true;
+                    if (
+                        Math.abs(deltaX) > 4 ||
+                        Math.abs(deltaY) > 4
+                    ) {
+
+                        dragMoved = true;
+
+                    }
+
+
+                    if (!dragMoved) {
+
+                        return;
+
+                    }
+
+
+                    let x =
+                        (
+                            eventMove.clientX -
+                            pitchRect.left
+                        ) /
+                        pitchRect.width *
+                        100;
+
+
+                    let y =
+                        (
+                            eventMove.clientY -
+                            pitchRect.top
+                        ) /
+                        pitchRect.height *
+                        100;
+
+
+                    /*
+                     * Hráč zůstane na hřišti.
+                     */
+
+                    x =
+                        Math.max(
+                            3,
+                            Math.min(
+                                97,
+                                x
+                            )
+                        );
+
+
+                    y =
+                        Math.max(
+                            4,
+                            Math.min(
+                                96,
+                                y
+                            )
+                        );
+
+
+                    player.style.left =
+                        x + "%";
+
+
+                    player.style.top =
+                        y + "%";
+
+
+                    eventMove.preventDefault();
 
                 }
 
 
-                if (!isDragging) {
-                    return;
+                function end() {
+
+                    try {
+
+                        player.releasePointerCapture(
+                            event.pointerId
+                        );
+
+                    } catch (error) {}
+
+
+                    player.removeEventListener(
+                        "pointermove",
+                        move
+                    );
+
+
+                    player.removeEventListener(
+                        "pointerup",
+                        end
+                    );
+
+
+                    player.removeEventListener(
+                        "pointercancel",
+                        end
+                    );
+
+
+                    draggingPlayer =
+                        null;
+
+
+                    if (dragMoved) {
+
+                        saveDataSilently();
+
+                    }
+
+
+                    /*
+                     * Po drag necháme click
+                     * doběhnout bez výměny.
+                     */
+
+                    setTimeout(
+                        function () {
+
+                            dragMoved = false;
+
+                        },
+                        30
+                    );
+
                 }
 
 
-                const deltaPercentX =
-                    (
-                        deltaX /
-                        pitchRect.width
-                    ) * 100;
+                player.addEventListener(
+                    "pointermove",
+                    move
+                );
 
 
-                const deltaPercentY =
-                    (
-                        deltaY /
-                        pitchRect.height
-                    ) * 100;
+                player.addEventListener(
+                    "pointerup",
+                    end
+                );
 
 
-                let newLeft =
-                    startLeft +
-                    deltaPercentX;
-
-
-                let newTop =
-                    startTop +
-                    deltaPercentY;
-
-
-                /*
-                 * Hráč zůstane uvnitř hřiště.
-                 */
-
-                const marginX =
-                    (
-                        player.offsetWidth /
-                        pitchRect.width
-                    ) * 50;
-
-
-                const marginY =
-                    (
-                        player.offsetHeight /
-                        pitchRect.height
-                    ) * 50;
-
-
-                newLeft =
-                    Math.max(
-                        marginX,
-                        Math.min(
-                            100 - marginX,
-                            newLeft
-                        )
-                    );
-
-
-                newTop =
-                    Math.max(
-                        marginY,
-                        Math.min(
-                            100 - marginY,
-                            newTop
-                        )
-                    );
-
-
-                player.style.left =
-                    newLeft + "%";
-
-
-                player.style.top =
-                    newTop + "%";
-
-
-                event.preventDefault();
-
-            }
-        );
-
-
-        player.addEventListener(
-            "pointerup",
-            function (event) {
-
-                try {
-
-                    player.releasePointerCapture(
-                        event.pointerId
-                    );
-
-                } catch (error) {
-                    /* není kritické */
-                }
-
-            }
-        );
-
-
-        player.addEventListener(
-            "pointercancel",
-            function () {
-
-                isDragging = false;
+                player.addEventListener(
+                    "pointercancel",
+                    end
+                );
 
             }
         );
@@ -880,462 +1001,631 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       VYTVOŘENÍ NÁHRADNÍKA
-       ================================================= */
+    /* =====================================================
+       KAPITÁN
+       ===================================================== */
 
-    function createBenchPlayer(number) {
+    function addCaptainBadge(player) {
 
-        const benchPlayer =
-            document.createElement("div");
+        if (
+            player.querySelector(
+                ".captain-badge"
+            )
+        ) {
 
+            return;
 
-        benchPlayer.className =
-            "bench-player";
-
-
-        /* ČÍSLO */
-
-        const numberEl =
-            document.createElement("div");
-
-        numberEl.className =
-            "bench-number";
-
-        numberEl.textContent =
-            number;
+        }
 
 
-        benchPlayer.appendChild(
-            numberEl
+        const badge =
+            document.createElement("span");
+
+
+        badge.className =
+            "captain-badge";
+
+
+        badge.textContent =
+            "C";
+
+
+        badge.style.position =
+            "absolute";
+
+
+        badge.style.top =
+            "-7px";
+
+
+        badge.style.right =
+            "-7px";
+
+
+        badge.style.width =
+            "20px";
+
+
+        badge.style.height =
+            "20px";
+
+
+        badge.style.borderRadius =
+            "50%";
+
+
+        badge.style.background =
+            "#ffd400";
+
+
+        badge.style.color =
+            "#000000";
+
+
+        badge.style.fontWeight =
+            "bold";
+
+
+        badge.style.fontSize =
+            "12px";
+
+
+        badge.style.display =
+            "flex";
+
+
+        badge.style.alignItems =
+            "center";
+
+
+        badge.style.justifyContent =
+            "center";
+
+
+        badge.style.border =
+            "2px solid #ffffff";
+
+
+        badge.style.zIndex =
+            "50";
+
+
+        badge.style.pointerEvents =
+            "none";
+
+
+        player.appendChild(
+            badge
+        );
+
+    }
+
+
+    function setCaptain(player) {
+
+        const number =
+            Number(
+                player.dataset.number
+            );
+
+
+        players.forEach(
+            p => p.captain = false
         );
 
 
-        /* JMÉNO */
-
-        const nameEl =
-            document.createElement("div");
-
-        nameEl.className =
-            "bench-name";
-
-        nameEl.textContent =
-            "Hráč";
+        const data =
+            getPlayer(number);
 
 
-        benchPlayer.appendChild(
-            nameEl
+        if (data) {
+
+            data.captain =
+                true;
+
+        }
+
+
+        document
+            .querySelectorAll(
+                ".captain-badge"
+            )
+            .forEach(
+                badge => badge.remove()
+            );
+
+
+        addCaptainBadge(
+            player
         );
 
 
-        /* =================================================
-           EDITACE JMÉNA
-           ================================================= */
+        saveDataSilently();
 
-        nameEl.addEventListener(
-            "pointerdown",
-            function (event) {
+    }
 
-                event.stopPropagation();
 
-                openNameEditor(
-                    benchPlayer
-                );
+    /* =====================================================
+       VYTVOŘENÍ LAVIČKY
+       ===================================================== */
+
+    function renderBench() {
+
+        bench.innerHTML =
+            "";
+
+
+        for (
+            let number = 12;
+            number <= 16;
+            number++
+        ) {
+
+            const playerData =
+                getPlayer(number);
+
+
+            if (!playerData) {
+
+                continue;
 
             }
-        );
 
 
-        /* =================================================
-           KLIK NA NÁHRADNÍKA
-           ================================================= */
-
-        benchPlayer.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
+            const benchPlayer =
+                document.createElement(
+                    "div"
+                );
 
 
-                if (!selectedForSwap) {
+            benchPlayer.className =
+                "bench-player";
 
-                    selectedForSwap =
-                        benchPlayer;
 
-                    benchPlayer.classList.add(
-                        "selected"
-                    );
+            benchPlayer.dataset.number =
+                playerData.number;
 
-                    return;
+
+            benchPlayer.dataset.name =
+                playerData.name;
+
+
+            benchPlayer.innerHTML = `
+
+                <div class="bench-number">
+                    ${escapeHTML(
+                        playerData.number
+                    )}
+                </div>
+
+                <div class="bench-name">
+                    ${escapeHTML(
+                        playerData.name
+                    )}
+                </div>
+
+            `;
+
+
+            const name =
+                benchPlayer.querySelector(
+                    ".bench-name"
+                );
+
+
+            /* =================================================
+               JMÉNO NÁHRADNÍKA
+               ================================================= */
+
+            name.addEventListener(
+                "pointerdown",
+                function (event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
 
                 }
+            );
 
 
-                if (
-                    selectedForSwap ===
-                    benchPlayer
-                ) {
+            name.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
 
                     clearSelection();
 
-                    return;
-
-                }
-
-
-                /*
-                 * Výměna pouze pokud je
-                 * vybraný hráč na hřišti.
-                 */
-
-                if (
-                    selectedForSwap.classList.contains(
-                        "player"
-                    )
-                ) {
-
-                    swapWithBench(
-                        selectedForSwap,
+                    openNameModal(
                         benchPlayer
                     );
 
                 }
+            );
 
 
-                clearSelection();
+            name.addEventListener(
+                "dblclick",
+                function (event) {
 
-            }
-        );
+                    event.preventDefault();
 
+                    event.stopPropagation();
 
-        return benchPlayer;
-
-    }
-
-
-    /* =================================================
-       VYTVOŘENÍ SESTAVY
-       ================================================= */
-
-    createBtn.addEventListener(
-        "click",
-        function () {
-
-            /*
-             * Vyčistíme pouze hráče
-             * a lavičku.
-             *
-             * Čáry hřiště zůstanou.
-             */
-
-            pitch
-                .querySelectorAll(".player")
-                .forEach(function (player) {
-
-                    player.remove();
-
-                });
-
-
-            bench.innerHTML = "";
-
-
-            clearSelection();
-
-
-            const formation =
-                formationSelect.value;
-
-
-            const rows =
-                getPositions(formation);
-
-
-            /*
-             * Čísla:
-             *
-             * GK
-             * 2–11
-             */
-
-            let jerseyNumber = 2;
-
-
-            const rowCount =
-                rows.length;
-
-
-            rows.forEach(
-                function (
-                    row,
-                    rowIndex
-                ) {
-
-                    const playerCount =
-                        row.length;
-
-
-                    /*
-                     * Pozice jednotlivých řad.
-                     */
-
-                    const y =
-                        8 +
-                        (
-                            rowIndex /
-                            Math.max(
-                                rowCount - 1,
-                                1
-                            )
-                        ) * 84;
-
-
-                    row.forEach(
-                        function (
-                            position,
-                            playerIndex
-                        ) {
-
-                            const isGK =
-                                rowIndex === 0 &&
-                                position === "GK";
-
-
-                            let player;
-
-
-                            if (isGK) {
-
-                                player =
-                                    createPlayer(
-                                        null,
-                                        "GK",
-                                        true
-                                    );
-
-                            } else {
-
-                                player =
-                                    createPlayer(
-                                        jerseyNumber,
-                                        position,
-                                        false
-                                    );
-
-
-                                jerseyNumber++;
-
-                            }
-
-
-                            /*
-                             * X pozice
-                             */
-
-                            let x;
-
-
-                            if (
-                                playerCount === 1
-                            ) {
-
-                                x = 50;
-
-                            } else {
-
-                                x =
-                                    (
-                                        (
-                                            playerIndex + 1
-                                        ) /
-                                        (
-                                            playerCount + 1
-                                        )
-                                    ) * 100;
-
-                            }
-
-
-                            player.style.left =
-                                x + "%";
-
-
-                            player.style.top =
-                                y + "%";
-
-
-                            pitch.appendChild(
-                                player
-                            );
-
-                        }
+                    openNameModal(
+                        benchPlayer
                     );
 
                 }
             );
 
 
-            /*
-             * LAVIČKA
-             *
-             * Pokud máme 11 hráčů,
-             * jerseyNumber bude 12.
-             */
+            /* =================================================
+               KLIK NA NÁHRADNÍKA
+               ================================================= */
 
-            for (
-                let number = jerseyNumber;
-                number <= 16;
-                number++
+            benchPlayer.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target.closest(
+                            ".bench-name"
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    event.preventDefault();
+
+                    event.stopPropagation();
+
+
+                    /*
+                     * Pokud je vybraný hráč
+                     * na hřišti → střídání.
+                     */
+
+                    if (selectedPlayer) {
+
+                        substitutePlayer(
+                            selectedPlayer,
+                            benchPlayer
+                        );
+
+                    }
+
+                }
+            );
+
+
+            bench.appendChild(
+                benchPlayer
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       STŘÍDÁNÍ HRÁČ ↔ NÁHRADNÍK
+       ===================================================== */
+
+    function substitutePlayer(
+        fieldPlayer,
+        benchPlayer
+    ) {
+
+        if (
+            !fieldPlayer ||
+            !benchPlayer
+        ) {
+
+            return;
+
+        }
+
+
+        const fieldNumber =
+            Number(
+                fieldPlayer.dataset.number
+            );
+
+
+        const benchNumber =
+            Number(
+                benchPlayer.dataset.number
+            );
+
+
+        const fieldData =
+            getPlayer(fieldNumber);
+
+
+        const benchData =
+            getPlayer(benchNumber);
+
+
+        if (
+            !fieldData ||
+            !benchData
+        ) {
+
+            clearSelection();
+
+            return;
+
+        }
+
+
+        /*
+         * Uložíme pozici hráče na hřišti.
+         */
+
+        const left =
+            fieldPlayer.style.left;
+
+
+        const top =
+            fieldPlayer.style.top;
+
+
+        const position =
+            fieldPlayer.dataset.position;
+
+
+        /*
+         * VYMĚNÍME ČÍSLO + JMÉNO + KAPITÁNA.
+         */
+
+        const temporary = {
+
+            number:
+                fieldData.number,
+
+            name:
+                fieldData.name,
+
+            captain:
+                fieldData.captain
+
+        };
+
+
+        fieldData.number =
+            benchData.number;
+
+
+        fieldData.name =
+            benchData.name;
+
+
+        fieldData.captain =
+            benchData.captain;
+
+
+        benchData.number =
+            temporary.number;
+
+
+        benchData.name =
+            temporary.name;
+
+
+        benchData.captain =
+            temporary.captain;
+
+
+        /*
+         * Vykreslíme znovu hráče.
+         */
+
+        renderPitch(
+            [
+                {
+                    number:
+                        fieldData.number,
+
+                    left:
+                        left,
+
+                    top:
+                        top,
+
+                    position:
+                        position
+                }
+            ],
+            true
+        );
+
+
+        /*
+         * POZOR:
+         * Ostatní hráče musíme zachovat.
+         *
+         * Proto místo kompletního přerenderování
+         * provedeme bezpečnou obnovu.
+         */
+
+        const currentPositions =
+            collectPositions();
+
+
+        renderPitch(
+            currentPositions
+        );
+
+
+        renderBench();
+
+
+        clearSelection();
+
+
+        saveDataSilently();
+
+    }
+
+
+    /* =====================================================
+       SBĚR POZIC
+       ===================================================== */
+
+    function collectPositions() {
+
+        const result = [];
+
+
+        pitch
+            .querySelectorAll(
+                ".player"
+            )
+            .forEach(
+                function (player) {
+
+                    result.push({
+
+                        number:
+                            Number(
+                                player.dataset.number
+                            ),
+
+                        left:
+                            player.style.left,
+
+                        top:
+                            player.style.top,
+
+                        position:
+                            player.dataset.position
+
+                    });
+
+                }
+            );
+
+
+        return result;
+
+    }
+
+
+    /* =====================================================
+       VYKRESLENÍ HŘIŠTĚ
+       ===================================================== */
+
+    function renderPitch(
+        savedPositions = [],
+        preserveCurrent = false
+    ) {
+
+        const formation =
+            formations[
+                formationSelect.value
+            ] ||
+            formations["1-4-4-2"];
+
+
+        let positions =
+            savedPositions;
+
+
+        if (
+            preserveCurrent &&
+            !positions.length
+        ) {
+
+            positions =
+                collectPositions();
+
+        }
+
+
+        pitch
+            .querySelectorAll(
+                ".player"
+            )
+            .forEach(
+                player => player.remove()
+            );
+
+
+        formation.forEach(
+            function (
+                positionData,
+                index
             ) {
 
-                const benchPlayer =
-                    createBenchPlayer(
-                        number
+                /*
+                 * V základní sestavě jsou 1–11.
+                 */
+
+                const playerData =
+                    getPlayer(
+                        index + 1
                     );
 
 
-                bench.appendChild(
-                    benchPlayer
-                );
+                if (!playerData) {
 
-            }
+                    return;
 
-        }
-    );
+                }
 
 
-    /* =================================================
-       ULOŽENÍ
-       ================================================= */
+                const saved =
+                    positions.find(
+                        item =>
+                            Number(
+                                item.number
+                            ) ===
+                            Number(
+                                playerData.number
+                            )
+                    );
 
-    if (saveBtn) {
 
-        saveBtn.addEventListener(
-            "click",
-            function () {
+                const finalPosition = {
 
-                const data = {
+                    position:
+                        saved?.position ||
+                        positionData.position,
 
-                    matchName:
-                        matchName
-                            ? matchName.value
-                            : "",
+                    x:
+                        saved
+                            ? parseFloat(
+                                saved.left
+                            )
+                            : positionData.x,
 
-                    matchDate:
-                        matchDate
-                            ? matchDate.value
-                            : "",
-
-                    formation:
-                        formationSelect.value,
-
-                    players: [],
-
-                    bench: []
+                    y:
+                        saved
+                            ? parseFloat(
+                                saved.top
+                            )
+                            : positionData.y
 
                 };
 
 
-                /*
-                 * HRÁČI
-                 */
-
-                pitch
-                    .querySelectorAll(".player")
-                    .forEach(
-                        function (player) {
-
-                            data.players.push({
-
-                                number:
-                                    player
-                                        .querySelector(
-                                            ".player-number"
-                                        )
-                                        .textContent,
-
-                                position:
-                                    player
-                                        .querySelector(
-                                            ".player-position"
-                                        )
-                                        .textContent,
-
-                                name:
-                                    player
-                                        .querySelector(
-                                            ".player-label"
-                                        )
-                                        .textContent,
-
-                                left:
-                                    player.style.left,
-
-                                top:
-                                    player.style.top
-
-                            });
-
-                        }
+                const element =
+                    createPlayer(
+                        playerData,
+                        finalPosition
                     );
 
 
-                /*
-                 * LAVIČKA
-                 */
-
-                bench
-                    .querySelectorAll(
-                        ".bench-player"
-                    )
-                    .forEach(
-                        function (player) {
-
-                            data.bench.push({
-
-                                number:
-                                    player
-                                        .querySelector(
-                                            ".bench-number"
-                                        )
-                                        .textContent,
-
-                                name:
-                                    player
-                                        .querySelector(
-                                            ".bench-name"
-                                        )
-                                        .textContent
-
-                            });
-
-                        }
-                    );
-
-
-                try {
-
-                    localStorage.setItem(
-                        "MATCH_LINEUP_DATA",
-                        JSON.stringify(data)
-                    );
-
-
-                    alert(
-                        "✅ Sestava byla uložena."
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        error
-                    );
-
-                    alert(
-                        "❌ Sestavu se nepodařilo uložit."
-                    );
-
-                }
+                pitch.appendChild(
+                    element
+                );
 
             }
         );
@@ -1343,136 +1633,105 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       NAČTENÍ ULOŽENÉ SESTAVY
-       ================================================= */
+    /* =====================================================
+       VYTVOŘIT SESTAVU
+       ===================================================== */
 
-    function loadSavedLineup() {
+    if (createBtn) {
 
-        const saved =
-            localStorage.getItem(
-                "MATCH_LINEUP_DATA"
-            );
+        createBtn.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                clearSelection();
+
+                renderPitch();
+
+                renderBench();
+
+                saveDataSilently();
+
+            }
+        );
+
+    }
 
 
-        if (!saved) {
-            return;
-        }
+    /* =====================================================
+       ZMĚNA ROZESTAVENÍ
+       ===================================================== */
 
+    if (formationSelect) {
+
+        formationSelect.addEventListener(
+            "change",
+            function () {
+
+                clearSelection();
+
+                renderPitch();
+
+                renderBench();
+
+                saveDataSilently();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ULOŽENÍ DAT
+       ===================================================== */
+
+    function buildData() {
+
+        return {
+
+            players:
+                players,
+
+            formation:
+                formationSelect
+                    ? formationSelect.value
+                    : "1-4-4-2",
+
+            matchName:
+                matchName
+                    ? matchName.value
+                    : "",
+
+            matchDate:
+                matchDate
+                    ? matchDate.value
+                    : "",
+
+            positions:
+                collectPositions()
+
+        };
+
+    }
+
+
+    function saveDataSilently() {
 
         try {
 
-            const data =
-                JSON.parse(saved);
-
-
-            if (
-                matchName &&
-                data.matchName
-            ) {
-
-                matchName.value =
-                    data.matchName;
-
-            }
-
-
-            if (
-                matchDate &&
-                data.matchDate
-            ) {
-
-                matchDate.value =
-                    data.matchDate;
-
-            }
-
-
-            if (data.formation) {
-
-                formationSelect.value =
-                    data.formation;
-
-            }
-
-
-            /*
-             * Hráče vytvoříme
-             * podle uložených dat.
-             */
-
-            data.players.forEach(
-                function (item) {
-
-                    const player =
-                        createPlayer(
-                            item.number === "GK"
-                                ? null
-                                : item.number,
-
-                            item.position,
-
-                            item.number === "GK"
-                        );
-
-
-                    player
-                        .querySelector(
-                            ".player-label"
-                        )
-                        .textContent =
-                        item.name || "Hráč";
-
-
-                    player.style.left =
-                        item.left || "50%";
-
-
-                    player.style.top =
-                        item.top || "50%";
-
-
-                    pitch.appendChild(
-                        player
-                    );
-
-                }
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(
+                    buildData()
+                )
             );
-
-
-            /*
-             * Lavička
-             */
-
-            data.bench.forEach(
-                function (item) {
-
-                    const player =
-                        createBenchPlayer(
-                            item.number
-                        );
-
-
-                    player
-                        .querySelector(
-                            ".bench-name"
-                        )
-                        .textContent =
-                        item.name || "Hráč";
-
-
-                    bench.appendChild(
-                        player
-                    );
-
-                }
-            );
-
 
         } catch (error) {
 
             console.error(
-                "Chyba načítání sestavy:",
+                "❌ Chyba ukládání:",
                 error
             );
 
@@ -1481,85 +1740,254 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       EXPORT – PŘÍPRAVA
-       ================================================= */
+    if (saveBtn) {
 
-    async function createExportCanvas() {
+        saveBtn.addEventListener(
+            "click",
+            function (event) {
 
-        if (
-            typeof html2canvas ===
-            "undefined"
-        ) {
+                event.preventDefault();
 
-            throw new Error(
-                "html2canvas není načten."
-            );
-
-        }
+                saveDataSilently();
 
 
-        /*
-         * html2canvas někdy neumí správně
-         * zachytit zelené pozadí v kombinaci
-         * s některými CSS styly.
-         *
-         * Proto exportnímu kontejneru
-         * nastavíme pevné pozadí.
-         */
-
-        const oldBackground =
-            exportContainer.style.background;
+                const oldText =
+                    saveBtn.textContent;
 
 
-        exportContainer.style.background =
-            "#164d20";
+                saveBtn.textContent =
+                    "✅ Uloženo";
 
+
+                setTimeout(
+                    function () {
+
+                        saveBtn.textContent =
+                            oldText;
+
+                    },
+                    1200
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       NAČTENÍ DAT
+       ===================================================== */
+
+    function loadData() {
 
         try {
 
-            const canvas =
-                await html2canvas(
-                    exportContainer,
-                    {
-                        backgroundColor:
-                            "#164d20",
-
-                        scale: 2,
-
-                        useCORS: true,
-
-                        logging: false
-                    }
+            const saved =
+                localStorage.getItem(
+                    STORAGE_KEY
                 );
 
 
-            return canvas;
+            if (!saved) {
 
-        } finally {
+                renderPitch();
 
-            exportContainer.style.background =
-                oldBackground;
+                renderBench();
+
+                return;
+
+            }
+
+
+            const data =
+                JSON.parse(
+                    saved
+                );
+
+
+            if (
+                Array.isArray(
+                    data.players
+                )
+            ) {
+
+                data.players.forEach(
+                    function (
+                        savedPlayer
+                    ) {
+
+                        const player =
+                            getPlayer(
+                                savedPlayer.number
+                            );
+
+
+                        if (!player) {
+
+                            return;
+
+                        }
+
+
+                        player.name =
+                            savedPlayer.name ||
+                            "Hráč";
+
+
+                        player.captain =
+                            Boolean(
+                                savedPlayer.captain
+                            );
+
+                    }
+                );
+
+            }
+
+
+            if (
+                formationSelect &&
+                data.formation &&
+                formations[
+                    data.formation
+                ]
+            ) {
+
+                formationSelect.value =
+                    data.formation;
+
+            }
+
+
+            if (matchName) {
+
+                matchName.value =
+                    data.matchName ||
+                    "";
+
+            }
+
+
+            if (matchDate) {
+
+                matchDate.value =
+                    data.matchDate ||
+                    "";
+
+            }
+
+
+            renderPitch(
+                Array.isArray(
+                    data.positions
+                )
+                    ? data.positions
+                    : []
+            );
+
+
+            renderBench();
+
+        } catch (error) {
+
+            console.error(
+                "❌ Chyba načítání:",
+                error
+            );
+
+
+            renderPitch();
+
+            renderBench();
 
         }
 
     }
 
 
-    /* =================================================
-       EXPORT PNG
-       ================================================= */
+    /* =====================================================
+       AUTOMATICKÉ ULOŽENÍ NÁZVU A DATA
+       ===================================================== */
+
+    if (matchName) {
+
+        matchName.addEventListener(
+            "input",
+            saveDataSilently
+        );
+
+    }
+
+
+    if (matchDate) {
+
+        matchDate.addEventListener(
+            "change",
+            saveDataSilently
+        );
+
+    }
+
+
+    /* =====================================================
+       PNG
+       ===================================================== */
 
     if (exportPngBtn) {
 
         exportPngBtn.addEventListener(
             "click",
-            async function () {
+            async function (event) {
+
+                event.preventDefault();
+
+
+                if (
+                    typeof html2canvas ===
+                    "undefined"
+                ) {
+
+                    alert(
+                        "❌ html2canvas není načten."
+                    );
+
+                    return;
+
+                }
+
+
+                const element =
+                    document.getElementById(
+                        "lineupExport"
+                    );
+
+
+                if (!element) {
+
+                    return;
+
+                }
+
 
                 try {
 
                     const canvas =
-                        await createExportCanvas();
+                        await html2canvas(
+                            element,
+                            {
+
+                                backgroundColor:
+                                    "#164d20",
+
+                                scale: 2,
+
+                                useCORS: true,
+
+                                logging: false
+
+                            }
+                        );
 
 
                     const link =
@@ -1588,17 +2016,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     link.remove();
 
-
                 } catch (error) {
 
                     console.error(
-                        "PNG export:",
+                        "PNG:",
                         error
                     );
 
 
                     alert(
-                        "❌ Export PNG se nepodařil."
+                        "❌ PNG se nepodařilo vytvořit."
                     );
 
                 }
@@ -1609,47 +2036,81 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       EXPORT PDF
-       ================================================= */
+    /* =====================================================
+       PDF
+       ===================================================== */
 
     if (exportPdfBtn) {
 
         exportPdfBtn.addEventListener(
             "click",
-            async function () {
+            async function (event) {
+
+                event.preventDefault();
+
+
+                if (
+                    typeof html2canvas ===
+                    "undefined"
+                ) {
+
+                    alert(
+                        "❌ html2canvas není načten."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !window.jspdf ||
+                    !window.jspdf.jsPDF
+                ) {
+
+                    alert(
+                        "❌ jsPDF není načten."
+                    );
+
+                    return;
+
+                }
+
+
+                const element =
+                    document.getElementById(
+                        "lineupExport"
+                    );
+
+
+                if (!element) {
+
+                    return;
+
+                }
+
 
                 try {
 
-                    if (
-                        typeof html2canvas ===
-                        "undefined"
-                    ) {
-
-                        throw new Error(
-                            "html2canvas není načten."
-                        );
-
-                    }
-
-
-                    if (
-                        !window.jspdf ||
-                        !window.jspdf.jsPDF
-                    ) {
-
-                        throw new Error(
-                            "jsPDF není načten."
-                        );
-
-                    }
-
-
                     const canvas =
-                        await createExportCanvas();
+                        await html2canvas(
+                            element,
+                            {
+
+                                backgroundColor:
+                                    "#164d20",
+
+                                scale: 2,
+
+                                useCORS: true,
+
+                                logging: false
+
+                            }
+                        );
 
 
-                    const imgData =
+                    const image =
                         canvas.toDataURL(
                             "image/png"
                         );
@@ -1661,22 +2122,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     const pdf =
                         new jsPDF(
-                            "portrait",
+                            "landscape",
                             "mm",
                             "a4"
                         );
 
 
                     const pageWidth =
-                        pdf.internal.pageSize.getWidth();
+                        pdf.internal.pageSize
+                            .getWidth();
 
 
                     const pageHeight =
-                        pdf.internal.pageSize.getHeight();
+                        pdf.internal.pageSize
+                            .getHeight();
 
 
-                    const margin =
-                        8;
+                    const margin = 8;
 
 
                     const availableWidth =
@@ -1684,7 +2146,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         margin * 2;
 
 
-                    const imageRatio =
+                    const ratio =
                         canvas.height /
                         canvas.width;
 
@@ -1695,31 +2157,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     let imageHeight =
                         imageWidth *
-                        imageRatio;
-
-
-                    /*
-                     * Pokud je obrázek příliš vysoký,
-                     * zmenšíme ho.
-                     */
-
-                    const maxHeight =
-                        pageHeight -
-                        margin * 2;
+                        ratio;
 
 
                     if (
                         imageHeight >
-                        maxHeight
+                        pageHeight -
+                        margin * 2
                     ) {
 
                         imageHeight =
-                            maxHeight;
+                            pageHeight -
+                            margin * 2;
 
 
                         imageWidth =
                             imageHeight /
-                            imageRatio;
+                            ratio;
 
                     }
 
@@ -1738,105 +2192,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         ) / 2;
 
 
-                    /*
-                     * Název zápasu
-                     */
-
-                    const title =
-                        matchName &&
-                        matchName.value.trim()
-                            ? matchName.value.trim()
-                            : "Match LineUP";
-
-
-                    pdf.setFontSize(16);
-
-
-                    pdf.text(
-                        title,
-                        pageWidth / 2,
-                        6,
-                        {
-                            align: "center"
-                        }
-                    );
-
-
-                    /*
-                     * Obrázek
-                     */
-
                     pdf.addImage(
-                        imgData,
+                        image,
                         "PNG",
                         x,
-                        Math.max(
-                            y,
-                            12
-                        ),
+                        y,
                         imageWidth,
-                        Math.min(
-                            imageHeight,
-                            pageHeight - 18
-                        )
+                        imageHeight
                     );
-
-
-                    /*
-                     * Datum
-                     */
-
-                    if (
-                        matchDate &&
-                        matchDate.value
-                    ) {
-
-                        pdf.setFontSize(9);
-
-
-                        const date =
-                            new Date(
-                                matchDate.value +
-                                "T00:00:00"
-                            );
-
-
-                        const formatted =
-                            date.toLocaleDateString(
-                                "cs-CZ"
-                            );
-
-
-                        pdf.text(
-                            "Datum: " +
-                            formatted,
-                            pageWidth / 2,
-                            pageHeight - 4,
-                            {
-                                align:
-                                    "center"
-                            }
-                        );
-
-                    }
 
 
                     pdf.save(
                         "match-lineup.pdf"
                     );
 
-
                 } catch (error) {
 
                     console.error(
-                        "PDF export:",
+                        "PDF:",
                         error
                     );
 
 
                     alert(
-                        "❌ Export PDF se nepodařil.\n\n" +
-                        error.message
+                        "❌ PDF se nepodařilo vytvořit."
                     );
 
                 }
@@ -1847,60 +2226,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =================================================
-       KLIK MIMO HRÁČE
-       ================================================= */
+    /* =====================================================
+       START
+       ===================================================== */
 
-    pitch.addEventListener(
-        "click",
-        function (event) {
-
-            if (
-                event.target === pitch
-            ) {
-
-                clearSelection();
-
-            }
-
-        }
-    );
-
-
-    /* =================================================
-       ZAVŘENÍ MODALU KLIKEM MIMO
-       ================================================= */
-
-    if (editModal) {
-
-        editModal.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target ===
-                    editModal
-                ) {
-
-                    closeNameEditor();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =================================================
-       AUTOMATICKÉ NAČTENÍ
-       ================================================= */
-
-    loadSavedLineup();
+    loadData();
 
 
     console.log(
-        "✅ Match LineUP JS načten."
+        "✅ Match LineUP – lineup.js načten."
     );
 
 });
