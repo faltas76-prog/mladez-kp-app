@@ -322,21 +322,36 @@ h1 {
 
 
 /* =====================================================
-   VELKÉ VÁPNO
+   VELKÉ VÁPNO – POKUTOVÉ ÚZEMÍ
    ===================================================== */
 
+/*
+   Skutečné rozměry:
+   šířka = 40,32 m
+   hloubka = 16,50 m
+
+   Hřiště:
+   68 m × 105 m
+
+   40,32 / 68  = 59,29 %
+   16,50 / 105 = 15,71 %
+*/
+
 .penalty-area {
+
     position: absolute;
 
     left: 50%;
 
-    width: 57.1%;
+    width: 59.29%;
+
     height: 15.71%;
 
     transform: translateX(-50%);
 
-    border-left: 2px solid #fff;
-    border-right: 2px solid #fff;
+    border-left: 2px solid #ffffff;
+
+    border-right: 2px solid #ffffff;
 
     z-index: 3;
 
@@ -345,55 +360,37 @@ h1 {
 
 
 /* =====================================================
-   HORNÍ "D"
+   HORNÍ VELKÉ VÁPNO
    ===================================================== */
 
-.penalty-arc.top {
+.penalty-area.top {
+
+    top: 0;
 
     /*
-       Kruhový oblouk je vystředěn
-       kolem penaltového bodu.
+       Spodní hrana velkého vápna
     */
 
-    top: 1.76%;
-
-    clip-path:
-        inset(
-            50% 0 0 0
-        );
+    border-bottom:
+        2px solid #ffffff;
 }
 
 
 /* =====================================================
-   DOLNÍ "D"
+   DOLNÍ VELKÉ VÁPNO
    ===================================================== */
 
-.penalty-arc.bottom {
+.penalty-area.bottom {
 
-    bottom: 1.76%;
+    bottom: 0;
 
-    clip-path:
-        inset(
-            0 0 50% 0
-        );
+    /*
+       Horní hrana velkého vápna
+    */
+
+    border-top:
+        2px solid #ffffff;
 }
-
-/* =====================================================
-   MALÉ VÁPNO
-   ===================================================== */
-
-/*
-   Hřiště má poměr 105 × 68 m.
-
-   Malé vápno:
-   šířka 18,32 m
-   hloubka 5,50 m
-
-   Proto:
-   18,32 / 68 = 26,94 %
-   5,50 / 105 = 5,24 %
-*/
-
 .goal-area {
 
     position: absolute;
